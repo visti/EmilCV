@@ -1,42 +1,1088 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Emil Visti - Workbench</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' shape-rendering='crispEdges'><rect width='16' height='16' fill='%230055aa'/><rect x='2' y='2' width='12' height='12' fill='%23fff' rx='0'/><rect x='3' y='3' width='10' height='3' fill='%230055aa'/><rect x='5' y='3' width='4' height='2' fill='%23fff'/><rect x='3' y='7' width='10' height='6' fill='%23aaccff'/><rect x='4' y='8' width='8' height='4' fill='%230055aa'/></svg>">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Silkscreen:wght@400;700&display=swap');
 
-  <head>
-    <title>
-      Hello from Fly
-    </title>
-    <style>
-      body {
-        font-family: Arial, sans-serif;
-        background-color: #f0f4f8;
-        color: #333;
-        text-align: center;
-        padding: 50px;
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: #0055aa;
+      color: #ffffff;
+      font-family: 'Silkscreen', 'Courier New', monospace;
+      font-size: 14px;
+      line-height: 1.4;
+      min-height: 100vh;
+      padding: 4px;
+      cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16'%3E%3Cpath d='M0 0L0 14L4 10L7 15L9 14L6 9L11 9Z' fill='%23ff8800' stroke='%23000' stroke-width='1'/%3E%3C/svg%3E") 0 0, auto;
+    }
+
+    /* Workbench title bar at top of screen */
+    .wb-screen-bar {
+      background: linear-gradient(to bottom, #ffffff 0%, #aaaaee 100%);
+      color: #0033aa;
+      padding: 2px 8px;
+      font-size: 13px;
+      font-weight: 700;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 2px solid #000;
+      margin-bottom: 8px;
+    }
+    .wb-screen-bar .gadgets {
+      display: flex;
+      gap: 2px;
+    }
+    .wb-screen-bar .gadget {
+      width: 18px;
+      height: 14px;
+      border: 2px solid #000;
+      background: #aaaacc;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      cursor: default;
+    }
+
+    /* Amiga-style window */
+    .window {
+      background: #0055aa;
+      border: 2px solid #ffffff;
+      margin-bottom: 8px;
+      box-shadow: 2px 2px 0 #000;
+      resize: both;
+      overflow: hidden;
+      min-width: 220px;
+      min-height: 80px;
+      max-width: 100%;
+    }
+
+    .window-title {
+      background: linear-gradient(to bottom, #6688cc 0%, #4466aa 100%);
+      color: #ffffff;
+      padding: 2px 6px;
+      font-size: 13px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      border-bottom: 2px solid #fff;
+      user-select: none;
+    }
+    .window-title .close-gadget {
+      width: 16px;
+      height: 12px;
+      border: 2px solid #fff;
+      background: #0055aa;
+      margin-right: 6px;
+      flex-shrink: 0;
+    }
+    .window-title .title-text {
+      flex: 1;
+      white-space: nowrap;
+      overflow: hidden;
+    }
+
+    .window-body {
+      padding: 8px 10px;
+    }
+
+    /* Content styling */
+    .prompt-line {
+      color: #ffffff;
+      margin-bottom: 2px;
+    }
+    .prompt-text {
+      color: #ffaa00;
+      font-weight: 700;
+    }
+    .cmd-text {
+      color: #ffffff;
+    }
+    .output-text {
+      color: #aaccff;
+    }
+    .dim-text {
+      color: #6699cc;
+    }
+    .highlight {
+      color: #ffaa00;
+    }
+    .ok-text {
+      color: #44dd44;
+    }
+    .star-text {
+      color: #ffaa00;
+    }
+    .bar-text {
+      color: #ffaa00;
+    }
+
+    a {
+      color: #ffaa00;
+      text-decoration: none;
+    }
+    a:hover {
+      color: #ffdd44;
+      text-decoration: underline;
+    }
+
+    .cursor {
+      display: inline-block;
+      width: 8px;
+      height: 14px;
+      background: #ffaa00;
+      animation: blink 1s step-end infinite;
+      vertical-align: text-bottom;
+    }
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50%      { opacity: 0; }
+    }
+    /* Boot sequence overlay */
+    .boot-screen {
+      position: fixed;
+      inset: 0;
+      background: #001244;
+      color: #aaccff;
+      font-family: 'Silkscreen', 'Courier New', monospace;
+      font-size: 14px;
+      z-index: 9999;
+      display: none;
+      padding: 16px;
+    }
+    .boot-screen.active {
+      display: block;
+    }
+    .boot-box {
+      border: 2px solid #fff;
+      background: #002266;
+      box-shadow: 2px 2px 0 #000;
+      padding: 12px;
+      max-width: 640px;
+    }
+    .boot-line {
+      margin-bottom: 6px;
+    }
+    #boot-hand {
+      display: block;
+      width: 260px;
+      height: auto;
+      margin: 8px 0 12px;
+      image-rendering: pixelated;
+      border: 2px solid #fff;
+      background: #001244;
+    }
+
+    /* Scrollbar groove on right side of window */
+    .window-scroll {
+      position: relative;
+    }
+    .window-scroll .window-body {
+      padding-right: 24px;
+    }
+    #main-window .scrollbar {
+      display: none;
+    }
+    #main-window .window-body {
+      padding-right: 10px;
+      overflow: auto;
+      scrollbar-color: #6688cc #4466aa;
+      scrollbar-width: auto;
+    }
+    #main-window .window-body::-webkit-scrollbar {
+      width: 16px;
+    }
+    #main-window .window-body::-webkit-scrollbar-track {
+      background: #4466aa;
+      border-left: 2px solid #fff;
+    }
+    #main-window .window-body::-webkit-scrollbar-thumb {
+      background: #6688cc;
+      border: 2px solid #fff;
+      box-shadow: inset 0 0 0 2px #4466aa;
+    }
+    #main-window .window-body::-webkit-scrollbar-button:single-button {
+      display: block;
+      height: 16px;
+      background: #6688cc;
+      border: 2px solid #fff;
+    }
+    .window-scroll .scrollbar {
+      position: absolute;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      width: 18px;
+      background: #4466aa;
+      border-left: 2px solid #fff;
+    }
+    .scrollbar .sb-arrow {
+      width: 100%;
+      height: 16px;
+      background: #6688cc;
+      border-bottom: 2px solid #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-size: 10px;
+    }
+    .scrollbar .sb-arrow-down {
+      border-bottom: none;
+      border-top: 2px solid #fff;
+      position: absolute;
+      bottom: 0;
+      width: 100%;
+    }
+    .scrollbar .sb-thumb {
+      width: 100%;
+      height: 30px;
+      background: #6688cc;
+      border: 2px solid #fff;
+      margin-top: 4px;
+    }
+
+    /* Recommendation entry */
+    .rec-entry {
+      margin-bottom: 6px;
+      padding: 4px 0;
+    }
+    .rec-header {
+      color: #ffaa00;
+      font-weight: 700;
+    }
+    .rec-quote {
+      color: #aaccff;
+      font-style: italic;
+    }
+
+    /* Icon row at bottom */
+    .icon-row {
+      display: flex;
+      gap: 24px;
+      flex-wrap: wrap;
+      padding: 12px 8px;
+    }
+    .wb-icon {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      cursor: inherit;
+      text-decoration: none;
+      color: #fff;
+      width: 84px;
+    }
+    .wb-icon:hover {
+      color: #ffaa00;
+    }
+    .wb-icon:hover .icon-box {
+      border-color: #ffaa00;
+    }
+    .icon-box {
+      width: 40px;
+      height: 32px;
+      border: 2px solid #fff;
+      background: #0044aa;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+    }
+    .icon-label {
+      font-size: 11px;
+      text-align: center;
+      white-space: pre-line;
+    }
+
+    .line {
+      opacity: 0;
+      transition: opacity 0.04s;
+    }
+    .line.visible {
+      opacity: 1;
+    }
+    #demo-body {
+      padding: 6px;
+      position: relative;
+      overflow: hidden;
+    }
+    #demo-canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+      border: 2px solid #fff;
+      background: #001a44;
+      image-rendering: pixelated;
+    }
+    #scroller {
+      position: absolute;
+      left: 0;
+      top: 0;
+      right: auto;
+      bottom: auto;
+      pointer-events: none;
+      overflow: hidden;
+      white-space: nowrap;
+      font-size: 160px;
+      letter-spacing: 3px;
+      color: #ffdd44;
+      text-transform: uppercase;
+      text-shadow: 0 2px 0 #ff6600, 0 0 8px rgba(255, 136, 0, 0.8);
+      font-weight: 700;
+    }
+    #scroller span {
+      display: inline-block;
+      min-width: 10px;
+    }
+
+    /* Collapsible recommendation windows */
+    .rec-window .rec-body {
+      display: none;
+    }
+    .rec-window.open .rec-body {
+      display: block;
+    }
+    .rec-hint {
+      margin-left: 8px;
+      font-size: 10px;
+      color: #ffdd44;
+      text-transform: uppercase;
+      opacity: 0.85;
+      white-space: nowrap;
+      display: none;
+    }
+    .rec-window:not(.open) .rec-hint {
+      display: inline;
+    }
+    .rec-toggle {
+      cursor: inherit;
+    }
+    .rec-toggle:hover {
+      background: linear-gradient(to bottom, #7799dd 0%, #5577bb 100%);
+    }
+    .rec-window .window-title {
+      border-bottom: none;
+    }
+    .rec-window.open .window-title {
+      border-bottom: 2px solid #fff;
+    }
+
+    /* Draggable windows */
+    .window.is-dragging {
+      opacity: 0.9;
+    }
+    .window.is-absolute {
+      position: absolute;
+    }
+
+    /* Responsive */
+    @media (max-width: 600px) {
+      body { padding: 2px; font-size: 12px; }
+      .window-body { padding: 6px 8px; }
+      .window-scroll .window-body { padding-right: 8px; }
+      .window-scroll .scrollbar { display: none; }
+      .icon-row { gap: 16px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="boot-screen" id="boot-screen">
+    <div class="boot-box">
+      <div class="boot-line">Kickstart ROM v3.1</div>
+      <img id="boot-hand" alt="Insert Workbench disk animation" src="/boot-hand.gif">
+      <div class="boot-line">Insert Workbench disk</div>
+      <div class="boot-line" id="boot-mem">Memory check: <span class="highlight">0 KB</span></div>
+      <div class="boot-line" id="boot-load">Loading Workbench...</div>
+    </div>
+  </div>
+
+  <!-- Screen title bar -->
+  <div class="wb-screen-bar">
+    <span>Workbench Screen</span>
+    <div class="gadgets">
+      <div class="gadget"></div>
+      <div class="gadget"></div>
+    </div>
+  </div>
+
+  <!-- Main shell window -->
+  <div class="window window-scroll rec-window open" id="main-window">
+    <div class="window-title rec-toggle" data-toggle="main-window">
+      <div class="close-gadget"></div>
+      <span class="title-text">AmigaShell - Emil Visti</span>
+    </div>
+    <div class="scrollbar rec-body">
+      <div class="sb-arrow">&#9650;</div>
+      <div class="sb-thumb"></div>
+      <div class="sb-arrow sb-arrow-down">&#9660;</div>
+    </div>
+    <div class="window-body rec-body" id="terminal"></div>
+  </div>
+
+  <!-- Recommendation windows (collapsed by default) -->
+  <div class="window rec-window" id="rec1">
+    <div class="window-title rec-toggle" data-toggle="rec1">
+      <div class="close-gadget"></div>
+      <span class="title-text">Recommendation #1: Gramex</span>
+      <span class="rec-hint">click to expand</span>
+    </div>
+    <div class="window-body rec-body">
+      <div class="output-text"><span class="highlight">Thomas M. Dyekjaer, Vice Director</span> - Nov 2020</div>
+      <br>
+      <div class="dim-text">"I can only give Emil my warmest recommendation."</div>
+      <br>
+      <div class="dim-text">"Emil built automation tools that were crucial under heavy time pressure."</div>
+      <br>
+      <div class="dim-text">"With his broad qualifications he solved tasks across departments, from IT to user support."</div>
+      <br>
+      <div><a href="/anbefaling-gramex.pdf" target="_blank">Download full letter (PDF)</a></div>
+    </div>
+  </div>
+
+  <div class="window rec-window" id="rec2">
+    <div class="window-title rec-toggle" data-toggle="rec2">
+      <div class="close-gadget"></div>
+      <span class="title-text">Recommendation #2: Sandrew Metronome</span>
+      <span class="rec-hint">click to expand</span>
+    </div>
+    <div class="window-body rec-body">
+      <div class="output-text"><span class="highlight">Per Dam, CEO & Karsten Dahlgaard, Digital Music Manager</span> - Oct 2016</div>
+      <br>
+      <div class="dim-text">"Emil registered and cleaned metadata for 160,000+ music tracks - a massive task requiring attention to detail."</div>
+      <br>
+      <div class="dim-text">"Emil has always delivered to our full satisfaction. Future employers will benefit greatly from his skills."</div>
+      <br>
+      <div><a href="/anbefaling-sandrew.pdf" target="_blank">Download full letter (PDF)</a></div>
+    </div>
+  </div>
+
+  <div class="window rec-window" id="rec3">
+    <div class="window-title rec-toggle" data-toggle="rec3">
+      <div class="close-gadget"></div>
+      <span class="title-text">Recommendation #3: ORA</span>
+      <span class="rec-hint">click to expand</span>
+    </div>
+    <div class="window-body rec-body">
+      <div class="output-text"><span class="highlight">Jesper F. Gravholt, Project Lead</span> - Mar 2012</div>
+      <br>
+      <div class="dim-text">"Emil single-handedly managed all press work for our major projects - to our great satisfaction."</div>
+      <br>
+      <div class="dim-text">"Emil worked independently and with great dedication."</div>
+      <br>
+      <div><a href="/anbefaling-ora.pdf" target="_blank">Download full letter (PDF)</a></div>
+    </div>
+  </div>
+
+  <!-- Demoscene window -->
+  <div class="window" id="demo-window">
+    <div class="window-title">
+      <div class="close-gadget"></div>
+      <span class="title-text">Demoscene - Starfield</span>
+    </div>
+    <div class="window-body" id="demo-body">
+      <canvas id="demo-canvas"></canvas>
+      <div id="scroller" aria-hidden="true"></div>
+    </div>
+  </div>
+
+  <!-- Icon row at bottom -->
+  <div class="icon-row">
+    <a class="wb-icon" href="https://github.com/visti" target="_blank">
+      <div class="icon-box">&#128190;</div>
+      <span class="icon-label">GitHub</span>
+    </a>
+    <a class="wb-icon" href="https://soundcloud.com/visti-1" target="_blank">
+      <div class="icon-box">&#9835;</div>
+      <span class="icon-label">SoundCloud</span>
+    </a>
+    <a class="wb-icon" href="#" id="reboot-icon" aria-label="Reboot">
+      <div class="icon-box">&#8635;</div>
+      <span class="icon-label">Reboot</span>
+    </a>
+    <a class="wb-icon" href="/anbefaling-gramex.pdf" target="_blank">
+      <div class="icon-box">&#128196;</div>
+      <span class="icon-label">Rec:<br>Gramex</span>
+    </a>
+    <a class="wb-icon" href="/anbefaling-sandrew.pdf" target="_blank">
+      <div class="icon-box">&#128196;</div>
+      <span class="icon-label">Rec:<br>Sandrew</span>
+    </a>
+    <a class="wb-icon" href="/anbefaling-ora.pdf" target="_blank">
+      <div class="icon-box">&#128196;</div>
+      <span class="icon-label">Rec:<br>ORA</span>
+    </a>
+  </div>
+
+  <script>
+    const GITHUB_USER = 'visti';
+
+    const fallback = {
+      name: 'Emil Visti',
+      location: 'Copenhagen',
+      company: 'Gramex',
+      public_repos: 14,
+      followers: 0,
+      following: 1,
+      created_at: '2013-03-08T00:00:00Z'
+    };
+
+    const fallbackRepos = [
+      { name: 'Sandrew', language: 'Python', stargazers_count: 1, fork: false, description: 'File handling & processing scripts' },
+      { name: 'Tv2Formatter', language: 'Python', stargazers_count: 0, fork: false, description: 'CLI tool for TV2 XML files' },
+      { name: 'CommercialFormatter', language: 'Python', stargazers_count: 0, fork: false, description: 'Porting file processing to Odin' },
+      { name: 'ClaudeProjects', language: null, stargazers_count: 0, fork: false, description: 'Projects developed with Claude AI' },
+      { name: 'Norns-Looper', language: 'Lua', stargazers_count: 0, fork: false, description: 'Norns music looper' },
+      { name: 'detectivestory', language: 'GDScript', stargazers_count: 0, fork: false, description: 'Detective story game' },
+      { name: 'Pico-8_Projects', language: 'Lua', stargazers_count: 0, fork: false, description: 'Pico-8 projects' },
+      { name: 'danish_word_of_the_day', language: 'Python', stargazers_count: 0, fork: false, description: 'E-ink danish word display' },
+      { name: 'gamejam', language: 'Python', stargazers_count: 0, fork: false, description: 'Game jam project' },
+      { name: 'visti.github.io', language: 'HTML', stargazers_count: 0, fork: false, description: 'Personal site' },
+    ];
+
+    async function fetchGitHub() {
+      try {
+        const [userRes, reposRes, commitsRes] = await Promise.all([
+          fetch(`https://api.github.com/users/${GITHUB_USER}`),
+          fetch(`https://api.github.com/users/${GITHUB_USER}/repos?sort=updated&per_page=100`),
+          fetch(`https://api.github.com/search/commits?q=author:${GITHUB_USER}`, {
+            headers: { 'Accept': 'application/vnd.github.cloak-preview+json' }
+          })
+        ]);
+        if (!userRes.ok || !reposRes.ok) throw new Error('API error');
+        const user = await userRes.json();
+        const repos = await reposRes.json();
+        const commits = commitsRes.ok ? await commitsRes.json() : null;
+        user.total_commits = commits ? commits.total_count : null;
+        return { user, repos };
+      } catch {
+        return { user: fallback, repos: fallbackRepos };
+      }
+    }
+
+    function pad(str, len) { return String(str).padEnd(len); }
+
+    function makeBar(count, max) {
+      const width = Math.max(1, Math.round((count / max) * 16));
+      return '\u2588'.repeat(width);
+    }
+
+    function buildLines(user, repos) {
+      const hideRepos = ['claudeprojects', 'detectivestory', 'gamejam', 'visti.github.io'];
+      const ownRepos = repos.filter(r => !r.fork && !hideRepos.includes(r.name.toLowerCase()));
+      const year = new Date(user.created_at).getFullYear();
+
+      const langCount = {};
+      ownRepos.forEach(r => {
+        if (r.language) langCount[r.language] = (langCount[r.language] || 0) + 1;
+      });
+      const langSorted = Object.entries(langCount).sort((a, b) => b[1] - a[1]);
+      const maxLang = langSorted.length ? langSorted[0][1] : 1;
+
+      const lines = [];
+
+      // Boot
+      lines.push({ type: 'boot', html: '<span class="dim-text">Amiga Kickstart ROM v3.1</span>' });
+      lines.push({ type: 'boot', html: '<span class="dim-text">68030 CPU @ 25MHz  -  2MB Chip RAM  -  8MB Fast RAM</span>' });
+      lines.push({ type: 'boot', html: '<span class="dim-text">Loading Workbench...</span>' });
+      lines.push({ type: 'blank' });
+
+      // Prompt: whoami
+      const parts = [user.name, user.location, user.company].filter(Boolean);
+      lines.push({ type: 'cmd', html: `<span class="prompt-text">1.SYS:&gt;</span> <span class="cmd-text">whoami</span>` });
+      lines.push({ type: 'out', html: `<span class="output-text">${parts.join(' - ')}</span>` });
+      lines.push({ type: 'blank' });
+
+      // GitHub stats
+      lines.push({ type: 'cmd', html: `<span class="prompt-text">1.SYS:&gt;</span> <span class="cmd-text">type DH0:github_stats</span>` });
+      lines.push({ type: 'out', html: `<span class="output-text">  Username:     <span class="highlight">${GITHUB_USER}</span></span>` });
+      lines.push({ type: 'out', html: `<span class="output-text">  Repos:        <span class="highlight">${user.public_repos}</span></span>` });
+      lines.push({ type: 'out', html: `<span class="output-text">  Commits:      <span class="highlight">${user.total_commits != null ? user.total_commits : '...'}</span></span>` });
+      lines.push({ type: 'out', html: `<span class="output-text">  Member since: <span class="highlight">${year}</span></span>` });
+      lines.push({ type: 'blank' });
+
+      // Experience
+      lines.push({ type: 'cmd', html: `<span class="prompt-text">1.SYS:&gt;</span> <span class="cmd-text">type DH0:experience.log</span>` });
+      lines.push({ type: 'out', html: `<span class="highlight">  Gramex, Copenhagen ......................... 2017-now</span>` });
+      lines.push({ type: 'out', html: `<span class="output-text">  Data Specialist</span>` });
+      lines.push({ type: 'out', html: `<span class="dim-text">  SQL / Python / Excel / Access / Navision / SSMS</span>` });
+      lines.push({ type: 'out', html: `<span class="dim-text">  Processing 350k+ plays/month for royalty payouts</span>` });
+      lines.push({ type: 'out', html: `<span class="dim-text">  to artists and labels across Denmark</span>` });
+      lines.push({ type: 'out', html: `<span class="dim-text">  Reports for public display, legal & internal use</span>` });
+      lines.push({ type: 'out', html: `<span class="dim-text">  PowerBI / Matplotlib / Pandas / Python automation</span>` });
+      lines.push({ type: 'blank' });
+      lines.push({ type: 'out', html: `<span class="highlight">  Sandrew Metronome, Aalborg ................. 2014-2016</span>` });
+      lines.push({ type: 'out', html: `<span class="output-text">  Metadata Expert</span>` });
+      lines.push({ type: 'blank' });
+      lines.push({ type: 'out', html: `<span class="highlight">  Big Beard Productions, Aalborg ............. 2012-2014</span>` });
+      lines.push({ type: 'out', html: `<span class="output-text">  Asst. Producer - Video/Music/Graphics</span>` });
+      lines.push({ type: 'blank' });
+      lines.push({ type: 'out', html: `<span class="highlight">  Rotation.dk ................................ 2012-2015</span>` });
+      lines.push({ type: 'out', html: `<span class="output-text">  Writer - SEO, Articles, Podcasts</span>` });
+      lines.push({ type: 'blank' });
+      lines.push({ type: 'out', html: `<span class="highlight">  ORA (Org. af Rytmiske Amatormusikere) ...... 2011-2012</span>` });
+      lines.push({ type: 'out', html: `<span class="output-text">  PR Associate</span>` });
+      lines.push({ type: 'blank' });
+
+      // Education
+      lines.push({ type: 'cmd', html: `<span class="prompt-text">1.SYS:&gt;</span> <span class="cmd-text">type DH0:education</span>` });
+      lines.push({ type: 'out', html: '<span class="output-text">  Librarian DB (IVA Aalborg) ............. 2014-2015</span>' });
+      lines.push({ type: 'out', html: '<span class="output-text">  BSc Information Science (IVA Aalborg) .. 2008-2014</span>' });
+      lines.push({ type: 'out', html: '<span class="output-text">  Gymnasium (Dronninglund) .............. 2003-2006</span>' });
+      lines.push({ type: 'blank' });
+
+      // Skills
+      lines.push({ type: 'cmd', html: `<span class="prompt-text">1.SYS:&gt;</span> <span class="cmd-text">type DH0:skills.cfg</span>` });
+      lines.push({ type: 'out', html: '<span class="output-text">  SQL / Python / Bash / Lua / GDScript</span>' });
+      lines.push({ type: 'out', html: '<span class="output-text">  SSMS / Access / Navision / Excel / PowerBI</span>' });
+      lines.push({ type: 'out', html: '<span class="output-text">  Pandas / Matplotlib / data visualization</span>' });
+      lines.push({ type: 'out', html: '<span class="output-text">  Unix & Windows sysadmin</span>' });
+      lines.push({ type: 'out', html: '<span class="output-text">  Photoshop / Premiere / Ableton</span>' });
+      lines.push({ type: 'out', html: '<span class="output-text">  Metadata standards & digitization</span>' });
+      lines.push({ type: 'out', html: '<span class="output-text">  Studio technician (music)</span>' });
+      lines.push({ type: 'out', html: '<span class="dim-text">  Languages: Danish, English</span>' });
+      lines.push({ type: 'blank' });
+
+      // Projects
+      lines.push({ type: 'cmd', html: `<span class="prompt-text">1.SYS:&gt;</span> <span class="cmd-text">list DH0:projects/</span>` });
+      ownRepos.forEach(r => {
+        const name = pad(r.name, 24);
+        const lang = r.language ? `<span class="highlight">${pad(r.language, 10)}</span>` : pad('-', 10);
+        const star = r.stargazers_count > 0 ? `<span class="star-text">\u2605 ${r.stargazers_count}</span>  ` : '     ';
+        const desc = r.description || '';
+        lines.push({ type: 'out', html: `<span class="output-text">  ${name}${lang}${star}<span class="dim-text">${desc}</span></span>` });
+      });
+      lines.push({ type: 'blank' });
+
+      // Languages
+      lines.push({ type: 'cmd', html: `<span class="prompt-text">1.SYS:&gt;</span> <span class="cmd-text">type DH0:languages.dat</span>` });
+      langSorted.forEach(([lang, count]) => {
+        const label = pad(lang, 12);
+        const bar = makeBar(count, maxLang);
+        const num = count === 1 ? '1 repo' : `${count} repos`;
+        lines.push({ type: 'out', html: `<span class="output-text">  ${label}<span class="bar-text">${bar}</span> ${num}</span>` });
+      });
+      lines.push({ type: 'blank' });
+
+      // Links
+      lines.push({ type: 'cmd', html: `<span class="prompt-text">1.SYS:&gt;</span> <span class="cmd-text">type DH0:links</span>` });
+      lines.push({ type: 'out', html: `  <a href="https://github.com/${GITHUB_USER}" target="_blank">github.com/${GITHUB_USER}</a>` });
+      lines.push({ type: 'blank' });
+
+      // Final prompt
+      lines.push({ type: 'final' });
+
+      return lines;
+    }
+
+    async function main() {
+      const terminal = document.getElementById('terminal');
+      const { user, repos } = await fetchGitHub();
+      const lines = buildLines(user, repos);
+
+      const elements = lines.map(line => {
+        const div = document.createElement('div');
+        div.classList.add('line');
+
+        if (line.type === 'blank') {
+          div.innerHTML = '&nbsp;';
+        } else if (line.type === 'final') {
+          div.innerHTML = `<span class="prompt-text">1.SYS:&gt;</span> <span class="cursor"></span>`;
+        } else {
+          div.innerHTML = line.html;
+        }
+
+        terminal.appendChild(div);
+        return { el: div, line };
+      });
+
+      applyInitialLayout();
+      sizeWindowsToContent();
+      sizeMainWindowBody();
+      sizeDemoCanvas();
+      startStarfield();
+      startScroller();
+
+      let i = 0;
+      function showNext() {
+        if (i >= elements.length) return;
+        const { el, line } = elements[i];
+        el.classList.add('visible');
+        i++;
+
+        const delays = {
+          'boot': 120,
+          'cmd': 200,
+          'blank': 50,
+          'out': 35,
+          'final': 0,
+        };
+        const delay = delays[line.type] ?? 40;
+        if (line.type !== 'final') {
+          setTimeout(showNext, delay);
+        }
       }
 
-      h1 {
-        font-family: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
-        color: #0070f3;
-        font-size: 2.5em;
+      setTimeout(showNext, 300);
+    }
+
+    // Hidden message for fellow devs
+    console.log(`%c
+ ____________________________________________________
+|                                                    |
+|     ___          _  __   _   ___  __  ___          |
+|    | __|_ __ _ _| | \\ \\ / (_)__| _||_(  )         |
+|    | _|| '  \\ | | |  \\ V /| (_-<  | _/ |          |
+|    |___|_|_|_|___|_|   \\_/ |_/__/  |_| _|          |
+|                                                    |
+|   ╔══════════════════════════════════════════════╗  |
+|   ║  This site was built with love & nostalgia   ║  |
+|   ║  on a rainy day in Copenhagen.               ║  |
+|   ║                                              ║  |
+|   ║  Stack: HTML + inline CSS/JS + GitHub API    ║  |
+|   ║  Host:  Fly.io (nginx:alpine)                ║  |
+|   ║  Aesthetic: Amiga Workbench 3.1              ║  |
+|   ║                                              ║  |
+|   ║  > github.com/visti                          ║  |
+|   ║  > soundcloud.com/visti-1                    ║  |
+|   ╚══════════════════════════════════════════════╝  |
+|                                                    |
+|   "Computers in the future may weigh no more       |
+|    than 1.5 tons." — Popular Mechanics, 1949       |
+|____________________________________________________|
+`, 'color: #ffaa00; font-family: monospace; font-size: 12px; background: #0055aa; padding: 8px;');
+
+    async function runBootSequence(force = false) {
+      const key = 'boot_seen_v1';
+      if (!force && localStorage.getItem(key) === '1') return;
+      const screen = document.getElementById('boot-screen');
+      const mem = document.getElementById('boot-mem');
+      const load = document.getElementById('boot-load');
+      if (!screen || !mem || !load) return;
+      screen.classList.add('active');
+      load.style.visibility = 'hidden';
+
+      let kb = 0;
+      const maxKb = 8192;
+      const step = 256;
+      while (kb <= maxKb) {
+        mem.innerHTML = `Memory check: <span class="highlight">${kb} KB</span>`;
+        await new Promise(r => setTimeout(r, 40));
+        kb += step;
+      }
+      load.style.visibility = 'visible';
+      await new Promise(r => setTimeout(r, 900));
+
+      screen.classList.remove('active');
+      localStorage.setItem(key, '1');
+    }
+
+    (async () => {
+      await runBootSequence();
+      main();
+    })();
+
+    const reboot = document.getElementById('reboot-icon');
+    if (reboot) {
+      reboot.addEventListener('click', async (e) => {
+        e.preventDefault();
+        await runBootSequence(true);
+      });
+    }
+
+    function toggleRec(id) {
+      const win = document.getElementById(id);
+      if (!win) return;
+      const title = win.querySelector('.window-title');
+      const wasOpen = win.classList.contains('open');
+      win.classList.toggle('open');
+      if (title && wasOpen) {
+        const prev = win.style.height || win.getBoundingClientRect().height + 'px';
+        win.dataset.prevHeight = prev;
+        win.style.height = (title.offsetHeight + 4) + 'px';
+      } else if (title && !wasOpen) {
+        if (win.dataset.prevHeight) {
+          win.style.height = win.dataset.prevHeight;
+          delete win.dataset.prevHeight;
+        } else {
+          win.style.height = '';
+        }
+      }
+      sizeWindowsToContent();
+      sizeMainWindowBody();
+    }
+
+    function sizeWindowsToContent() {
+      const wins = document.querySelectorAll('.window');
+      const viewportMax = document.documentElement.clientWidth - 8;
+      wins.forEach((win) => {
+        if (win.id === 'demo-window') return;
+        const title = win.querySelector('.window-title');
+        const body = win.querySelector('.window-body');
+        const scrollbar = win.querySelector('.scrollbar');
+        let w = 0;
+        if (title) w = Math.max(w, title.scrollWidth);
+        if (body) w = Math.max(w, body.scrollWidth);
+        if (scrollbar && getComputedStyle(scrollbar).display !== 'none') {
+          w += scrollbar.offsetWidth;
+        }
+        w += 8;
+        const current = win.getBoundingClientRect().width || 0;
+        const target = Math.min(Math.max(w, current), viewportMax);
+        win.style.width = target + 'px';
+      });
+    }
+
+    function applyInitialLayout() {
+      const vw = document.documentElement.clientWidth;
+      const vh = document.documentElement.clientHeight;
+      if (vw < 900 || vh < 700) return;
+
+      const starts = {
+        'main-window': { x: 40, y: 120, w: 560, h: Math.round(vh * 0.625) },
+        'rec1': { x: 760, y: 330, w: 360 },
+        'rec2': { x: 760, y: 540, w: 360 },
+        'rec3': { x: 760, y: 740, w: 360 },
+        'demo-window': { x: Math.max(40, vw - 520), y: 120, w: 480, h: 260 },
+      };
+
+      Object.entries(starts).forEach(([id, pos]) => {
+        const win = document.getElementById(id);
+        if (!win) return;
+        win.classList.add('is-absolute');
+        win.style.left = Math.min(pos.x, vw - 260) + 'px';
+        win.style.top = Math.min(pos.y, vh - 140) + 'px';
+        win.style.width = Math.min(pos.w, vw - 16) + 'px';
+        if (pos.h) {
+          win.style.height = Math.min(pos.h, vh - 40) + 'px';
+        }
+      });
+    }
+
+    function sizeMainWindowBody() {
+      const win = document.getElementById('main-window');
+      if (!win) return;
+      const title = win.querySelector('.window-title');
+      const body = win.querySelector('.window-body');
+      if (!title || !body) return;
+      const inner = win.clientHeight - title.offsetHeight - 4;
+      body.style.height = Math.max(inner, 140) + 'px';
+    }
+
+    function sizeDemoCanvas() {
+      const win = document.getElementById('demo-window');
+      const body = document.getElementById('demo-body');
+      const canvas = document.getElementById('demo-canvas');
+      const scroller = document.getElementById('scroller');
+      if (!win || !body || !canvas) return;
+      const title = win.querySelector('.window-title');
+      const inner = win.clientHeight - (title ? title.offsetHeight : 0) - 12;
+      body.style.height = Math.max(inner, 120) + 'px';
+      const rect = body.getBoundingClientRect();
+      const w = Math.max(120, Math.floor(rect.width - 12));
+      const h = Math.max(90, Math.floor(rect.height - 12));
+      if (canvas.width !== w || canvas.height !== h) {
+        canvas.width = w;
+        canvas.height = h;
+      }
+      if (scroller) {
+        scroller.style.left = canvas.offsetLeft + 'px';
+        scroller.style.top = canvas.offsetTop + 'px';
+        scroller.style.width = canvas.clientWidth + 'px';
+        scroller.style.height = canvas.clientHeight + 'px';
+      }
+    }
+
+    function startStarfield() {
+      const canvas = document.getElementById('demo-canvas');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return;
+      const stars = Array.from({ length: 140 }, () => ({
+        x: Math.random() * 2 - 1,
+        y: Math.random() * 2 - 1,
+        z: Math.random(),
+        v: 0.004 + Math.random() * 0.012
+      }));
+
+      function render() {
+        sizeDemoCanvas();
+        const w = canvas.width;
+        const h = canvas.height;
+        ctx.fillStyle = '#001a44';
+        ctx.fillRect(0, 0, w, h);
+
+        const cx = w / 2;
+        const cy = h / 2;
+        const scale = Math.min(w, h) * 0.6;
+        for (const s of stars) {
+          s.z -= s.v;
+          if (s.z <= 0.02) {
+            s.x = Math.random() * 2 - 1;
+            s.y = Math.random() * 2 - 1;
+            s.z = 1;
+            s.v = 0.004 + Math.random() * 0.012;
+          }
+          const x = cx + (s.x / s.z) * scale;
+          const y = cy + (s.y / s.z) * scale;
+          if (x < 0 || x > w || y < 0 || y > h) continue;
+          const size = Math.max(1, Math.floor((1 - s.z) * 2.5));
+          const shade = Math.floor(160 + (1 - s.z) * 95);
+          ctx.fillStyle = `rgb(${shade}, ${shade}, ${shade})`;
+          ctx.fillRect(x, y, size, size);
+        }
+        requestAnimationFrame(render);
       }
 
-      p {
-        font-size: 1.2em;
+      requestAnimationFrame(render);
+    }
+
+    function startScroller() {
+      const text = 'Emil Visti curriculum vitae 2026  ';
+      const scroller = document.getElementById('scroller');
+      if (!scroller) return;
+      scroller.innerHTML = '';
+      const inner = document.createElement('div');
+      inner.style.whiteSpace = 'nowrap';
+      inner.style.display = 'inline-block';
+      scroller.appendChild(inner);
+
+      function addText() {
+        return text.split('').map((ch) => {
+          const span = document.createElement('span');
+          span.textContent = ch === ' ' ? '\u00A0' : ch;
+          inner.appendChild(span);
+          return span;
+        });
       }
 
-      a {
-        color: #0070f3;
-        text-decoration: none;
+      const chars = addText().concat(addText());
+      const palette = [
+        '#ffcc33', '#ff9933', '#ff6633', '#ff3333',
+        '#ff33aa', '#ff66ff', '#cc66ff', '#9966ff',
+        '#6699ff', '#33ccff', '#33ffcc', '#66ff66',
+        '#ccff66', '#ffff66', '#ffcc33', '#ff9933'
+      ];
+      let t = 0;
+      let offset = 0;
+
+      function render() {
+        const canvas = document.getElementById('demo-canvas');
+        if (!canvas) return;
+        const speed = 1.6;
+        const loopWidth = inner.scrollWidth / 2 || 1;
+        offset = (offset - speed) % loopWidth;
+        const fontSize = parseFloat(getComputedStyle(scroller).fontSize) || 0;
+        const baseY = (canvas.clientHeight * 0.5) - (fontSize * 0.5);
+        chars.forEach((span, i) => {
+          const wave = Math.sin((i * 0.32) + t) * 56;
+          span.style.color = palette[(i + Math.floor(t * 12)) % palette.length];
+          span.style.transform = `translate(${offset}px, ${wave + baseY}px)`;
+        });
+        t += 0.08;
+        requestAnimationFrame(render);
       }
 
-      a:hover {
-        text-decoration: underline;
+      requestAnimationFrame(render);
+    }
+
+    // --- Draggable windows ---
+    let dragState = null;
+    let topZ = 10;
+
+    function bringToFront(win) {
+      topZ++;
+      win.style.zIndex = topZ;
+    }
+
+    document.addEventListener('mousedown', (e) => {
+      const titleBar = e.target.closest('.window-title');
+      if (!titleBar) {
+        // Click on window body still brings to front
+        const win = e.target.closest('.window');
+        if (win) bringToFront(win);
+        return;
       }
-    </style>
-  </head>
+      const win = titleBar.closest('.window');
+      if (!win) return;
 
-  <body>
-    <h1>Hello from <a href="https://fly.io" target="_blank">Fly.io</a> with a static web site</h1>
-    <p>Or <a href="goodbye.html">goodbye.</a></p>
-  </body>
+      bringToFront(win);
+      const rect = win.getBoundingClientRect();
 
+      dragState = {
+        win,
+        titleBar,
+        startX: e.clientX,
+        startY: e.clientY,
+        origLeft: rect.left,
+        origTop: rect.top + window.scrollY,
+        origWidth: rect.width,
+        offsetX: e.clientX - rect.left,
+        offsetY: e.clientY - rect.top,
+        moved: false
+      };
+      e.preventDefault();
+    });
+
+    document.addEventListener('mousemove', (e) => {
+      if (!dragState) return;
+      const dx = e.clientX - dragState.startX;
+      const dy = e.clientY - dragState.startY;
+
+      if (!dragState.moved && (Math.abs(dx) > 3 || Math.abs(dy) > 3)) {
+        dragState.moved = true;
+        const w = dragState.win;
+        if (!w.classList.contains('is-absolute')) {
+          w.classList.add('is-absolute');
+          w.style.left = dragState.origLeft + 'px';
+          w.style.top = dragState.origTop + 'px';
+          w.style.width = dragState.origWidth + 'px';
+        }
+        w.classList.add('is-dragging');
+      }
+
+      if (dragState.moved) {
+        dragState.win.style.left = (e.clientX - dragState.offsetX) + 'px';
+        dragState.win.style.top = (e.clientY - dragState.offsetY + window.scrollY) + 'px';
+      }
+    });
+
+    document.addEventListener('mouseup', (e) => {
+      if (!dragState) return;
+      dragState.win.classList.remove('is-dragging');
+
+      if (!dragState.moved) {
+        // Was a click, not a drag — toggle collapse
+        const toggle = dragState.titleBar.closest('.rec-toggle');
+        if (toggle) {
+          const id = toggle.dataset.toggle;
+          if (id) toggleRec(id);
+        }
+      }
+      dragState = null;
+    });
+
+    window.addEventListener('resize', sizeWindowsToContent);
+    window.addEventListener('resize', sizeMainWindowBody);
+    window.addEventListener('resize', sizeDemoCanvas);
+
+    const mainWin = document.getElementById('main-window');
+    if (mainWin && 'ResizeObserver' in window) {
+      const ro = new ResizeObserver(() => sizeMainWindowBody());
+      ro.observe(mainWin);
+    }
+
+    const demoWin = document.getElementById('demo-window');
+    if (demoWin && 'ResizeObserver' in window) {
+      const ro2 = new ResizeObserver(() => sizeDemoCanvas());
+      ro2.observe(demoWin);
+    }
+  </script>
+</body>
 </html>
