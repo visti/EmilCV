@@ -733,7 +733,7 @@
     }
 
     // Hidden message for fellow devs
-    console.log(`%c
+    const easterEgg = String.raw`
  ____________________________________________________
 |                                                    |
 |     ___          _  __   _   ___  __  ___          |
@@ -755,8 +755,11 @@
 |                                                    |
 |   "Computers in the future may weigh no more       |
 |    than 1.5 tons." — Popular Mechanics, 1949       |
-|____________________________________________________|
-`, 'color: #ffaa00; font-family: monospace; font-size: 12px; background: #0055aa; padding: 8px;');
+|____________________________________________________|`;
+    console.log(
+      `%c${easterEgg}`,
+      'color: #ffaa00; font-family: monospace; font-size: 12px; background: #0055aa; padding: 8px;'
+    );
 
     async function runBootSequence(force = false) {
       const key = 'boot_seen_v1';
