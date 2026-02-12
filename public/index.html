@@ -850,7 +850,7 @@
 
   <!-- Icon row at bottom -->
   <div class="icon-row">
-    <a class="wb-icon" href="https://github.com/visti" target="_blank">
+    <a class="wb-icon" href="https://github.com/visti" target="_blank" rel="noopener noreferrer">
       <div class="icon-box">
         <svg viewBox="0 0 36 36" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges">
           <path d="M0 0 H30 L34 4 V34 H0 Z" fill="#0055AA" stroke="white" stroke-width="2"/>
@@ -863,7 +863,7 @@
       </div>
       <span class="icon-label">GitHub</span>
     </a>
-    <a class="wb-icon" href="https://soundcloud.com/visti-1" target="_blank">
+    <a class="wb-icon" href="https://soundcloud.com/visti-1" target="_blank" rel="noopener noreferrer">
       <div class="icon-box">
         <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges">
           <rect x="12" y="4" width="2" height="18" fill="white"/>
@@ -1186,7 +1186,7 @@
 
       // Links
       lines.push({ type: 'cmd', html: `<span class="prompt-text">1.SYS:&gt;</span> <span class="cmd-text">type DH0:links</span>` });
-      lines.push({ type: 'out', html: `  <a href="https://github.com/${GITHUB_USER}" target="_blank">github.com/${GITHUB_USER}</a>` });
+      lines.push({ type: 'out', html: `  <a href="https://github.com/${GITHUB_USER}" target="_blank" rel="noopener noreferrer">github.com/${GITHUB_USER}</a>` });
       lines.push({ type: 'blank' });
 
       // Final prompt
@@ -1197,11 +1197,11 @@
 
     async function fetchNotes() {
       try {
-        const res = await fetch('/notes/manifest.json');
+        const res = await fetch('./notes/manifest.json');
         if (!res.ok) throw new Error('manifest fetch failed');
         const filenames = await res.json();
         const notes = await Promise.all(filenames.map(async (name, index) => {
-          const r = await fetch('/notes/' + name);
+          const r = await fetch('./notes/' + name);
           if (!r.ok) return null;
           const md = await r.text();
           return parseNote(md, index);
@@ -1210,6 +1210,39 @@
       } catch {
         return [];
       }
+    }
+
+    function escapeHtml(str) {
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    function safeUrl(url) {
+      const raw = String(url || '').trim();
+      const lower = raw.toLowerCase();
+      if (!raw) return '#';
+      if (lower.startsWith('javascript:') || lower.startsWith('data:') || lower.startsWith('vbscript:')) return '#';
+      if (
+        lower.startsWith('http://') ||
+        lower.startsWith('https://') ||
+        lower.startsWith('mailto:') ||
+        lower.startsWith('./') ||
+        lower.startsWith('../') ||
+        lower.startsWith('/') ||
+        lower.startsWith('#')
+      ) {
+        return raw;
+      }
+      return '#';
+    }
+
+    function safeId(str) {
+      const cleaned = String(str || '').toLowerCase().replace(/[^a-z0-9_-]/g, '_');
+      return cleaned || 'file';
     }
 
     function parseNote(md, index) {
@@ -1233,9 +1266,11 @@
       const bodyHtml = body.split('\n').map(line => {
         if (line.trim() === '') return '<br>';
         // Process inline markdown
-        let html = line
+        let html = escapeHtml(line)
           .replace(/\*\*(.+?)\*\*/g, '<span class="highlight">$1</span>')
-          .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank">$1</a>');
+          .replace(/\[([^\]]+)\]\(([^)]+)\)/g, (m, text, url) => {
+            return '<a href="' + escapeHtml(safeUrl(url)) + '" target="_blank" rel="noopener noreferrer">' + text + '</a>';
+          });
         if (line.startsWith('> ')) {
           html = '<div class="dim-text">' + html.slice(2) + '</div>';
         } else {
@@ -1275,14 +1310,17 @@
         win.id = note.id;
         if (!note.open) win.style.display = 'none';
 
+        const safeTitle = escapeHtml(note.title);
+        const safeFilename = escapeHtml(note.filename);
+        const safeIcon = escapeHtml(note.icon);
         win.innerHTML =
           `<div class="window-title rec-toggle" data-toggle="${note.id}">` +
             `<div class="close-gadget note-close"></div>` +
-            `<span class="title-text">${note.title}</span>` +
+            `<span class="title-text">${safeTitle}</span>` +
             `<span class="rec-hint">click to expand</span>` +
           `</div>` +
           `<div class="window-body rec-body">` +
-            `<div class="dim-text">${note.filename}</div><br>` +
+            `<div class="dim-text">${safeFilename}</div><br>` +
             note.bodyHtml +
           `</div>`;
 
@@ -1301,7 +1339,7 @@
         icon.href = '#';
         icon.innerHTML =
           `<div class="icon-box">${docSvg}</div>` +
-          `<span class="icon-label">${note.icon}</span>`;
+          `<span class="icon-label">${safeIcon}</span>`;
 
         icon.addEventListener('click', (e) => {
           e.preventDefault();
@@ -2143,7 +2181,7 @@
           setTimeout(() => resetSaveBtn(), 2000);
           return;
         }
-        fetch('/paint/', {
+        fetch('./paint/', {
           method: 'POST',
           headers: { 'Content-Type': 'image/png' },
           body: blob
@@ -2194,7 +2232,7 @@
     function loadPictures() {
       const body = document.getElementById('pictures-body');
       if (!body) return;
-      fetch('/paint/')
+      fetch('./paint/')
         .then(res => res.ok ? res.json() : [])
         .then(list => {
           body.innerHTML = '';
@@ -2272,28 +2310,41 @@
 
     // === Open painting in a Workbench window ===
     function openPaintingWindow(filename, url) {
+      const viewerId = 'viewer-' + safeId(filename);
+      const safeSrc = safeUrl(url);
       // Remove existing viewer for same file
-      const existing = document.getElementById('viewer-' + filename);
+      const existing = document.getElementById(viewerId);
       if (existing) { bringToFront(existing); return; }
 
       const win = document.createElement('div');
       win.className = 'window is-absolute';
-      win.id = 'viewer-' + filename;
+      win.id = viewerId;
       const vw = document.documentElement.clientWidth;
       const vh = document.documentElement.clientHeight;
       win.style.left = Math.max(20, Math.round((vw - 360) / 2) + Math.random() * 40 - 20) + 'px';
       win.style.top = Math.max(40, Math.round((vh - 320) / 2) + Math.random() * 40 - 20) + 'px';
       win.style.width = '360px';
-      win.innerHTML =
-        '<div class="window-title">' +
-          '<div class="close-gadget"></div>' +
-          '<span class="title-text">' + filename + '</span>' +
-        '</div>' +
-        '<div class="window-body painting-viewer">' +
-          '<img src="' + url + '" alt="' + filename + '">' +
-        '</div>';
+      const title = document.createElement('div');
+      title.className = 'window-title';
+      const close = document.createElement('div');
+      close.className = 'close-gadget';
+      const titleText = document.createElement('span');
+      titleText.className = 'title-text';
+      titleText.textContent = filename;
+      title.appendChild(close);
+      title.appendChild(titleText);
 
-      win.querySelector('.close-gadget').addEventListener('click', (e) => {
+      const body = document.createElement('div');
+      body.className = 'window-body painting-viewer';
+      const img = document.createElement('img');
+      img.src = safeSrc;
+      img.alt = filename;
+      body.appendChild(img);
+
+      win.appendChild(title);
+      win.appendChild(body);
+
+      close.addEventListener('click', (e) => {
         e.stopPropagation();
         win.remove();
       });
@@ -2318,7 +2369,7 @@
         trashEl.classList.remove('drag-over');
         const filename = e.dataTransfer.getData('text/plain');
         if (!filename || !filename.startsWith('painting-')) return;
-        fetch('/paint/' + encodeURIComponent(filename), { method: 'DELETE' })
+        fetch('./paint/' + encodeURIComponent(filename), { method: 'DELETE' })
           .then(res => {
             if (res.ok) {
               // Refresh pictures window if open
