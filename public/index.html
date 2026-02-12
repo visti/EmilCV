@@ -93,10 +93,6 @@
     }
 
     /* Content styling */
-    .prompt-line {
-      color: #ffffff;
-      margin-bottom: 2px;
-    }
     .prompt-text {
       color: #ffaa00;
       font-weight: 700;
@@ -112,9 +108,6 @@
     }
     .highlight {
       color: #ffaa00;
-    }
-    .ok-text {
-      color: #44dd44;
     }
     .star-text {
       color: #ffaa00;
@@ -179,16 +172,6 @@
       background: #001244;
     }
 
-    /* Scrollbar groove on right side of window */
-    .window-scroll {
-      position: relative;
-    }
-    .window-scroll .window-body {
-      padding-right: 24px;
-    }
-    #main-window .scrollbar {
-      display: none;
-    }
     #main-window .window-body {
       padding-right: 10px;
       overflow: auto;
@@ -213,55 +196,6 @@
       background: #6688cc;
       border: 2px solid #fff;
     }
-    .window-scroll .scrollbar {
-      position: absolute;
-      top: 0;
-      right: 0;
-      bottom: 0;
-      width: 18px;
-      background: #4466aa;
-      border-left: 2px solid #fff;
-    }
-    .scrollbar .sb-arrow {
-      width: 100%;
-      height: 16px;
-      background: #6688cc;
-      border-bottom: 2px solid #fff;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: #fff;
-      font-size: 10px;
-    }
-    .scrollbar .sb-arrow-down {
-      border-bottom: none;
-      border-top: 2px solid #fff;
-      position: absolute;
-      bottom: 0;
-      width: 100%;
-    }
-    .scrollbar .sb-thumb {
-      width: 100%;
-      height: 30px;
-      background: #6688cc;
-      border: 2px solid #fff;
-      margin-top: 4px;
-    }
-
-    /* Recommendation entry */
-    .rec-entry {
-      margin-bottom: 6px;
-      padding: 4px 0;
-    }
-    .rec-header {
-      color: #ffaa00;
-      font-weight: 700;
-    }
-    .rec-quote {
-      color: #aaccff;
-      font-style: italic;
-    }
-
     /* Icon row at bottom */
     .icon-row {
       display: flex;
@@ -277,23 +211,22 @@
       cursor: inherit;
       text-decoration: none;
       color: #fff;
-      width: 84px;
+      width: 90px;
     }
     .wb-icon:hover {
       color: #ffaa00;
     }
-    .wb-icon:hover .icon-box {
-      border-color: #ffaa00;
-    }
     .icon-box {
-      width: 40px;
-      height: 32px;
-      border: 2px solid #fff;
-      background: #0044aa;
+      width: 48px;
+      height: 40px;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 18px;
+    }
+    .icon-box svg {
+      width: 100%;
+      height: 100%;
+      filter: drop-shadow(2px 2px 0 #000);
     }
     .icon-label {
       font-size: 11px;
@@ -386,8 +319,6 @@
     @media (max-width: 600px) {
       body { padding: 2px; font-size: 12px; }
       .window-body { padding: 6px 8px; }
-      .window-scroll .window-body { padding-right: 8px; }
-      .window-scroll .scrollbar { display: none; }
       .icon-row { gap: 16px; }
     }
   </style>
@@ -413,15 +344,10 @@
   </div>
 
   <!-- Main shell window -->
-  <div class="window window-scroll rec-window open" id="main-window">
+  <div class="window rec-window open" id="main-window">
     <div class="window-title rec-toggle" data-toggle="main-window">
       <div class="close-gadget"></div>
       <span class="title-text">AmigaShell - Emil Visti</span>
-    </div>
-    <div class="scrollbar rec-body">
-      <div class="sb-arrow">&#9650;</div>
-      <div class="sb-thumb"></div>
-      <div class="sb-arrow sb-arrow-down">&#9660;</div>
     </div>
     <div class="window-body rec-body" id="terminal"></div>
   </div>
@@ -495,27 +421,81 @@
   <!-- Icon row at bottom -->
   <div class="icon-row">
     <a class="wb-icon" href="https://github.com/visti" target="_blank">
-      <div class="icon-box">&#128190;</div>
+      <div class="icon-box">
+        <svg viewBox="0 0 36 36" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges">
+          <path d="M0 0 H30 L34 4 V34 H0 Z" fill="#0055AA" stroke="white" stroke-width="2"/>
+          <rect x="6" y="14" width="22" height="16" fill="white"/>
+          <rect x="8" y="2" width="14" height="8" fill="white" stroke="black" stroke-width="1"/>
+          <rect x="12" y="18" width="14" height="2" fill="#0055AA"/>
+          <rect x="12" y="22" width="14" height="2" fill="#0055AA"/>
+          <rect x="12" y="26" width="10" height="2" fill="#0055AA"/>
+        </svg>
+      </div>
       <span class="icon-label">GitHub</span>
     </a>
     <a class="wb-icon" href="https://soundcloud.com/visti-1" target="_blank">
-      <div class="icon-box">&#9835;</div>
+      <div class="icon-box">
+        <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges">
+          <rect x="12" y="4" width="2" height="18" fill="white"/>
+          <rect x="22" y="2" width="2" height="18" fill="white"/>
+          <rect x="12" y="4" width="12" height="2" fill="white"/>
+          <rect x="6" y="20" width="8" height="6" rx="3" fill="white"/>
+          <rect x="16" y="18" width="8" height="6" rx="3" fill="white"/>
+          <rect x="4" y="28" width="24" height="2" fill="#FF8800"/>
+          <rect x="2" y="26" width="2" height="4" fill="#FF8800"/>
+          <rect x="28" y="26" width="2" height="4" fill="#FF8800"/>
+        </svg>
+      </div>
       <span class="icon-label">SoundCloud</span>
     </a>
     <a class="wb-icon" href="#" id="reboot-icon" aria-label="Reboot">
-      <div class="icon-box">&#8635;</div>
+      <div class="icon-box">
+        <svg viewBox="0 0 36 36" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges">
+          <path d="M0 0 H30 L34 4 V34 H0 Z" fill="#0055AA" stroke="white" stroke-width="2"/>
+          <rect x="6" y="14" width="22" height="16" fill="white"/>
+          <rect x="8" y="2" width="14" height="8" fill="white" stroke="black" stroke-width="1"/>
+          <path d="M10 22 L15 27 L24 16" stroke="#FF8800" stroke-width="3" fill="none"/>
+        </svg>
+      </div>
       <span class="icon-label">Reboot</span>
     </a>
     <a class="wb-icon" href="/anbefaling-gramex.pdf" target="_blank">
-      <div class="icon-box">&#128196;</div>
+      <div class="icon-box">
+        <svg viewBox="0 0 30 36" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges">
+          <path d="M2 0 H22 L28 6 V34 H2 Z" fill="white" stroke="#0055AA" stroke-width="2"/>
+          <path d="M22 0 V6 H28" fill="none" stroke="#0055AA" stroke-width="2"/>
+          <rect x="6" y="10" width="18" height="2" fill="#0055AA"/>
+          <rect x="6" y="15" width="18" height="2" fill="#0055AA"/>
+          <rect x="6" y="20" width="18" height="2" fill="#0055AA"/>
+          <rect x="6" y="25" width="12" height="2" fill="#0055AA"/>
+        </svg>
+      </div>
       <span class="icon-label">Rec:<br>Gramex</span>
     </a>
     <a class="wb-icon" href="/anbefaling-sandrew.pdf" target="_blank">
-      <div class="icon-box">&#128196;</div>
+      <div class="icon-box">
+        <svg viewBox="0 0 30 36" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges">
+          <path d="M2 0 H22 L28 6 V34 H2 Z" fill="white" stroke="#0055AA" stroke-width="2"/>
+          <path d="M22 0 V6 H28" fill="none" stroke="#0055AA" stroke-width="2"/>
+          <rect x="6" y="10" width="18" height="2" fill="#0055AA"/>
+          <rect x="6" y="15" width="18" height="2" fill="#0055AA"/>
+          <rect x="6" y="20" width="18" height="2" fill="#0055AA"/>
+          <rect x="6" y="25" width="12" height="2" fill="#0055AA"/>
+        </svg>
+      </div>
       <span class="icon-label">Rec:<br>Sandrew</span>
     </a>
     <a class="wb-icon" href="/anbefaling-ora.pdf" target="_blank">
-      <div class="icon-box">&#128196;</div>
+      <div class="icon-box">
+        <svg viewBox="0 0 30 36" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges">
+          <path d="M2 0 H22 L28 6 V34 H2 Z" fill="white" stroke="#0055AA" stroke-width="2"/>
+          <path d="M22 0 V6 H28" fill="none" stroke="#0055AA" stroke-width="2"/>
+          <rect x="6" y="10" width="18" height="2" fill="#0055AA"/>
+          <rect x="6" y="15" width="18" height="2" fill="#0055AA"/>
+          <rect x="6" y="20" width="18" height="2" fill="#0055AA"/>
+          <rect x="6" y="25" width="12" height="2" fill="#0055AA"/>
+        </svg>
+      </div>
       <span class="icon-label">Rec:<br>ORA</span>
     </a>
   </div>
@@ -709,27 +689,28 @@
       startStarfield();
       startScroller();
 
-      let i = 0;
-      function showNext() {
-        if (i >= elements.length) return;
-        const { el, line } = elements[i];
-        el.classList.add('visible');
-        i++;
+      return function startTypewriter() {
+        let i = 0;
+        function showNext() {
+          if (i >= elements.length) return;
+          const { el, line } = elements[i];
+          el.classList.add('visible');
+          i++;
 
-        const delays = {
-          'boot': 120,
-          'cmd': 200,
-          'blank': 50,
-          'out': 35,
-          'final': 0,
-        };
-        const delay = delays[line.type] ?? 40;
-        if (line.type !== 'final') {
-          setTimeout(showNext, delay);
+          const delays = {
+            'boot': 120,
+            'cmd': 200,
+            'blank': 50,
+            'out': 35,
+            'final': 0,
+          };
+          const delay = delays[line.type] ?? 40;
+          if (line.type !== 'final') {
+            setTimeout(showNext, delay);
+          }
         }
-      }
-
-      setTimeout(showNext, 300);
+        setTimeout(showNext, 300);
+      };
     }
 
     // Hidden message for fellow devs
@@ -761,9 +742,7 @@
       'color: #ffaa00; font-family: monospace; font-size: 12px; background: #0055aa; padding: 8px;'
     );
 
-    async function runBootSequence(force = false) {
-      const key = 'boot_seen_v1';
-      if (!force && localStorage.getItem(key) === '1') return;
+    async function runBootSequence() {
       const screen = document.getElementById('boot-screen');
       const mem = document.getElementById('boot-mem');
       const load = document.getElementById('boot-load');
@@ -783,19 +762,21 @@
       await new Promise(r => setTimeout(r, 900));
 
       screen.classList.remove('active');
-      localStorage.setItem(key, '1');
     }
 
     (async () => {
-      await runBootSequence();
-      main();
+      const [, startTypewriter] = await Promise.all([
+        runBootSequence(),
+        main()
+      ]);
+      if (startTypewriter) startTypewriter();
     })();
 
     const reboot = document.getElementById('reboot-icon');
     if (reboot) {
       reboot.addEventListener('click', async (e) => {
         e.preventDefault();
-        await runBootSequence(true);
+        await runBootSequence();
       });
     }
 
@@ -804,18 +785,22 @@
       if (!win) return;
       const title = win.querySelector('.window-title');
       const wasOpen = win.classList.contains('open');
-      win.classList.toggle('open');
       if (title && wasOpen) {
+        // Capture height BEFORE removing .open (which hides .rec-body)
         const prev = win.style.height || win.getBoundingClientRect().height + 'px';
         win.dataset.prevHeight = prev;
+        win.classList.remove('open');
         win.style.height = (title.offsetHeight + 4) + 'px';
       } else if (title && !wasOpen) {
+        win.classList.add('open');
         if (win.dataset.prevHeight) {
           win.style.height = win.dataset.prevHeight;
           delete win.dataset.prevHeight;
         } else {
           win.style.height = '';
         }
+      } else {
+        win.classList.toggle('open');
       }
       sizeWindowsToContent();
       sizeMainWindowBody();
@@ -826,18 +811,14 @@
       const viewportMax = document.documentElement.clientWidth - 8;
       wins.forEach((win) => {
         if (win.id === 'demo-window') return;
+        if (win.style.width) return; // already sized, don't ratchet
         const title = win.querySelector('.window-title');
         const body = win.querySelector('.window-body');
-        const scrollbar = win.querySelector('.scrollbar');
         let w = 0;
         if (title) w = Math.max(w, title.scrollWidth);
         if (body) w = Math.max(w, body.scrollWidth);
-        if (scrollbar && getComputedStyle(scrollbar).display !== 'none') {
-          w += scrollbar.offsetWidth;
-        }
         w += 8;
-        const current = win.getBoundingClientRect().width || 0;
-        const target = Math.min(Math.max(w, current), viewportMax);
+        const target = Math.min(w, viewportMax);
         win.style.width = target + 'px';
       });
     }
