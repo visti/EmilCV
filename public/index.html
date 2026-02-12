@@ -254,6 +254,23 @@
       background: #001a44;
       image-rendering: pixelated;
     }
+    /* Disk pie window */
+    #disk-window {
+      min-width: 360px;
+      min-height: 260px;
+    }
+    #disk-body {
+      padding: 6px;
+      background: #001a44;
+    }
+    #disk-canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+      border: 2px solid #fff;
+      background: #001244;
+      image-rendering: pixelated;
+    }
     #scroller {
       position: absolute;
       left: 0;
@@ -935,6 +952,17 @@
     </div>
   </div>
 
+  <!-- Disk pie window (hidden by default) -->
+  <div class="window" id="disk-window" style="display:none">
+    <div class="window-title">
+      <div class="close-gadget" id="disk-close"></div>
+      <span class="title-text">Disk Map</span>
+    </div>
+    <div class="window-body" id="disk-body">
+      <canvas id="disk-canvas"></canvas>
+    </div>
+  </div>
+
   <!-- Timeline window (hidden by default) -->
   <div class="window" id="timeline-window" style="display:none">
     <div class="window-title">
@@ -1005,6 +1033,17 @@
         </svg>
       </div>
       <span class="icon-label">Deluxe<br>Paint</span>
+    </a>
+    <a class="wb-icon" href="#" id="disk-icon" aria-label="Disk">
+      <div class="icon-box">
+        <svg viewBox="0 0 36 36" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges">
+          <rect x="2" y="4" width="32" height="28" fill="#0055AA" stroke="white" stroke-width="2"/>
+          <circle cx="18" cy="18" r="10" fill="#ffaa00" stroke="#ffdd44" stroke-width="2"/>
+          <rect x="17" y="8" width="2" height="20" fill="#0055AA"/>
+          <rect x="8" y="17" width="20" height="2" fill="#0055AA"/>
+        </svg>
+      </div>
+      <span class="icon-label">Disk</span>
     </a>
     <a class="wb-icon" href="#" id="pictures-icon" aria-label="Pictures">
       <div class="icon-box">
@@ -1655,7 +1694,7 @@
       const wins = document.querySelectorAll('.window');
       const viewportMax = document.documentElement.clientWidth - 8;
       wins.forEach((win) => {
-        if (win.id === 'demo-window' || win.id === 'dpaint-window' || win.id === 'mail-window') return;
+      if (win.id === 'demo-window' || win.id === 'dpaint-window' || win.id === 'mail-window' || win.id === 'disk-window') return;
         if (win.style.width) return; // already sized, don't ratchet
         const title = win.querySelector('.window-title');
         const body = win.querySelector('.window-body');
@@ -1676,6 +1715,7 @@
       const starts = {
         'main-window': { x: 40, y: 120, w: 560, h: Math.round(vh * 0.625) },
         'demo-window': { x: Math.max(40, vw - 520), y: 120, w: 480, h: 260 },
+        'disk-window': { x: Math.max(40, vw - 520), y: 420, w: 420, h: 300 },
       };
 
       Object.entries(starts).forEach(([id, pos]) => {
@@ -1741,6 +1781,23 @@
       }
     }
 
+    function sizeDiskCanvas() {
+      const win = document.getElementById('disk-window');
+      const body = document.getElementById('disk-body');
+      const canvas = document.getElementById('disk-canvas');
+      if (!win || !body || !canvas || win.style.display === 'none') return;
+      const title = win.querySelector('.window-title');
+      const inner = win.clientHeight - (title ? title.offsetHeight : 0) - 12;
+      body.style.height = Math.max(inner, 160) + 'px';
+      const rect = body.getBoundingClientRect();
+      const w = Math.max(160, Math.floor(rect.width - 12));
+      const h = Math.max(160, Math.floor(rect.height - 12));
+      if (canvas.width !== w || canvas.height !== h) {
+        canvas.width = w;
+        canvas.height = h;
+      }
+    }
+
     function startStarfield() {
       const canvas = document.getElementById('demo-canvas');
       if (!canvas) return;
@@ -1783,6 +1840,81 @@
       }
 
       requestAnimationFrame(render);
+    }
+
+    // === Disk pie animation ===
+    const diskSlices = [
+      { value: 38, color: '#ffaa00' },
+      { value: 22, color: '#66ccff' },
+      { value: 16, color: '#ff6699' },
+      { value: 12, color: '#66ff66' },
+      { value: 7, color: '#ffcc33' },
+      { value: 5, color: '#cc66ff' }
+    ];
+    let diskAnim = { running: false, start: 0, duration: 1100 };
+
+    function drawDiskPie(t) {
+      const canvas = document.getElementById('disk-canvas');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return;
+      const w = canvas.width;
+      const h = canvas.height;
+      const cx = w / 2;
+      const cy = h / 2;
+      const r = Math.min(w, h) * 0.38;
+
+      ctx.clearRect(0, 0, w, h);
+      ctx.fillStyle = '#001244';
+      ctx.fillRect(0, 0, w, h);
+
+      // Base solid disk (fade out as slices expand)
+      const baseAlpha = Math.max(0, 1 - t * 1.2);
+      if (baseAlpha > 0) {
+        ctx.globalAlpha = baseAlpha;
+        ctx.fillStyle = '#ffaa00';
+        ctx.beginPath();
+        ctx.arc(cx, cy, r, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.globalAlpha = 1;
+      }
+
+      const total = diskSlices.reduce((s, a) => s + a.value, 0);
+      let start = -Math.PI / 2;
+      diskSlices.forEach((s) => {
+        const sweep = (s.value / total) * Math.PI * 2 * t;
+        if (sweep <= 0.001) return;
+        ctx.fillStyle = s.color;
+        ctx.beginPath();
+        ctx.moveTo(cx, cy);
+        ctx.arc(cx, cy, r, start, start + sweep);
+        ctx.closePath();
+        ctx.fill();
+        start += (s.value / total) * Math.PI * 2;
+      });
+
+      // Center hub
+      ctx.fillStyle = '#003366';
+      ctx.beginPath();
+      ctx.arc(cx, cy, r * 0.12, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    function animateDiskPie() {
+      if (diskAnim.running) return;
+      diskAnim.running = true;
+      diskAnim.start = performance.now();
+
+      const step = (now) => {
+        const t = Math.min(1, (now - diskAnim.start) / diskAnim.duration);
+        drawDiskPie(t);
+        if (t < 1 && diskAnim.running) {
+          requestAnimationFrame(step);
+        } else {
+          diskAnim.running = false;
+        }
+      };
+      requestAnimationFrame(step);
     }
 
     function startScroller() {
@@ -1844,7 +1976,7 @@
     }
 
     document.addEventListener('mousedown', (e) => {
-      if (e.target.closest('#dpaint-close') || e.target.closest('.note-close') || e.target.closest('#mail-close')) return;
+      if (e.target.closest('#dpaint-close') || e.target.closest('.note-close') || e.target.closest('#mail-close') || e.target.closest('#disk-close')) return;
       const titleBar = e.target.closest('.window-title');
       if (!titleBar) {
         // Click on window body still brings to front
@@ -1914,6 +2046,7 @@
     window.addEventListener('resize', sizeWindowsToContent);
     window.addEventListener('resize', sizeMainWindowBody);
     window.addEventListener('resize', sizeDemoCanvas);
+    window.addEventListener('resize', sizeDiskCanvas);
 
     const mainWin = document.getElementById('main-window');
     if (mainWin && 'ResizeObserver' in window) {
@@ -1925,6 +2058,12 @@
     if (demoWin && 'ResizeObserver' in window) {
       const ro2 = new ResizeObserver(() => sizeDemoCanvas());
       ro2.observe(demoWin);
+    }
+
+    const diskWin = document.getElementById('disk-window');
+    if (diskWin && 'ResizeObserver' in window) {
+      const roDisk = new ResizeObserver(() => sizeDiskCanvas());
+      roDisk.observe(diskWin);
     }
 
     // === Deluxe Paint ===
@@ -2273,6 +2412,39 @@
     document.getElementById('dpaint-close')?.addEventListener('click', (e) => {
       e.stopPropagation();
       document.getElementById('dpaint-window').style.display = 'none';
+    });
+
+    // === Disk window ===
+    function toggleDiskWindow() {
+      const win = document.getElementById('disk-window');
+      if (!win) return;
+      if (win.style.display === 'none') {
+        win.style.display = '';
+        if (!win.classList.contains('is-absolute')) {
+          const vw = document.documentElement.clientWidth;
+          const vh = document.documentElement.clientHeight;
+          win.classList.add('is-absolute');
+          win.style.left = Math.max(20, Math.round((vw - 420) / 2)) + 'px';
+          win.style.top = Math.max(40, Math.round((vh - 320) / 2)) + 'px';
+          win.style.width = '420px';
+          win.style.height = '320px';
+        }
+        bringToFront(win);
+        sizeDiskCanvas();
+        animateDiskPie();
+      } else {
+        win.style.display = 'none';
+      }
+    }
+
+    document.getElementById('disk-icon')?.addEventListener('click', (e) => {
+      e.preventDefault();
+      toggleDiskWindow();
+    });
+
+    document.getElementById('disk-close')?.addEventListener('click', (e) => {
+      e.stopPropagation();
+      document.getElementById('disk-window').style.display = 'none';
     });
 
     initDPaint();
