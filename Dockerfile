@@ -1,4 +1,6 @@
-FROM nginx:alpine
-
-COPY public /usr/share/nginx/html
-RUN cd /usr/share/nginx/html/notes && ls *.md 2>/dev/null | sort | sed 's/.*/"&"/' | paste -sd, | sed 's/^/[/;s/$/]/' > manifest.json
+FROM node:20-alpine
+WORKDIR /app
+COPY package.json server.js ./
+COPY public ./public
+EXPOSE 3000
+CMD ["node", "server.js"]

@@ -484,6 +484,127 @@
       50% { border-color: #000; }
     }
 
+    /* Save button */
+    .dp-save {
+      background: #4a4;
+      color: #fff;
+      border: 2px outset #6c6;
+    }
+    .dp-save:hover { background: #5b5; }
+    .dp-save.saving {
+      background: #aa8;
+      border-style: inset;
+      pointer-events: none;
+    }
+    .dp-save.saved {
+      background: #4a4;
+      border-style: inset;
+    }
+    .dp-save.error {
+      background: #a44;
+      border-style: inset;
+    }
+
+    /* Pictures window */
+    #pictures-body {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      padding: 8px 10px;
+      min-height: 60px;
+      align-content: flex-start;
+    }
+    .pic-thumb {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px;
+      text-decoration: none;
+      color: #aaccff;
+      font-size: 9px;
+    }
+    .pic-thumb img {
+      width: 80px;
+      height: 64px;
+      object-fit: contain;
+      image-rendering: pixelated;
+      border: 2px solid #fff;
+      background: #001a44;
+    }
+    .pic-thumb:hover img {
+      border-color: #ffaa00;
+    }
+    .pic-empty {
+      color: #6699cc;
+      font-size: 12px;
+      padding: 16px;
+    }
+    .pic-thumb[draggable="true"] {
+      cursor: grab;
+    }
+    .pic-thumb.dragging {
+      opacity: 0.4;
+    }
+
+    /* Trashcan drop target */
+    #trash-icon.drag-over .icon-box svg rect:first-of-type {
+      fill: #c44;
+    }
+    #trash-icon.drag-over .icon-label {
+      color: #ff6644;
+    }
+
+    /* Painting viewer window */
+    .painting-viewer {
+      padding: 4px;
+      background: #555;
+    }
+    .painting-viewer img {
+      display: block;
+      width: 100%;
+      height: auto;
+      image-rendering: pixelated;
+      border: 2px solid #fff;
+    }
+
+    /* AmigaBASIC window */
+    #basic-body {
+      background: #0022aa;
+      color: #fff;
+      font-family: 'Silkscreen', monospace;
+      font-size: 13px;
+      padding: 0;
+      overflow-y: auto;
+      cursor: text;
+      display: flex;
+      flex-direction: column;
+      scrollbar-color: #6688cc #4466aa;
+    }
+    #basic-output {
+      white-space: pre-wrap;
+      word-break: break-all;
+      padding: 6px 8px 0;
+      flex: 1;
+    }
+    #basic-input-line {
+      display: flex;
+      padding: 0 8px 6px;
+    }
+    #basic-prompt {
+      white-space: pre;
+    }
+    #basic-input {
+      background: transparent;
+      border: none;
+      color: #fff;
+      font-family: 'Silkscreen', monospace;
+      font-size: 13px;
+      outline: none;
+      flex: 1;
+      padding: 0;
+      caret-color: #ffaa00;
+    }
+
     /* Responsive */
     @media (max-width: 600px) {
       body { padding: 2px; font-size: 12px; }
@@ -586,6 +707,10 @@
           </button>
           <hr class="dp-divider">
           <button class="dp-tool" id="dp-clear" title="Clear canvas">CLR</button>
+          <hr class="dp-divider">
+          <button class="dp-tool dp-save" id="dp-save" title="Save painting (Ctrl+S)">
+            <svg viewBox="0 0 18 18"><path d="M3 1h10l3 3v11a2 2 0 01-2 2H3a2 2 0 01-2-2V3a2 2 0 012-2z" fill="none" stroke="#fff" stroke-width="1.5"/><rect x="5" y="1" width="7" height="5" rx="0.5" fill="#fff" opacity="0.7"/><rect x="5" y="10" width="8" height="6" rx="1" fill="#fff" opacity="0.5"/></svg>
+          </button>
         </div>
       </div>
       <div id="dpaint-palette-bar">
@@ -594,6 +719,32 @@
           <div id="dp-fg-swatch"></div>
         </div>
         <div id="dp-palette"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Pictures window (hidden by default) -->
+  <div class="window" id="pictures-window" style="display:none">
+    <div class="window-title">
+      <div class="close-gadget" id="pictures-close"></div>
+      <span class="title-text">Pictures</span>
+    </div>
+    <div class="window-body" id="pictures-body">
+      <div class="pic-empty">No paintings saved yet</div>
+    </div>
+  </div>
+
+  <!-- AmigaBASIC window (hidden by default) -->
+  <div class="window" id="basic-window" style="display:none">
+    <div class="window-title">
+      <div class="close-gadget" id="basic-close"></div>
+      <span class="title-text">AmigaBASIC</span>
+    </div>
+    <div class="window-body" id="basic-body">
+      <div id="basic-output"></div>
+      <div id="basic-input-line">
+        <span id="basic-prompt"></span>
+        <input type="text" id="basic-input" autocomplete="off" spellcheck="false">
       </div>
     </div>
   </div>
@@ -652,6 +803,34 @@
         </svg>
       </div>
       <span class="icon-label">Deluxe<br>Paint</span>
+    </a>
+    <a class="wb-icon" href="#" id="pictures-icon" aria-label="Pictures">
+      <div class="icon-box">
+        <svg viewBox="0 0 36 36" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges">
+          <path d="M0 0 H30 L34 4 V34 H0 Z" fill="#0055AA" stroke="white" stroke-width="2"/>
+          <rect x="6" y="14" width="22" height="16" fill="white"/>
+          <rect x="8" y="2" width="14" height="8" fill="white" stroke="black" stroke-width="1"/>
+          <circle cx="13" cy="21" r="2" fill="#ffaa00"/>
+          <path d="M8 28 L14 22 L18 26 L22 20 L28 28 Z" fill="#4a8"/>
+        </svg>
+      </div>
+      <span class="icon-label">Pictures</span>
+    </a>
+    <a class="wb-icon" href="#" id="basic-icon" aria-label="AmigaBASIC">
+      <div class="icon-box">
+        <svg viewBox="0 0 36 36" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges">
+          <path d="M0 0 H30 L34 4 V34 H0 Z" fill="#0055AA" stroke="white" stroke-width="2"/>
+          <rect x="6" y="14" width="22" height="16" fill="#0022aa"/>
+          <rect x="8" y="2" width="14" height="8" fill="white" stroke="black" stroke-width="1"/>
+          <rect x="8" y="16" width="4" height="2" fill="#ffaa00"/>
+          <rect x="14" y="16" width="10" height="2" fill="white"/>
+          <rect x="8" y="20" width="4" height="2" fill="#ffaa00"/>
+          <rect x="14" y="20" width="8" height="2" fill="white"/>
+          <rect x="8" y="24" width="4" height="2" fill="#ffaa00"/>
+          <rect x="14" y="24" width="6" height="2" fill="white"/>
+        </svg>
+      </div>
+      <span class="icon-label">Amiga<br>BASIC</span>
     </a>
     <div id="note-icons" style="display:contents"></div>
   </div>
@@ -1031,7 +1210,7 @@
 |   ║  on a rainy day in Copenhagen.               ║  |
 |   ║                                              ║  |
 |   ║  Stack: HTML + inline CSS/JS + GitHub API    ║  |
-|   ║  Host:  Fly.io (nginx:alpine)                ║  |
+|   ║  Host:  Fly.io (node:20-alpine)               ║  |
 |   ║  Aesthetic: Amiga Workbench 3.1              ║  |
 |   ║                                              ║  |
 |   ║  > github.com/visti                          ║  |
@@ -1449,7 +1628,6 @@
       buildDPaintPalette();
       attachDPaintCanvasEvents();
       attachDPaintToolbarEvents();
-      attachDPaintKeyboardShortcuts();
     }
 
     function dpaintCoords(e) {
@@ -1715,28 +1893,6 @@
       }
     }
 
-    function attachDPaintKeyboardShortcuts() {
-      document.addEventListener('keydown', (e) => {
-        const win = document.getElementById('dpaint-window');
-        if (!win || win.style.display === 'none') return;
-        if (e.ctrlKey || e.metaKey) return;
-        const key = e.key.toLowerCase();
-        if (e.shiftKey && key === 'f') {
-          dpaint.filled = !dpaint.filled;
-          const btn = document.getElementById('dp-filled-toggle');
-          if (btn) btn.classList.toggle('active', dpaint.filled);
-          return;
-        }
-        const shortcuts = { p:'pencil', l:'line', r:'rect', c:'circle', f:'fill', e:'eraser', i:'eyedropper' };
-        if (shortcuts[key]) {
-          dpaint.currentTool = shortcuts[key];
-          document.querySelectorAll('#dpaint-toolbar .dp-tool[data-tool]').forEach(b => {
-            b.classList.toggle('active', b.dataset.tool === shortcuts[key]);
-          });
-        }
-      });
-    }
-
     function sizeDPaintCanvas() {
       const win = document.getElementById('dpaint-window');
       const body = document.getElementById('dpaint-body');
@@ -1758,7 +1914,7 @@
           win.style.left = Math.max(20, Math.round((vw - 560) / 2)) + 'px';
           win.style.top = Math.max(40, Math.round((vh - 420) / 2)) + 'px';
           win.style.width = '560px';
-          win.style.height = '420px';
+          win.style.height = '480px';
         }
         bringToFront(win);
         sizeDPaintCanvas();
@@ -1785,6 +1941,817 @@
     if (dpaintWin && 'ResizeObserver' in window) {
       const ro3 = new ResizeObserver(() => sizeDPaintCanvas());
       ro3.observe(dpaintWin);
+    }
+
+    // === Save painting ===
+    function dpaintSave() {
+      const btn = document.getElementById('dp-save');
+      if (!btn || !dpaint.canvas) return;
+      btn.classList.remove('saved', 'error');
+      btn.classList.add('saving');
+      btn.innerHTML = '...';
+
+      dpaint.canvas.toBlob((blob) => {
+        if (!blob) {
+          btn.classList.remove('saving');
+          btn.classList.add('error');
+          btn.innerHTML = '!';
+          setTimeout(() => resetSaveBtn(), 2000);
+          return;
+        }
+        fetch('/paint/', {
+          method: 'POST',
+          headers: { 'Content-Type': 'image/png' },
+          body: blob
+        })
+        .then(res => {
+          if (!res.ok) throw new Error(res.statusText);
+          return res.json();
+        })
+        .then(() => {
+          btn.classList.remove('saving');
+          btn.classList.add('saved');
+          btn.innerHTML = '<svg viewBox="0 0 18 18"><path d="M4 9 L7 13 L14 5" stroke="#fff" stroke-width="2.5" fill="none"/></svg>';
+          setTimeout(() => resetSaveBtn(), 2000);
+        })
+        .catch(() => {
+          btn.classList.remove('saving');
+          btn.classList.add('error');
+          btn.innerHTML = '!';
+          setTimeout(() => resetSaveBtn(), 2000);
+        });
+      }, 'image/png');
+    }
+
+    function resetSaveBtn() {
+      const btn = document.getElementById('dp-save');
+      if (!btn) return;
+      btn.classList.remove('saving', 'saved', 'error');
+      btn.innerHTML = '<svg viewBox="0 0 18 18"><path d="M3 1h10l3 3v11a2 2 0 01-2 2H3a2 2 0 01-2-2V3a2 2 0 012-2z" fill="none" stroke="#fff" stroke-width="1.5"/><rect x="5" y="1" width="7" height="5" rx="0.5" fill="#fff" opacity="0.7"/><rect x="5" y="10" width="8" height="6" rx="1" fill="#fff" opacity="0.5"/></svg>';
+    }
+
+    document.getElementById('dp-save')?.addEventListener('click', (e) => {
+      e.stopPropagation();
+      dpaintSave();
+    });
+
+    // Ctrl+S to save when DPaint is visible
+    document.addEventListener('keydown', (e) => {
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 's') {
+        const win = document.getElementById('dpaint-window');
+        if (win && win.style.display !== 'none') {
+          e.preventDefault();
+          dpaintSave();
+        }
+      }
+    });
+
+    // === Pictures window ===
+    function loadPictures() {
+      const body = document.getElementById('pictures-body');
+      if (!body) return;
+      fetch('/paint/')
+        .then(res => res.ok ? res.json() : [])
+        .then(list => {
+          body.innerHTML = '';
+          if (list.length === 0) {
+            body.innerHTML = '<div class="pic-empty">No paintings saved yet</div>';
+            return;
+          }
+          list.forEach(item => {
+            const a = document.createElement('a');
+            a.className = 'pic-thumb';
+            a.href = item.url;
+            a.draggable = true;
+            a.dataset.filename = item.filename;
+            a.addEventListener('click', (e) => {
+              e.preventDefault();
+              openPaintingWindow(item.filename, item.url);
+            });
+            a.addEventListener('dragstart', (e) => {
+              e.dataTransfer.setData('text/plain', item.filename);
+              e.dataTransfer.effectAllowed = 'move';
+              a.classList.add('dragging');
+            });
+            a.addEventListener('dragend', () => {
+              a.classList.remove('dragging');
+            });
+            const img = document.createElement('img');
+            img.src = item.url;
+            img.alt = item.filename;
+            a.appendChild(img);
+            // Extract date from filename: painting-{timestamp}.png
+            const ts = parseInt(item.filename.replace('painting-', '').replace('.png', ''), 10);
+            if (ts) {
+              const d = new Date(ts);
+              const label = document.createElement('span');
+              label.textContent = d.toLocaleDateString() + ' ' + d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+              a.appendChild(label);
+            }
+            body.appendChild(a);
+          });
+        })
+        .catch(() => {
+          body.innerHTML = '<div class="pic-empty">Could not load paintings</div>';
+        });
+    }
+
+    function togglePicturesWindow() {
+      const win = document.getElementById('pictures-window');
+      if (!win) return;
+      if (win.style.display === 'none') {
+        win.style.display = '';
+        if (!win.classList.contains('is-absolute')) {
+          const vw = document.documentElement.clientWidth;
+          const vh = document.documentElement.clientHeight;
+          win.classList.add('is-absolute');
+          win.style.left = Math.max(20, Math.round((vw - 420) / 2)) + 'px';
+          win.style.top = Math.max(40, Math.round((vh - 300) / 2)) + 'px';
+          win.style.width = '420px';
+        }
+        bringToFront(win);
+        loadPictures();
+      } else {
+        win.style.display = 'none';
+      }
+    }
+
+    document.getElementById('pictures-icon')?.addEventListener('click', (e) => {
+      e.preventDefault();
+      togglePicturesWindow();
+    });
+
+    document.getElementById('pictures-close')?.addEventListener('click', (e) => {
+      e.stopPropagation();
+      document.getElementById('pictures-window').style.display = 'none';
+    });
+
+    // === Open painting in a Workbench window ===
+    function openPaintingWindow(filename, url) {
+      // Remove existing viewer for same file
+      const existing = document.getElementById('viewer-' + filename);
+      if (existing) { bringToFront(existing); return; }
+
+      const win = document.createElement('div');
+      win.className = 'window is-absolute';
+      win.id = 'viewer-' + filename;
+      const vw = document.documentElement.clientWidth;
+      const vh = document.documentElement.clientHeight;
+      win.style.left = Math.max(20, Math.round((vw - 360) / 2) + Math.random() * 40 - 20) + 'px';
+      win.style.top = Math.max(40, Math.round((vh - 320) / 2) + Math.random() * 40 - 20) + 'px';
+      win.style.width = '360px';
+      win.innerHTML =
+        '<div class="window-title">' +
+          '<div class="close-gadget"></div>' +
+          '<span class="title-text">' + filename + '</span>' +
+        '</div>' +
+        '<div class="window-body painting-viewer">' +
+          '<img src="' + url + '" alt="' + filename + '">' +
+        '</div>';
+
+      win.querySelector('.close-gadget').addEventListener('click', (e) => {
+        e.stopPropagation();
+        win.remove();
+      });
+
+      document.body.appendChild(win);
+      bringToFront(win);
+    }
+
+    // === Drag pictures to trashcan to delete ===
+    const trashEl = document.getElementById('trash-icon');
+    if (trashEl) {
+      trashEl.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        e.dataTransfer.dropEffect = 'move';
+        trashEl.classList.add('drag-over');
+      });
+      trashEl.addEventListener('dragleave', () => {
+        trashEl.classList.remove('drag-over');
+      });
+      trashEl.addEventListener('drop', (e) => {
+        e.preventDefault();
+        trashEl.classList.remove('drag-over');
+        const filename = e.dataTransfer.getData('text/plain');
+        if (!filename || !filename.startsWith('painting-')) return;
+        fetch('/paint/' + encodeURIComponent(filename), { method: 'DELETE' })
+          .then(res => {
+            if (res.ok) {
+              // Refresh pictures window if open
+              const picWin = document.getElementById('pictures-window');
+              if (picWin && picWin.style.display !== 'none') loadPictures();
+            }
+          })
+          .catch(() => {});
+      });
+    }
+
+    // === AmigaBASIC Interpreter ===
+    const bas = {
+      prog: {}, vars: {}, running: false, pc: 0,
+      lines: [], callStack: [], forStack: [], whileStack: [],
+      data: [], dataPtr: 0, inputResolve: null,
+    };
+
+    function basOut(s) {
+      const el = document.getElementById('basic-output');
+      if (!el) return;
+      el.textContent += s + '\n';
+      const body = el.closest('#basic-body');
+      if (body) body.scrollTop = body.scrollHeight;
+    }
+    function basOutRaw(s) {
+      const el = document.getElementById('basic-output');
+      if (!el) return;
+      el.textContent += s;
+      const body = el.closest('#basic-body');
+      if (body) body.scrollTop = body.scrollHeight;
+    }
+    function basCls() {
+      const el = document.getElementById('basic-output');
+      if (el) el.textContent = '';
+    }
+    let basAudioCtx = null;
+    function basBeep() {
+      try {
+        if (!basAudioCtx) basAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const o = basAudioCtx.createOscillator();
+        const g = basAudioCtx.createGain();
+        o.connect(g); g.connect(basAudioCtx.destination);
+        o.frequency.value = 440; g.gain.value = 0.1;
+        o.start(); o.stop(basAudioCtx.currentTime + 0.15);
+      } catch {}
+    }
+
+    // --- Tokenizer ---
+    function basTok(src) {
+      const t = [];
+      let i = 0;
+      while (i < src.length) {
+        if (src[i] === ' ' || src[i] === '\t') { i++; continue; }
+        if (src[i] === '"') {
+          let s = ''; i++;
+          while (i < src.length && src[i] !== '"') s += src[i++];
+          if (i < src.length) i++;
+          t.push(['S', s]); continue;
+        }
+        if (/\d/.test(src[i]) || (src[i] === '.' && /\d/.test(src[i+1]||''))) {
+          let n = '';
+          while (i < src.length && /[\d.]/.test(src[i])) n += src[i++];
+          t.push(['N', parseFloat(n)]); continue;
+        }
+        if (src[i] === "'" ) { break; } // comment
+        const tw = src.slice(i, i+2);
+        if (['<>', '<=', '>='].includes(tw)) { t.push(['O', tw]); i += 2; continue; }
+        if ('+-*/^=<>(),;:'.includes(src[i])) { t.push(['O', src[i]]); i++; continue; }
+        if (/[a-zA-Z]/.test(src[i])) {
+          let id = '';
+          while (i < src.length && /[a-zA-Z0-9_]/.test(src[i])) id += src[i++];
+          if (i < src.length && (src[i] === '$' || src[i] === '%')) id += src[i++];
+          t.push(['I', id.toUpperCase()]); continue;
+        }
+        i++;
+      }
+      return t;
+    }
+
+    // --- Expression Parser ---
+    class BasP {
+      constructor(t) { this.t = t; this.p = 0; }
+      pk() { return this.t[this.p] || null; }
+      nx() { return this.t[this.p++] || null; }
+      is(ty, v) { const t = this.pk(); return t && t[0] === ty && (v === undefined || t[1] === v); }
+      eat(ty, v) { if (this.is(ty, v)) { this.p++; return true; } return false; }
+      need(ty, v) { if (!this.eat(ty, v)) throw new Error('Expected ' + (v || ty)); }
+
+      expr() { return this.bor(); }
+      bor() {
+        let l = this.band();
+        while (this.is('I','OR')) { this.nx(); const r = this.band(); l = (l||r) ? -1 : 0; }
+        return l;
+      }
+      band() {
+        let l = this.bnot();
+        while (this.is('I','AND')) { this.nx(); const r = this.bnot(); l = (l&&r) ? -1 : 0; }
+        return l;
+      }
+      bnot() { if (this.eat('I','NOT')) return this.bnot() ? 0 : -1; return this.cmp(); }
+      cmp() {
+        let l = this.add();
+        const ops = {'=':0,'<>':0,'<':0,'>':0,'<=':0,'>=':0};
+        if (this.pk() && this.pk()[0]==='O' && this.pk()[1] in ops) {
+          const op = this.nx()[1]; const r = this.add();
+          if (op==='=') return l===r?-1:0; if (op==='<>') return l!==r?-1:0;
+          if (op==='<') return l<r?-1:0;   if (op==='>') return l>r?-1:0;
+          if (op==='<=') return l<=r?-1:0;  return l>=r?-1:0;
+        }
+        return l;
+      }
+      add() {
+        let l = this.mul();
+        while (this.is('O','+') || this.is('O','-')) {
+          const op = this.nx()[1]; const r = this.mul();
+          l = op==='+' ? (typeof l==='string'||typeof r==='string' ? String(l)+String(r) : l+r) : l-r;
+        }
+        return l;
+      }
+      mul() {
+        let l = this.pw();
+        while (this.is('O','*') || this.is('O','/') || this.is('I','MOD')) {
+          const op = this.nx()[1]; const r = this.pw();
+          if (op==='*') l=l*r; else if (op==='/') { if(r===0) throw new Error('Division by zero'); l=l/r; } else l=l%r;
+        }
+        return l;
+      }
+      pw() { let l = this.un(); if (this.eat('O','^')) l = Math.pow(l, this.un()); return l; }
+      un() { if (this.eat('O','-')) return -this.un(); if (this.eat('O','+')) return this.un(); return this.at(); }
+      at() {
+        const t = this.pk();
+        if (!t) throw new Error('Unexpected end');
+        if (t[0]==='N') { this.nx(); return t[1]; }
+        if (t[0]==='S') { this.nx(); return t[1]; }
+        if (this.eat('O','(')) { const v = this.expr(); this.need('O',')'); return v; }
+        if (t[0]==='I') {
+          this.nx(); const n = t[1];
+          if (this.eat('O','(')) {
+            const a = [];
+            if (!this.is('O',')')) { a.push(this.expr()); while (this.eat('O',',')) a.push(this.expr()); }
+            this.need('O',')');
+            return this.fn(n, a);
+          }
+          if (n==='RND') return Math.random();
+          if (n==='TIMER') return Math.floor(Date.now()/1000);
+          if (n==='PI') return Math.PI;
+          return bas.vars[n] !== undefined ? bas.vars[n] : (n.endsWith('$') ? '' : 0);
+        }
+        throw new Error('Syntax error');
+      }
+      fn(n, a) {
+        const f = {
+          INT:()=>Math.floor(a[0]), ABS:()=>Math.abs(a[0]), SQR:()=>Math.sqrt(a[0]),
+          SIN:()=>Math.sin(a[0]), COS:()=>Math.cos(a[0]), TAN:()=>Math.tan(a[0]),
+          ATN:()=>Math.atan(a[0]), LOG:()=>Math.log(a[0]), EXP:()=>Math.exp(a[0]),
+          SGN:()=>Math.sign(a[0]), RND:()=>Math.random()*(a[0]||1),
+          LEN:()=>String(a[0]).length,
+          'LEFT$':()=>String(a[0]).slice(0,a[1]),
+          'RIGHT$':()=>String(a[0]).slice(-(a[1]||0)),
+          'MID$':()=>String(a[0]).slice((a[1]||1)-1, a[2]?(a[1]||1)-1+a[2]:undefined),
+          'CHR$':()=>String.fromCharCode(a[0]),
+          ASC:()=>String(a[0]).charCodeAt(0)||0,
+          'STR$':()=>String(a[0]),
+          VAL:()=>parseFloat(a[0])||0,
+          TAB:()=>' '.repeat(Math.max(0,Math.floor(a[0]))),
+          PEEK:()=>Math.floor(Math.random()*256),
+          'UCASE$':()=>String(a[0]).toUpperCase(),
+          'LCASE$':()=>String(a[0]).toLowerCase(),
+        };
+        if (f[n]) return f[n]();
+        throw new Error('Unknown function: ' + n);
+      }
+    }
+
+    function basEval(toks, pos) {
+      const p = new BasP(toks.slice(pos));
+      const v = p.expr();
+      return [v, pos + p.p];
+    }
+
+    // --- Block-level skip helpers ---
+    function basSkipIf(findElse) {
+      let depth = 0;
+      while (bas.pc < bas.lines.length) {
+        const u = bas.prog[bas.lines[bas.pc]].trim().toUpperCase();
+        if (/^IF\b/.test(u) && /\bTHEN\s*$/.test(u)) depth++;
+        else if (/^ELSE\b/.test(u) && depth === 0 && findElse) { bas.pc++; return; }
+        else if (/^END\s*IF\b/.test(u)) { if (depth === 0) { bas.pc++; return; } depth--; }
+        bas.pc++;
+      }
+    }
+    function basSkipWend() {
+      let depth = 0;
+      while (bas.pc < bas.lines.length) {
+        const u = bas.prog[bas.lines[bas.pc]].trim().toUpperCase();
+        if (/^WHILE\b/.test(u)) depth++;
+        else if (/^WEND\b/.test(u)) { if (depth === 0) { bas.pc++; return; } depth--; }
+        bas.pc++;
+      }
+    }
+
+    // --- Statement execution ---
+    async function basExecStmt(toks, pos) {
+      if (pos >= toks.length) return pos;
+      const t = toks[pos];
+
+      if (t[0] === 'I' && t[1] === 'REM') return toks.length;
+
+      // PRINT
+      if (t[0] === 'I' && t[1] === 'PRINT') {
+        pos++;
+        let out = '', nl = true;
+        while (pos < toks.length && !(toks[pos][0]==='O' && toks[pos][1]===':')) {
+          if (toks[pos][0]==='O' && toks[pos][1]===';') { nl = false; pos++; continue; }
+          if (toks[pos][0]==='O' && toks[pos][1]===',') { out += '\t'; nl = false; pos++; continue; }
+          const [v, np] = basEval(toks, pos); pos = np;
+          out += (v == null) ? '' : String(v);
+          nl = true;
+        }
+        if (nl) basOut(out); else basOutRaw(out);
+        return pos;
+      }
+
+      // INPUT
+      if (t[0] === 'I' && t[1] === 'INPUT') {
+        pos++;
+        let prompt = '';
+        if (toks[pos] && toks[pos][0] === 'S') {
+          prompt = toks[pos][1]; pos++;
+          if (toks[pos] && toks[pos][0] === 'O' && (toks[pos][1]===';'||toks[pos][1]===',')) pos++;
+        }
+        if (!toks[pos] || toks[pos][0] !== 'I') throw new Error('Expected variable');
+        const vn = toks[pos][1]; pos++;
+        basOutRaw(prompt + '? ');
+        const val = await new Promise(r => { bas.inputResolve = r; });
+        bas.vars[vn] = vn.endsWith('$') ? val : (parseFloat(val) || 0);
+        return pos;
+      }
+
+      // LET
+      if (t[0] === 'I' && t[1] === 'LET') {
+        pos++;
+        if (!toks[pos] || toks[pos][0] !== 'I') throw new Error('Expected variable');
+        const vn = toks[pos][1]; pos++;
+        if (!toks[pos] || toks[pos][1] !== '=') throw new Error('Expected =');
+        pos++;
+        const [v, np] = basEval(toks, pos);
+        bas.vars[vn] = v;
+        return np;
+      }
+
+      // Single-line IF: IF expr THEN stmt [ELSE stmt]
+      if (t[0] === 'I' && t[1] === 'IF') {
+        pos++;
+        let thenPos = -1;
+        for (let i = pos; i < toks.length; i++) {
+          if (toks[i][0] === 'I' && toks[i][1] === 'THEN') { thenPos = i; break; }
+        }
+        if (thenPos === -1) throw new Error('IF without THEN');
+        const condToks = toks.slice(pos, thenPos);
+        const cond = new BasP(condToks).expr();
+        pos = thenPos + 1;
+        if (pos >= toks.length) return pos; // multi-line handled at block level
+
+        // Check if after THEN is a line number (GOTO shorthand)
+        if (toks[pos][0] === 'N') {
+          if (cond) {
+            const ln = toks[pos][1];
+            const idx = bas.lines.indexOf(ln);
+            if (idx === -1) throw new Error('Undefined line ' + ln);
+            bas.pc = idx;
+          }
+          return toks.length;
+        }
+
+        // Find ELSE at same nesting level
+        let elsePos = -1;
+        for (let i = pos; i < toks.length; i++) {
+          if (toks[i][0] === 'I' && toks[i][1] === 'ELSE') { elsePos = i; break; }
+        }
+
+        if (cond) {
+          const end = elsePos !== -1 ? elsePos : toks.length;
+          while (pos < end) {
+            if (toks[pos][0]==='O' && toks[pos][1]===':') { pos++; continue; }
+            pos = await basExecStmt(toks, pos);
+          }
+        } else if (elsePos !== -1) {
+          pos = elsePos + 1;
+          while (pos < toks.length) {
+            if (toks[pos][0]==='O' && toks[pos][1]===':') { pos++; continue; }
+            pos = await basExecStmt(toks, pos);
+          }
+        }
+        return toks.length;
+      }
+
+      // FOR var = start TO end [STEP step]
+      if (t[0] === 'I' && t[1] === 'FOR') {
+        pos++;
+        if (!toks[pos] || toks[pos][0] !== 'I') throw new Error('Expected variable');
+        const vn = toks[pos][1]; pos++;
+        if (!toks[pos] || toks[pos][1] !== '=') throw new Error('Expected =');
+        pos++;
+        const [sv, np1] = basEval(toks, pos); pos = np1;
+        if (!toks[pos] || toks[pos][1] !== 'TO') throw new Error('Expected TO');
+        pos++;
+        const [ev, np2] = basEval(toks, pos); pos = np2;
+        let step = 1;
+        if (toks[pos] && toks[pos][0]==='I' && toks[pos][1]==='STEP') {
+          pos++;
+          const [stv, np3] = basEval(toks, pos); step = stv; pos = np3;
+        }
+        bas.vars[vn] = sv;
+        bas.forStack.push({ v: vn, end: ev, step, line: bas.pc });
+        return pos;
+      }
+
+      // NEXT
+      if (t[0] === 'I' && t[1] === 'NEXT') {
+        pos++;
+        if (toks[pos] && toks[pos][0]==='I') pos++; // skip optional var name
+        if (bas.forStack.length === 0) throw new Error('NEXT without FOR');
+        const f = bas.forStack[bas.forStack.length - 1];
+        bas.vars[f.v] += f.step;
+        const done = f.step > 0 ? bas.vars[f.v] > f.end : bas.vars[f.v] < f.end;
+        if (!done) { bas.pc = f.line; } else { bas.forStack.pop(); }
+        return pos;
+      }
+
+      // GOTO
+      if (t[0] === 'I' && t[1] === 'GOTO') {
+        pos++;
+        const [ln] = basEval(toks, pos);
+        const idx = bas.lines.indexOf(ln);
+        if (idx === -1) throw new Error('Undefined line ' + ln);
+        bas.pc = idx;
+        return toks.length;
+      }
+
+      // GOSUB
+      if (t[0] === 'I' && t[1] === 'GOSUB') {
+        pos++;
+        const [ln] = basEval(toks, pos);
+        const idx = bas.lines.indexOf(ln);
+        if (idx === -1) throw new Error('Undefined line ' + ln);
+        bas.callStack.push(bas.pc);
+        bas.pc = idx;
+        return toks.length;
+      }
+
+      // RETURN
+      if (t[0]==='I' && t[1]==='RETURN') {
+        if (bas.callStack.length === 0) throw new Error('RETURN without GOSUB');
+        bas.pc = bas.callStack.pop();
+        return toks.length;
+      }
+
+      // END / STOP
+      if (t[0]==='I' && (t[1]==='END'||t[1]==='STOP')) { bas.running = false; return toks.length; }
+
+      // CLS
+      if (t[0]==='I' && t[1]==='CLS') { basCls(); return pos + 1; }
+
+      // BEEP
+      if (t[0]==='I' && t[1]==='BEEP') { basBeep(); return pos + 1; }
+
+      // SLEEP
+      if (t[0]==='I' && t[1]==='SLEEP') {
+        pos++;
+        const [s] = basEval(toks, pos);
+        await new Promise(r => setTimeout(r, Math.min(s * 1000, 10000)));
+        return toks.length;
+      }
+
+      // DIM / DATA — no-op at runtime
+      if (t[0]==='I' && (t[1]==='DIM'||t[1]==='DATA')) return toks.length;
+
+      // READ var [, var...]
+      if (t[0]==='I' && t[1]==='READ') {
+        pos++;
+        while (pos < toks.length) {
+          if (!toks[pos] || toks[pos][0] !== 'I') break;
+          const vn = toks[pos][1]; pos++;
+          if (bas.dataPtr >= bas.data.length) throw new Error('Out of DATA');
+          bas.vars[vn] = bas.data[bas.dataPtr++];
+          if (toks[pos] && toks[pos][0]==='O' && toks[pos][1]===',') pos++;
+          else break;
+        }
+        return pos;
+      }
+
+      // RESTORE
+      if (t[0]==='I' && t[1]==='RESTORE') { bas.dataPtr = 0; return pos + 1; }
+
+      // POKE — no-op
+      if (t[0]==='I' && t[1]==='POKE') return toks.length;
+
+      // Assignment: var = expr
+      if (t[0]==='I' && pos+1 < toks.length && toks[pos+1][0]==='O' && toks[pos+1][1]==='=') {
+        const vn = t[1]; pos += 2;
+        const [v, np] = basEval(toks, pos);
+        bas.vars[vn] = v;
+        return np;
+      }
+
+      throw new Error('Syntax error');
+    }
+
+    async function basExecLine(src) {
+      const toks = basTok(src);
+      let pos = 0;
+      while (pos < toks.length) {
+        if (toks[pos][0]==='O' && toks[pos][1]===':') { pos++; continue; }
+        pos = await basExecStmt(toks, pos);
+      }
+    }
+
+    // --- Data collection ---
+    function basCollectData() {
+      bas.data = []; bas.dataPtr = 0;
+      for (const ln of bas.lines) {
+        const src = bas.prog[ln].trim();
+        if (/^DATA\b/i.test(src)) {
+          src.slice(4).split(',').forEach(v => {
+            v = v.trim();
+            if (v.startsWith('"') && v.endsWith('"')) bas.data.push(v.slice(1,-1));
+            else bas.data.push(isNaN(v) ? v : parseFloat(v));
+          });
+        }
+      }
+    }
+
+    // --- Program run ---
+    async function basRun() {
+      bas.lines = Object.keys(bas.prog).map(Number).sort((a,b) => a-b);
+      bas.pc = 0; bas.running = true;
+      bas.callStack = []; bas.forStack = []; bas.whileStack = [];
+      bas.vars = {};
+      basCollectData();
+      let cycles = 0;
+
+      while (bas.running && bas.pc < bas.lines.length) {
+        const lineNum = bas.lines[bas.pc];
+        const src = bas.prog[lineNum].trim();
+        const upper = src.toUpperCase();
+        bas.pc++;
+
+        try {
+          // Block-level: multi-line IF
+          if (/^IF\b/.test(upper) && /\bTHEN\s*$/.test(upper)) {
+            const condSrc = src.substring(
+              src.search(/^if\b/i) + 2,
+              src.search(/\bthen\s*$/i)
+            ).trim();
+            const cond = new BasP(basTok(condSrc)).expr();
+            if (!cond) basSkipIf(true);
+            continue;
+          }
+          if (/^ELSE\b/.test(upper)) { basSkipIf(false); continue; }
+          if (/^END\s*IF\b/.test(upper)) continue;
+
+          // Block-level: WHILE/WEND
+          if (/^WHILE\b/.test(upper)) {
+            const condSrc = src.slice(5).trim();
+            const cond = new BasP(basTok(condSrc)).expr();
+            const idx = bas.pc - 1;
+            if (cond) {
+              if (!bas.whileStack.length || bas.whileStack[bas.whileStack.length-1] !== idx)
+                bas.whileStack.push(idx);
+            } else {
+              if (bas.whileStack.length && bas.whileStack[bas.whileStack.length-1] === idx)
+                bas.whileStack.pop();
+              basSkipWend();
+            }
+            continue;
+          }
+          if (/^WEND\b/.test(upper)) {
+            if (!bas.whileStack.length) throw new Error('WEND without WHILE');
+            bas.pc = bas.whileStack[bas.whileStack.length-1];
+            continue;
+          }
+
+          // Regular statement
+          await basExecLine(src);
+
+        } catch(e) {
+          basOut('?' + e.message + ' in ' + lineNum);
+          bas.running = false;
+        }
+
+        if (++cycles % 100 === 0) await new Promise(r => setTimeout(r, 0));
+      }
+      bas.running = false;
+    }
+
+    // --- Input handler ---
+    async function basHandleInput(text) {
+      if (bas.inputResolve) {
+        basOut(text);
+        const r = bas.inputResolve;
+        bas.inputResolve = null;
+        r(text);
+        return;
+      }
+
+      const trimmed = text.trim();
+      if (!trimmed) { basOut('Ok'); return; }
+
+      basOut(text);
+      const m = trimmed.match(/^(\d+)\s*(.*)/);
+      if (m) {
+        const num = parseInt(m[1]);
+        if (m[2] === '') delete bas.prog[num];
+        else bas.prog[num] = m[2];
+        basOut('Ok');
+        return;
+      }
+
+      const upper = trimmed.toUpperCase();
+
+      if (upper === 'RUN') { await basRun(); basOut('Ok'); return; }
+
+      if (upper.startsWith('LIST')) {
+        const lines = Object.keys(bas.prog).map(Number).sort((a,b) => a-b);
+        lines.forEach(n => basOut(n + ' ' + bas.prog[n]));
+        basOut('Ok'); return;
+      }
+
+      if (upper === 'NEW') { bas.prog = {}; bas.vars = {}; basOut('Ok'); return; }
+
+      if (upper === 'HELP') {
+        basOut('Commands: PRINT, LET, INPUT, IF/THEN/ELSE/END IF');
+        basOut('FOR/NEXT, WHILE/WEND, GOTO, GOSUB/RETURN');
+        basOut('CLS, BEEP, SLEEP, READ, DATA, DIM');
+        basOut('RUN, LIST, NEW, REM, END');
+        basOut('');
+        basOut('Type line numbers to store a program:');
+        basOut('  10 PRINT "Hello, World!"');
+        basOut('  20 GOTO 10');
+        basOut('  RUN');
+        basOut('Ok'); return;
+      }
+
+      try {
+        await basExecLine(trimmed);
+        basOut('Ok');
+      } catch(e) {
+        basOut('?' + e.message);
+        basOut('Ok');
+      }
+    }
+
+    // --- BASIC UI ---
+    function basInit() {
+      const input = document.getElementById('basic-input');
+      if (!input) return;
+      basOut('AmigaBASIC v3.4');
+      basOut('(c) 2026 Workbench Edition');
+      basOut('32768 bytes free');
+      basOut('Ok');
+
+      input.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+          const text = input.value;
+          input.value = '';
+          basHandleInput(text);
+        }
+      });
+      document.getElementById('basic-body')?.addEventListener('click', () => input.focus());
+    }
+
+    function toggleBasicWindow() {
+      const win = document.getElementById('basic-window');
+      if (!win) return;
+      if (win.style.display === 'none') {
+        win.style.display = '';
+        if (!win.classList.contains('is-absolute')) {
+          const vw = document.documentElement.clientWidth;
+          const vh = document.documentElement.clientHeight;
+          win.classList.add('is-absolute');
+          win.style.left = Math.max(20, Math.round((vw - 480) / 2)) + 'px';
+          win.style.top = Math.max(40, Math.round((vh - 380) / 2)) + 'px';
+          win.style.width = '480px';
+          win.style.height = '380px';
+        }
+        bringToFront(win);
+        document.getElementById('basic-input')?.focus();
+      } else {
+        win.style.display = 'none';
+      }
+    }
+
+    function sizeBasicBody() {
+      const win = document.getElementById('basic-window');
+      const body = document.getElementById('basic-body');
+      if (!win || !body || win.style.display === 'none') return;
+      const title = win.querySelector('.window-title');
+      const inner = win.clientHeight - (title ? title.offsetHeight : 0) - 4;
+      body.style.height = Math.max(inner, 100) + 'px';
+    }
+
+    document.getElementById('basic-icon')?.addEventListener('click', (e) => {
+      e.preventDefault();
+      toggleBasicWindow();
+    });
+    document.getElementById('basic-close')?.addEventListener('click', (e) => {
+      e.stopPropagation();
+      document.getElementById('basic-window').style.display = 'none';
+    });
+
+    basInit();
+    window.addEventListener('resize', sizeBasicBody);
+    const basicWin = document.getElementById('basic-window');
+    if (basicWin && 'ResizeObserver' in window) {
+      new ResizeObserver(() => sizeBasicBody()).observe(basicWin);
     }
   </script>
 </body>
