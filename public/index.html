@@ -879,6 +879,9 @@
       <img id="boot-hand" alt="Insert Workbench disk animation" src="/boot-hand.gif">
       <div class="boot-line">Insert Workbench disk</div>
       <div class="boot-line" id="boot-mem">Memory check: <span class="highlight">0 KB</span></div>
+      <div class="boot-line" id="boot-scan">Scanning expansion devices...</div>
+      <div class="boot-line" id="boot-chipset">Checking chipset: Agnus / Denise / Paula</div>
+      <div class="boot-line" id="boot-drives">Mounting DH0: DF0:</div>
       <div class="boot-line" id="boot-load">Loading Workbench...</div>
     </div>
   </div>
@@ -1706,10 +1709,16 @@
     async function runBootSequence() {
       const screen = document.getElementById('boot-screen');
       const mem = document.getElementById('boot-mem');
+      const scan = document.getElementById('boot-scan');
+      const chipset = document.getElementById('boot-chipset');
+      const drives = document.getElementById('boot-drives');
       const load = document.getElementById('boot-load');
-      if (!screen || !mem || !load) return;
+      if (!screen || !mem || !scan || !chipset || !drives || !load) return;
       screen.classList.add('active');
       load.style.visibility = 'hidden';
+      scan.style.visibility = 'hidden';
+      chipset.style.visibility = 'hidden';
+      drives.style.visibility = 'hidden';
 
       let kb = 0;
       const maxKb = 8192;
@@ -1719,6 +1728,12 @@
         await new Promise(r => setTimeout(r, 40));
         kb += step;
       }
+      scan.style.visibility = 'visible';
+      await new Promise(r => setTimeout(r, 260));
+      chipset.style.visibility = 'visible';
+      await new Promise(r => setTimeout(r, 260));
+      drives.style.visibility = 'visible';
+      await new Promise(r => setTimeout(r, 300));
       load.style.visibility = 'visible';
       await new Promise(r => setTimeout(r, 900));
 
