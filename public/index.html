@@ -3691,8 +3691,11 @@
       document.getElementById('mail-window').style.display = 'none';
     });
     document.getElementById('mail-send-btn')?.addEventListener('click', () => {
-      const subject = encodeURIComponent(document.getElementById('mail-subject')?.value || '');
-      const body = encodeURIComponent(document.getElementById('mail-msg')?.value || '');
+      const subjectRaw = document.getElementById('mail-subject')?.value || '';
+      const bodyRaw = document.getElementById('mail-msg')?.value || '';
+      if (!subjectRaw.trim() && !bodyRaw.trim()) return;
+      const subject = encodeURIComponent(subjectRaw);
+      const body = encodeURIComponent(bodyRaw);
       window.location.href = 'mailto:emilvisti@gmail.com?subject=' + subject + '&body=' + body;
     });
 
