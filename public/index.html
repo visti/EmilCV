@@ -357,6 +357,7 @@
       bottom: auto;
       pointer-events: none;
       overflow: hidden;
+      clip-path: inset(2px);
       white-space: nowrap;
       font-size: 160px;
       letter-spacing: 3px;
@@ -1130,17 +1131,6 @@
       </div>
       <span class="icon-label">Deluxe<br>Paint</span>
     </a>
-    <a class="wb-icon" href="#" id="disk-icon" aria-label="Disk">
-      <div class="icon-box">
-        <svg viewBox="0 0 36 36" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges">
-          <rect x="2" y="4" width="32" height="28" fill="#0055AA" stroke="white" stroke-width="2"/>
-          <circle cx="18" cy="18" r="10" fill="#ffaa00" stroke="#ffdd44" stroke-width="2"/>
-          <rect x="17" y="8" width="2" height="20" fill="#0055AA"/>
-          <rect x="8" y="17" width="20" height="2" fill="#0055AA"/>
-        </svg>
-      </div>
-      <span class="icon-label">Disk</span>
-    </a>
     <a class="wb-icon" href="#" id="filemgr-icon" aria-label="File Manager">
       <div class="icon-box">
         <svg viewBox="0 0 36 36" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges">
@@ -1882,10 +1872,11 @@
         canvas.height = h;
       }
       if (scroller) {
-        scroller.style.left = canvas.offsetLeft + 'px';
-        scroller.style.top = canvas.offsetTop + 'px';
-        scroller.style.width = canvas.clientWidth + 'px';
-        scroller.style.height = canvas.clientHeight + 'px';
+        const pad = 2;
+        scroller.style.left = (canvas.offsetLeft + pad) + 'px';
+        scroller.style.top = (canvas.offsetTop + pad) + 'px';
+        scroller.style.width = Math.max(0, canvas.clientWidth - pad * 2) + 'px';
+        scroller.style.height = Math.max(0, canvas.clientHeight - pad * 2) + 'px';
       }
     }
 
@@ -2047,7 +2038,6 @@
       { id: 'education', label: 'Education' },
       { id: 'skills', label: 'Skills' },
       { id: 'languages', label: 'Languages' },
-      { id: 'links', label: 'Links' },
       { id: 'recommendations', label: 'Recommendations' }
     ];
 
