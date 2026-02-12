@@ -567,6 +567,93 @@
       border: 2px solid #fff;
     }
 
+    /* Timeline window */
+    #timeline-window {
+      min-width: 460px;
+      min-height: 260px;
+    }
+    .timeline-body {
+      padding: 8px 10px;
+      background: #002266;
+      color: #aaccff;
+      font-size: 12px;
+      overflow: auto;
+    }
+    .timeline-legend {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      margin-bottom: 8px;
+      color: #ffdd44;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .timeline-legend span {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .timeline-swatch {
+      width: 10px;
+      height: 10px;
+      border: 1px solid #fff;
+      box-shadow: 1px 1px 0 #000;
+    }
+    .timeline-grid {
+      display: grid;
+      gap: 2px;
+      background: #001244;
+      padding: 6px;
+      border: 2px solid #fff;
+      box-shadow: 2px 2px 0 #000;
+      overflow-x: auto;
+    }
+    .timeline-label {
+      font-size: 10px;
+      color: #ffdd44;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      white-space: nowrap;
+    }
+    .timeline-year {
+      font-size: 9px;
+      color: #6699cc;
+      text-align: center;
+      white-space: nowrap;
+    }
+    .timeline-cell {
+      width: 14px;
+      height: 14px;
+      background: #003366;
+      border: 1px solid #001a44;
+    }
+    .timeline-cell.active-exp {
+      background: #ffaa00;
+      border-color: #ffdd44;
+    }
+    .timeline-cell.active-edu {
+      background: #66ccff;
+      border-color: #aaccff;
+    }
+    .timeline-cell.multi::after {
+      content: '';
+      display: block;
+      width: 4px;
+      height: 4px;
+      margin: 4px auto 0;
+      background: #ffffff;
+    }
+    .timeline-detail {
+      margin-top: 8px;
+      padding: 6px 8px;
+      background: #001a44;
+      border: 2px solid #fff;
+      color: #aaccff;
+      min-height: 44px;
+      font-size: 11px;
+    }
+
     /* AmigaBASIC window */
     #basic-body {
       background: #0022aa;
@@ -848,6 +935,22 @@
     </div>
   </div>
 
+  <!-- Timeline window (hidden by default) -->
+  <div class="window" id="timeline-window" style="display:none">
+    <div class="window-title">
+      <div class="close-gadget" id="timeline-close"></div>
+      <span class="title-text">Timeline Map</span>
+    </div>
+    <div class="window-body timeline-body" id="timeline-body">
+      <div class="timeline-legend">
+        <span><i class="timeline-swatch" style="background:#ffaa00;border-color:#ffdd44"></i>Experience</span>
+        <span><i class="timeline-swatch" style="background:#66ccff;border-color:#aaccff"></i>Education</span>
+      </div>
+      <div class="timeline-grid" id="timeline-grid"></div>
+      <div class="timeline-detail" id="timeline-detail">Hover a block to see details.</div>
+    </div>
+  </div>
+
   <!-- Icon row at bottom -->
   <div class="icon-row">
     <a class="wb-icon" href="https://github.com/visti" target="_blank" rel="noopener noreferrer">
@@ -944,6 +1047,23 @@
         </svg>
       </div>
       <span class="icon-label">Mail</span>
+    </a>
+    <a class="wb-icon" href="#" id="timeline-icon" aria-label="Timeline">
+      <div class="icon-box">
+        <svg viewBox="0 0 36 36" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges">
+          <rect x="2" y="4" width="32" height="28" fill="#0055AA" stroke="white" stroke-width="2"/>
+          <rect x="6" y="8" width="6" height="6" fill="#ffaa00"/>
+          <rect x="14" y="8" width="6" height="6" fill="#66ccff"/>
+          <rect x="22" y="8" width="6" height="6" fill="#ffaa00"/>
+          <rect x="6" y="16" width="6" height="6" fill="#66ccff"/>
+          <rect x="14" y="16" width="6" height="6" fill="#ffaa00"/>
+          <rect x="22" y="16" width="6" height="6" fill="#66ccff"/>
+          <rect x="6" y="24" width="6" height="6" fill="#ffaa00"/>
+          <rect x="14" y="24" width="6" height="6" fill="#66ccff"/>
+          <rect x="22" y="24" width="6" height="6" fill="#ffaa00"/>
+        </svg>
+      </div>
+      <span class="icon-label">Timeline</span>
     </a>
     <a class="wb-icon" href="#" id="print-icon" aria-label="Print CV">
       <div class="icon-box">
@@ -3027,6 +3147,128 @@
       const subject = encodeURIComponent(document.getElementById('mail-subject')?.value || '');
       const body = encodeURIComponent(document.getElementById('mail-msg')?.value || '');
       window.location.href = 'mailto:emilvisti@gmail.com?subject=' + subject + '&body=' + body;
+    });
+
+    // === Timeline window ===
+    const timelineEntries = [
+      { type: 'experience', title: 'Data Specialist', org: 'Gramex', start: 2017, end: null },
+      { type: 'experience', title: 'Metadata Expert', org: 'Sandrew Metronome', start: 2014, end: 2016 },
+      { type: 'experience', title: 'Asst. Producer — Video / Music / Graphics', org: 'Big Beard Productions', start: 2012, end: 2014 },
+      { type: 'experience', title: 'Writer — SEO, Articles, Podcasts', org: 'Rotation.dk', start: 2012, end: 2015 },
+      { type: 'experience', title: 'PR Associate', org: 'ORA', start: 2011, end: 2012 },
+      { type: 'education', title: 'Librarian DB', org: 'IVA Aalborg', start: 2014, end: 2015 },
+      { type: 'education', title: 'BSc Information Science', org: 'IVA Aalborg', start: 2008, end: 2014 },
+      { type: 'education', title: 'Gymnasium', org: 'Dronninglund', start: 2003, end: 2006 }
+    ];
+
+    function buildTimelineMap() {
+      const grid = document.getElementById('timeline-grid');
+      const detail = document.getElementById('timeline-detail');
+      if (!grid || !detail) return;
+
+      const nowYear = new Date().getFullYear();
+      const normalized = timelineEntries.map((e) => ({
+        ...e,
+        end: e.end || nowYear,
+        openEnd: e.end == null
+      }));
+      const minYear = Math.min(...normalized.map(e => e.start));
+      const maxYear = Math.max(...normalized.map(e => e.end));
+      const years = [];
+      for (let y = minYear; y <= maxYear; y++) years.push(y);
+
+      grid.innerHTML = '';
+      grid.style.gridTemplateColumns = `90px repeat(${years.length}, 14px)`;
+
+      const header = document.createElement('div');
+      header.className = 'timeline-label';
+      header.textContent = 'Year';
+      grid.appendChild(header);
+
+      years.forEach((y) => {
+        const cell = document.createElement('div');
+        cell.className = 'timeline-year';
+        cell.textContent = String(y).slice(2);
+        grid.appendChild(cell);
+      });
+
+      function setDetail(year, type, entries) {
+        detail.innerHTML = '';
+        const title = document.createElement('div');
+        title.className = 'highlight';
+        title.textContent = `${year} — ${type === 'experience' ? 'Experience' : 'Education'}`;
+        detail.appendChild(title);
+
+        if (!entries.length) {
+          const empty = document.createElement('div');
+          empty.textContent = 'No entries';
+          detail.appendChild(empty);
+          return;
+        }
+
+        entries.forEach((e) => {
+          const line = document.createElement('div');
+          const endLabel = e.openEnd ? 'Present' : e.end;
+          line.textContent = `${e.title} — ${e.org} (${e.start}–${endLabel})`;
+          detail.appendChild(line);
+        });
+      }
+
+      function addRow(label, type) {
+        const rowLabel = document.createElement('div');
+        rowLabel.className = 'timeline-label';
+        rowLabel.textContent = label;
+        grid.appendChild(rowLabel);
+
+        years.forEach((y) => {
+          const entries = normalized.filter(e => e.type === type && y >= e.start && y <= e.end);
+          const cell = document.createElement('div');
+          cell.className = 'timeline-cell';
+          if (entries.length) {
+            cell.classList.add(type === 'experience' ? 'active-exp' : 'active-edu');
+            if (entries.length > 1) cell.classList.add('multi');
+          }
+          cell.addEventListener('mouseenter', () => setDetail(y, type, entries));
+          grid.appendChild(cell);
+        });
+      }
+
+      addRow('Experience', 'experience');
+      addRow('Education', 'education');
+
+      grid.onmouseleave = () => {
+        detail.textContent = 'Hover a block to see details.';
+      };
+    }
+
+    function toggleTimelineWindow() {
+      const win = document.getElementById('timeline-window');
+      if (!win) return;
+      if (win.style.display === 'none') {
+        win.style.display = '';
+        if (!win.classList.contains('is-absolute')) {
+          const vw = document.documentElement.clientWidth;
+          const vh = document.documentElement.clientHeight;
+          win.classList.add('is-absolute');
+          win.style.left = Math.max(20, Math.round((vw - 520) / 2)) + 'px';
+          win.style.top = Math.max(40, Math.round((vh - 360) / 2)) + 'px';
+          win.style.width = '520px';
+          win.style.height = '360px';
+        }
+        bringToFront(win);
+        buildTimelineMap();
+      } else {
+        win.style.display = 'none';
+      }
+    }
+
+    document.getElementById('timeline-icon')?.addEventListener('click', (e) => {
+      e.preventDefault();
+      toggleTimelineWindow();
+    });
+    document.getElementById('timeline-close')?.addEventListener('click', (e) => {
+      e.stopPropagation();
+      document.getElementById('timeline-window').style.display = 'none';
     });
 
     // === Print CV ===
