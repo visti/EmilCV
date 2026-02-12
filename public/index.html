@@ -1988,58 +1988,56 @@
         title: 'Experience',
         base: '#ffcc33',
         slices: [
-          { value: 40, color: '#ffaa00' },
-          { value: 25, color: '#ff9933' },
-          { value: 20, color: '#ff6633' },
-          { value: 10, color: '#ff3366' },
-          { value: 5, color: '#ffdd44' }
+          { value: 40, color: '#ffaa00', label: 'Gramex' },
+          { value: 25, color: '#ff9933', label: 'Sandrew' },
+          { value: 20, color: '#ff6633', label: 'Big Beard' },
+          { value: 10, color: '#ff3366', label: 'Rotation' },
+          { value: 5, color: '#ffdd44', label: 'ORA' }
         ]
       },
       education: {
         title: 'Education',
         base: '#66ccff',
         slices: [
-          { value: 45, color: '#66ccff' },
-          { value: 25, color: '#33aaff' },
-          { value: 15, color: '#99ddff' },
-          { value: 10, color: '#55bbff' },
-          { value: 5, color: '#bbf2ff' }
+          { value: 50, color: '#66ccff', label: 'BSc' },
+          { value: 25, color: '#33aaff', label: 'Librarian' },
+          { value: 25, color: '#99ddff', label: 'Gymnasium' }
         ]
       },
       skills: {
         title: 'Skills',
         base: '#66ff66',
         slices: [
-          { value: 30, color: '#66ff66' },
-          { value: 25, color: '#aaff66' },
-          { value: 20, color: '#33cc66' },
-          { value: 15, color: '#88ff88' },
-          { value: 10, color: '#44aa44' }
+          { value: 30, color: '#66ff66', label: 'Data' },
+          { value: 25, color: '#aaff66', label: 'Tools' },
+          { value: 20, color: '#33cc66', label: 'Systems' },
+          { value: 15, color: '#88ff88', label: 'Creative' },
+          { value: 10, color: '#44aa44', label: 'Other' }
         ]
       },
       languages: {
         title: 'Languages',
         base: '#cc66ff',
         slices: [
-          { value: 55, color: '#cc66ff' },
-          { value: 45, color: '#9966ff' }
+          { value: 55, color: '#cc66ff', label: 'Danish' },
+          { value: 45, color: '#9966ff', label: 'English' }
         ]
       },
       links: {
         title: 'Links',
         base: '#66ffff',
         slices: [
-          { value: 60, color: '#66ffff' },
-          { value: 40, color: '#33ccff' }
+          { value: 60, color: '#66ffff', label: 'GitHub' },
+          { value: 40, color: '#33ccff', label: 'SoundCloud' }
         ]
       },
       recommendations: {
         title: 'Recommendations',
         base: '#ff6699',
         slices: [
-          { value: 34, color: '#ff6699' },
-          { value: 33, color: '#ff99bb' },
-          { value: 33, color: '#ff3366' }
+          { value: 40, color: '#ff6699', label: 'Gramex' },
+          { value: 30, color: '#ff99bb', label: 'Sandrew' },
+          { value: 30, color: '#ff3366', label: 'ORA' }
         ]
       }
     };
@@ -2050,12 +2048,82 @@
       { id: 'skills', label: 'Skills' },
       { id: 'languages', label: 'Languages' },
       { id: 'links', label: 'Links' },
-      { id: 'recommendations', label: 'Recommendations' },
-      { id: 'disk', label: 'Disk' }
+      { id: 'recommendations', label: 'Recommendations' }
     ];
 
+    function allocateBlocks(values, totalBlocks) {
+      const sum = values.reduce((a, b) => a + b, 0) || 1;
+      const raw = values.map(v => (v / sum) * totalBlocks);
+      const blocks = raw.map(v => Math.max(1, Math.floor(v)));
+      let used = blocks.reduce((a, b) => a + b, 0);
+      while (used < totalBlocks) {
+        let best = 0;
+        let bestFrac = -1;
+        raw.forEach((v, i) => {
+          const frac = v - Math.floor(v);
+          if (frac > bestFrac) { bestFrac = frac; best = i; }
+        });
+        blocks[best] += 1;
+        used += 1;
+      }
+      while (used > totalBlocks) {
+        let idx = blocks.findIndex(b => b > 1);
+        if (idx === -1) break;
+        blocks[idx] -= 1;
+        used -= 1;
+      }
+      return blocks;
+    }
+
+    function drawDefragGrid(canvasId, t, slices) {
+      const canvas = document.getElementById(canvasId);
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return;
+      const w = canvas.width;
+      const h = canvas.height;
+
+      ctx.clearRect(0, 0, w, h);
+      ctx.fillStyle = '#001244';
+      ctx.fillRect(0, 0, w, h);
+
+      const labelW = 80;
+      const gridW = Math.max(120, w - labelW - 12);
+      const cell = Math.max(8, Math.min(12, Math.floor(gridW / 24)));
+      const cols = Math.max(16, Math.floor(gridW / cell));
+      const gap = 2;
+      const rows = slices.length;
+      const totalBlocks = cols;
+      const blocks = allocateBlocks(slices.map(s => s.value), totalBlocks);
+
+      const rowH = cell + 6;
+      const startY = Math.max(8, Math.floor((h - rows * rowH) / 2));
+
+      ctx.font = '10px Silkscreen, monospace';
+      ctx.textBaseline = 'middle';
+      ctx.textAlign = 'left';
+
+      slices.forEach((s, row) => {
+        const y = startY + row * rowH;
+        ctx.fillStyle = '#ffdd44';
+        ctx.fillText(s.label || '', 6, y + cell / 2);
+
+        const rowProgress = Math.min(1, Math.max(0, (t - row * 0.08) / 0.7));
+        const fillCount = Math.floor(blocks[row] * rowProgress);
+        for (let i = 0; i < cols; i++) {
+          const x = labelW + i * cell;
+          ctx.fillStyle = '#003366';
+          ctx.fillRect(x, y, cell - gap, cell - gap);
+          if (i < fillCount) {
+            ctx.fillStyle = s.color;
+            ctx.fillRect(x, y, cell - gap, cell - gap);
+          }
+        }
+      });
+    }
+
     function drawDefrag(id) {
-      const set = defragSets[id] || defragSets.disk;
+      const set = defragSets[id] || defragSets.experience;
       const title = document.getElementById('filemgr-title');
       if (title) title.textContent = `Defrag View — ${set.title}`;
       let t = 0;
@@ -2063,13 +2131,13 @@
       const duration = 900;
       const step = (now) => {
         t = Math.min(1, (now - start) / duration);
-        drawPie('filemgr-canvas', t, set.slices, set.base);
+        drawDefragGrid('filemgr-canvas', t, set.slices);
         if (t < 1) requestAnimationFrame(step);
       };
       requestAnimationFrame(step);
     }
 
-    function drawPie(canvasId, t, slices, baseColor) {
+    function drawPie(canvasId, t, slices, baseColor, showLabels) {
       const canvas = document.getElementById(canvasId);
       if (!canvas) return;
       const ctx = canvas.getContext('2d');
@@ -2098,7 +2166,8 @@
       const total = slices.reduce((s, a) => s + a.value, 0);
       let start = -Math.PI / 2;
       slices.forEach((s) => {
-        const sweep = (s.value / total) * Math.PI * 2 * t;
+        const fullSweep = (s.value / total) * Math.PI * 2;
+        const sweep = fullSweep * t;
         if (sweep <= 0.001) return;
         ctx.fillStyle = s.color;
         ctx.beginPath();
@@ -2106,7 +2175,18 @@
         ctx.arc(cx, cy, r, start, start + sweep);
         ctx.closePath();
         ctx.fill();
-        start += (s.value / total) * Math.PI * 2;
+        if (showLabels && t > 0.9 && s.label && fullSweep > 0.25) {
+          const mid = start + fullSweep / 2;
+          const lr = r * 0.68;
+          const lx = cx + Math.cos(mid) * lr;
+          const ly = cy + Math.sin(mid) * lr;
+          ctx.fillStyle = '#ffffff';
+          ctx.font = '10px Silkscreen, monospace';
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          ctx.fillText(s.label, lx, ly);
+        }
+        start += fullSweep;
       });
 
       // Center hub
@@ -2123,7 +2203,7 @@
 
       const step = (now) => {
         const t = Math.min(1, (now - diskAnim.start) / diskAnim.duration);
-        drawPie('disk-canvas', t, diskSlices, '#ffaa00');
+        drawPie('disk-canvas', t, diskSlices, '#ffaa00', false);
         if (t < 1 && diskAnim.running) {
           requestAnimationFrame(step);
         } else {
