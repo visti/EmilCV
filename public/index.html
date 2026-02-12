@@ -275,6 +275,139 @@
       min-width: 10px;
     }
 
+    /* === Deluxe Paint window === */
+    #dpaint-window {
+      min-width: 420px;
+      min-height: 340px;
+    }
+    #dpaint-body {
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      height: calc(100% - 22px);
+      overflow: hidden;
+    }
+    #dpaint-layout {
+      display: flex;
+      flex: 1;
+      min-height: 0;
+    }
+    #dpaint-canvas-wrap {
+      flex: 1;
+      position: relative;
+      background: #555;
+      padding: 2px;
+      min-width: 0;
+      overflow: hidden;
+    }
+    #dpaint-canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+      image-rendering: pixelated;
+      image-rendering: crisp-edges;
+      background: #a0a0a0;
+      cursor: crosshair;
+    }
+    #dpaint-overlay {
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      width: calc(100% - 4px);
+      height: calc(100% - 4px);
+      image-rendering: pixelated;
+      image-rendering: crisp-edges;
+      pointer-events: none;
+    }
+    #dpaint-toolbar {
+      width: 38px;
+      background: #888;
+      border-left: 2px solid #fff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 3px 2px;
+      gap: 2px;
+      overflow-y: auto;
+      flex-shrink: 0;
+    }
+    .dp-tool {
+      width: 30px;
+      height: 26px;
+      border: 2px outset #ccc;
+      background: #a0a0a0;
+      cursor: inherit;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0;
+      font-family: 'Silkscreen', monospace;
+      font-size: 9px;
+      color: #000;
+      flex-shrink: 0;
+    }
+    .dp-tool:hover { background: #c0c0c0; }
+    .dp-tool.active {
+      border-style: inset;
+      background: #6688cc;
+      color: #fff;
+    }
+    .dp-tool svg { width: 18px; height: 18px; }
+    .dp-divider {
+      width: 26px;
+      border: none;
+      border-top: 1px solid #555;
+      border-bottom: 1px solid #ccc;
+      margin: 2px 0;
+    }
+    #dpaint-palette-bar {
+      display: flex;
+      align-items: center;
+      background: #888;
+      border-top: 2px solid #fff;
+      padding: 3px 4px;
+      gap: 4px;
+      flex-shrink: 0;
+      height: 34px;
+    }
+    #dp-color-indicator {
+      width: 28px;
+      height: 28px;
+      position: relative;
+      flex-shrink: 0;
+      border: 1px solid #000;
+    }
+    #dp-bg-swatch {
+      position: absolute;
+      inset: 0;
+      background: #a0a0a0;
+    }
+    #dp-fg-swatch {
+      position: absolute;
+      top: 4px;
+      left: 4px;
+      width: 14px;
+      height: 14px;
+      background: #000;
+      border: 1px solid #fff;
+    }
+    #dp-palette {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1px;
+      flex: 1;
+    }
+    .dp-color {
+      width: 14px;
+      height: 12px;
+      border: 1px solid #000;
+      cursor: inherit;
+      flex-shrink: 0;
+    }
+    .dp-color:hover { border-color: #fff; }
+    .dp-color.fg-selected { border: 2px solid #fff; }
+    .dp-color.bg-selected { border: 2px dashed #fff; }
+
     /* Collapsible recommendation windows */
     .rec-window .rec-body {
       display: none;
@@ -315,6 +448,42 @@
       position: absolute;
     }
 
+    /* Trashcan */
+    #trash-icon {
+      position: fixed;
+      bottom: 12px;
+      right: 12px;
+      z-index: 5;
+    }
+
+    /* Guru Meditation */
+    .guru-screen {
+      position: fixed;
+      inset: 0;
+      background: #000;
+      z-index: 99999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: inherit;
+    }
+    .guru-box {
+      border: 4px solid #f00;
+      padding: 12px 32px;
+      text-align: center;
+      animation: guru-flash 1s step-end infinite;
+    }
+    .guru-box div {
+      font-family: 'Silkscreen', 'Courier New', monospace;
+      font-size: 16px;
+      color: #f00;
+      line-height: 1.8;
+    }
+    @keyframes guru-flash {
+      0%, 100% { border-color: #f00; }
+      50% { border-color: #000; }
+    }
+
     /* Responsive */
     @media (max-width: 600px) {
       body { padding: 2px; font-size: 12px; }
@@ -352,59 +521,8 @@
     <div class="window-body rec-body" id="terminal"></div>
   </div>
 
-  <!-- Recommendation windows (collapsed by default) -->
-  <div class="window rec-window" id="rec1">
-    <div class="window-title rec-toggle" data-toggle="rec1">
-      <div class="close-gadget"></div>
-      <span class="title-text">Recommendation #1: Gramex</span>
-      <span class="rec-hint">click to expand</span>
-    </div>
-    <div class="window-body rec-body">
-      <div class="output-text"><span class="highlight">Thomas M. Dyekjaer, Vice Director</span> - Nov 2020</div>
-      <br>
-      <div class="dim-text">"I can only give Emil my warmest recommendation."</div>
-      <br>
-      <div class="dim-text">"Emil built automation tools that were crucial under heavy time pressure."</div>
-      <br>
-      <div class="dim-text">"With his broad qualifications he solved tasks across departments, from IT to user support."</div>
-      <br>
-      <div><a href="/anbefaling-gramex.pdf" target="_blank">Download full letter (PDF)</a></div>
-    </div>
-  </div>
-
-  <div class="window rec-window" id="rec2">
-    <div class="window-title rec-toggle" data-toggle="rec2">
-      <div class="close-gadget"></div>
-      <span class="title-text">Recommendation #2: Sandrew Metronome</span>
-      <span class="rec-hint">click to expand</span>
-    </div>
-    <div class="window-body rec-body">
-      <div class="output-text"><span class="highlight">Per Dam, CEO & Karsten Dahlgaard, Digital Music Manager</span> - Oct 2016</div>
-      <br>
-      <div class="dim-text">"Emil registered and cleaned metadata for 160,000+ music tracks - a massive task requiring attention to detail."</div>
-      <br>
-      <div class="dim-text">"Emil has always delivered to our full satisfaction. Future employers will benefit greatly from his skills."</div>
-      <br>
-      <div><a href="/anbefaling-sandrew.pdf" target="_blank">Download full letter (PDF)</a></div>
-    </div>
-  </div>
-
-  <div class="window rec-window" id="rec3">
-    <div class="window-title rec-toggle" data-toggle="rec3">
-      <div class="close-gadget"></div>
-      <span class="title-text">Recommendation #3: ORA</span>
-      <span class="rec-hint">click to expand</span>
-    </div>
-    <div class="window-body rec-body">
-      <div class="output-text"><span class="highlight">Jesper F. Gravholt, Project Lead</span> - Mar 2012</div>
-      <br>
-      <div class="dim-text">"Emil single-handedly managed all press work for our major projects - to our great satisfaction."</div>
-      <br>
-      <div class="dim-text">"Emil worked independently and with great dedication."</div>
-      <br>
-      <div><a href="/anbefaling-ora.pdf" target="_blank">Download full letter (PDF)</a></div>
-    </div>
-  </div>
+  <!-- Note windows (dynamically populated) -->
+  <div id="note-windows" style="display:contents"></div>
 
   <!-- Demoscene window -->
   <div class="window" id="demo-window">
@@ -415,6 +533,68 @@
     <div class="window-body" id="demo-body">
       <canvas id="demo-canvas"></canvas>
       <div id="scroller" aria-hidden="true"></div>
+    </div>
+  </div>
+
+  <!-- DPaint window (hidden by default) -->
+  <div class="window" id="dpaint-window" style="display:none">
+    <div class="window-title">
+      <div class="close-gadget" id="dpaint-close"></div>
+      <span class="title-text">Deluxe Paint - [untitled]</span>
+    </div>
+    <div class="window-body" id="dpaint-body">
+      <div id="dpaint-layout">
+        <div id="dpaint-canvas-wrap">
+          <canvas id="dpaint-canvas"></canvas>
+          <canvas id="dpaint-overlay"></canvas>
+        </div>
+        <div id="dpaint-toolbar">
+          <button class="dp-tool active" data-tool="pencil" title="Pencil (P)">
+            <svg viewBox="0 0 18 18"><line x1="4" y1="14" x2="14" y2="4" stroke="#000" stroke-width="2"/><rect x="12" y="2" width="3" height="3" fill="#000"/></svg>
+          </button>
+          <button class="dp-tool" data-tool="line" title="Line (L)">
+            <svg viewBox="0 0 18 18"><line x1="2" y1="16" x2="16" y2="2" stroke="#000" stroke-width="2"/></svg>
+          </button>
+          <button class="dp-tool" data-tool="rect" title="Rectangle (R)">
+            <svg viewBox="0 0 18 18"><rect x="2" y="4" width="14" height="10" fill="none" stroke="#000" stroke-width="2"/></svg>
+          </button>
+          <button class="dp-tool" data-tool="circle" title="Circle (C)">
+            <svg viewBox="0 0 18 18"><ellipse cx="9" cy="9" rx="7" ry="6" fill="none" stroke="#000" stroke-width="2"/></svg>
+          </button>
+          <button class="dp-tool" data-tool="fill" title="Fill (F)">
+            <svg viewBox="0 0 18 18"><path d="M4 14 L4 6 L10 2 L10 6 L14 6 L14 14 Z" fill="#000"/><path d="M15 10 Q17 13 15 15 Q13 13 15 10" fill="#000"/></svg>
+          </button>
+          <button class="dp-tool" data-tool="eraser" title="Eraser (E)">
+            <svg viewBox="0 0 18 18"><rect x="3" y="6" width="12" height="8" rx="1" fill="#fff" stroke="#000" stroke-width="1.5"/><rect x="3" y="10" width="12" height="4" rx="1" fill="#fcc" stroke="#000" stroke-width="1.5"/></svg>
+          </button>
+          <button class="dp-tool" data-tool="eyedropper" title="Eyedropper (I)">
+            <svg viewBox="0 0 18 18"><path d="M6 16 L4 14 L10 8 L12 10 Z" fill="#000"/><circle cx="13" cy="5" r="3" fill="none" stroke="#000" stroke-width="1.5"/></svg>
+          </button>
+          <hr class="dp-divider">
+          <button class="dp-tool" id="dp-filled-toggle" title="Toggle Filled (Shift+F)">
+            <svg viewBox="0 0 18 18"><rect x="2" y="4" width="14" height="10" fill="none" stroke="#000" stroke-width="2"/><rect x="5" y="7" width="8" height="4" fill="#000"/></svg>
+          </button>
+          <hr class="dp-divider">
+          <button class="dp-tool dp-size active" data-size="1" title="1px brush">
+            <svg viewBox="0 0 18 18"><rect x="8" y="8" width="2" height="2" fill="#000"/></svg>
+          </button>
+          <button class="dp-tool dp-size" data-size="2" title="2px brush">
+            <svg viewBox="0 0 18 18"><rect x="7" y="7" width="4" height="4" fill="#000"/></svg>
+          </button>
+          <button class="dp-tool dp-size" data-size="3" title="3px brush">
+            <svg viewBox="0 0 18 18"><rect x="6" y="6" width="6" height="6" fill="#000"/></svg>
+          </button>
+          <hr class="dp-divider">
+          <button class="dp-tool" id="dp-clear" title="Clear canvas">CLR</button>
+        </div>
+      </div>
+      <div id="dpaint-palette-bar">
+        <div id="dp-color-indicator">
+          <div id="dp-bg-swatch"></div>
+          <div id="dp-fg-swatch"></div>
+        </div>
+        <div id="dp-palette"></div>
+      </div>
     </div>
   </div>
 
@@ -459,46 +639,37 @@
       </div>
       <span class="icon-label">Reboot</span>
     </a>
-    <a class="wb-icon" href="/anbefaling-gramex.pdf" target="_blank">
+    <a class="wb-icon" href="#" id="dpaint-icon" aria-label="Deluxe Paint">
       <div class="icon-box">
-        <svg viewBox="0 0 30 36" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges">
-          <path d="M2 0 H22 L28 6 V34 H2 Z" fill="white" stroke="#0055AA" stroke-width="2"/>
-          <path d="M22 0 V6 H28" fill="none" stroke="#0055AA" stroke-width="2"/>
-          <rect x="6" y="10" width="18" height="2" fill="#0055AA"/>
-          <rect x="6" y="15" width="18" height="2" fill="#0055AA"/>
-          <rect x="6" y="20" width="18" height="2" fill="#0055AA"/>
-          <rect x="6" y="25" width="12" height="2" fill="#0055AA"/>
+        <svg viewBox="0 0 36 36" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges">
+          <path d="M0 0 H30 L34 4 V34 H0 Z" fill="#0055AA" stroke="white" stroke-width="2"/>
+          <rect x="6" y="14" width="22" height="16" fill="white"/>
+          <circle cx="11" cy="22" r="3" fill="#ec0000"/>
+          <circle cx="19" cy="22" r="3" fill="#fcec00"/>
+          <circle cx="15" cy="27" r="3" fill="#0000fc"/>
+          <rect x="19" y="2" width="3" height="10" fill="#ffaa00" transform="rotate(-20 20.5 7)"/>
+          <rect x="18" y="1" width="5" height="3" fill="#642000" transform="rotate(-20 20.5 2.5)"/>
         </svg>
       </div>
-      <span class="icon-label">Rec:<br>Gramex</span>
+      <span class="icon-label">Deluxe<br>Paint</span>
     </a>
-    <a class="wb-icon" href="/anbefaling-sandrew.pdf" target="_blank">
-      <div class="icon-box">
-        <svg viewBox="0 0 30 36" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges">
-          <path d="M2 0 H22 L28 6 V34 H2 Z" fill="white" stroke="#0055AA" stroke-width="2"/>
-          <path d="M22 0 V6 H28" fill="none" stroke="#0055AA" stroke-width="2"/>
-          <rect x="6" y="10" width="18" height="2" fill="#0055AA"/>
-          <rect x="6" y="15" width="18" height="2" fill="#0055AA"/>
-          <rect x="6" y="20" width="18" height="2" fill="#0055AA"/>
-          <rect x="6" y="25" width="12" height="2" fill="#0055AA"/>
-        </svg>
-      </div>
-      <span class="icon-label">Rec:<br>Sandrew</span>
-    </a>
-    <a class="wb-icon" href="/anbefaling-ora.pdf" target="_blank">
-      <div class="icon-box">
-        <svg viewBox="0 0 30 36" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges">
-          <path d="M2 0 H22 L28 6 V34 H2 Z" fill="white" stroke="#0055AA" stroke-width="2"/>
-          <path d="M22 0 V6 H28" fill="none" stroke="#0055AA" stroke-width="2"/>
-          <rect x="6" y="10" width="18" height="2" fill="#0055AA"/>
-          <rect x="6" y="15" width="18" height="2" fill="#0055AA"/>
-          <rect x="6" y="20" width="18" height="2" fill="#0055AA"/>
-          <rect x="6" y="25" width="12" height="2" fill="#0055AA"/>
-        </svg>
-      </div>
-      <span class="icon-label">Rec:<br>ORA</span>
-    </a>
+    <div id="note-icons" style="display:contents"></div>
   </div>
+
+  <!-- Trashcan (lower-right, like real Workbench) -->
+  <a class="wb-icon" id="trash-icon" href="#">
+    <div class="icon-box">
+      <svg viewBox="0 0 36 36" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges">
+        <rect x="6" y="8" width="24" height="24" fill="#888" stroke="white" stroke-width="2"/>
+        <rect x="10" y="4" width="16" height="6" fill="#aaa" stroke="white" stroke-width="2"/>
+        <rect x="14" y="2" width="8" height="4" fill="#aaa" stroke="white" stroke-width="2"/>
+        <rect x="10" y="14" width="2" height="14" fill="#555"/>
+        <rect x="17" y="14" width="2" height="14" fill="#555"/>
+        <rect x="24" y="14" width="2" height="14" fill="#555"/>
+      </svg>
+    </div>
+    <span class="icon-label">Trashcan</span>
+  </a>
 
   <script>
     const GITHUB_USER = 'visti';
@@ -661,9 +832,140 @@
       return lines;
     }
 
+    async function fetchNotes() {
+      try {
+        const res = await fetch('/notes/manifest.json');
+        if (!res.ok) throw new Error('manifest fetch failed');
+        const filenames = await res.json();
+        const notes = await Promise.all(filenames.map(async (name, index) => {
+          const r = await fetch('/notes/' + name);
+          if (!r.ok) return null;
+          const md = await r.text();
+          return parseNote(md, index);
+        }));
+        return notes.filter(Boolean);
+      } catch {
+        return [];
+      }
+    }
+
+    function parseNote(md, index) {
+      const text = md.replace(/\r\n/g, '\n');
+      const fmMatch = text.match(/^---\n([\s\S]*?)\n---\n([\s\S]*)$/);
+      if (!fmMatch) return null;
+      const fmBlock = fmMatch[1];
+      const body = fmMatch[2].trim();
+
+      const meta = {};
+      fmBlock.split('\n').forEach(line => {
+        const m = line.match(/^(\w+):\s*(.+)$/);
+        if (!m) return;
+        let val = m[2].trim();
+        if (val.startsWith('"') && val.endsWith('"')) val = val.slice(1, -1);
+        if (val === 'true') val = true;
+        else if (val === 'false') val = false;
+        meta[m[1]] = val;
+      });
+
+      const bodyHtml = body.split('\n').map(line => {
+        if (line.trim() === '') return '<br>';
+        // Process inline markdown
+        let html = line
+          .replace(/\*\*(.+?)\*\*/g, '<span class="highlight">$1</span>')
+          .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank">$1</a>');
+        if (line.startsWith('> ')) {
+          html = '<div class="dim-text">' + html.slice(2) + '</div>';
+        } else {
+          html = '<div class="output-text">' + html + '</div>';
+        }
+        return html;
+      }).join('\n');
+
+      return {
+        title: meta.title || 'Note',
+        filename: meta.filename || '',
+        icon: (meta.icon || 'Note').replace(/\\n/g, '\n'),
+        open: meta.open === true,
+        bodyHtml,
+        id: 'note-' + index
+      };
+    }
+
+    function renderNotes(notes) {
+      const container = document.getElementById('note-windows');
+      const iconContainer = document.getElementById('note-icons');
+      if (!container || !iconContainer) return;
+
+      const docSvg = `<svg viewBox="0 0 30 36" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges">
+        <path d="M2 0 H22 L28 6 V34 H2 Z" fill="white" stroke="#0055AA" stroke-width="2"/>
+        <path d="M22 0 V6 H28" fill="none" stroke="#0055AA" stroke-width="2"/>
+        <rect x="6" y="10" width="18" height="2" fill="#0055AA"/>
+        <rect x="6" y="15" width="18" height="2" fill="#0055AA"/>
+        <rect x="6" y="20" width="18" height="2" fill="#0055AA"/>
+        <rect x="6" y="25" width="12" height="2" fill="#0055AA"/>
+      </svg>`;
+
+      notes.forEach(note => {
+        // Create window
+        const win = document.createElement('div');
+        win.className = 'window rec-window' + (note.open ? ' open' : '');
+        win.id = note.id;
+        if (!note.open) win.style.display = 'none';
+
+        win.innerHTML =
+          `<div class="window-title rec-toggle" data-toggle="${note.id}">` +
+            `<div class="close-gadget note-close"></div>` +
+            `<span class="title-text">${note.title}</span>` +
+            `<span class="rec-hint">click to expand</span>` +
+          `</div>` +
+          `<div class="window-body rec-body">` +
+            `<div class="dim-text">${note.filename}</div><br>` +
+            note.bodyHtml +
+          `</div>`;
+
+        container.appendChild(win);
+
+        // Close gadget hides the window
+        win.querySelector('.note-close').addEventListener('click', (e) => {
+          e.stopPropagation();
+          win.style.display = 'none';
+        });
+
+        // Create icon
+        const icon = document.createElement('a');
+        icon.className = 'wb-icon';
+        icon.id = note.id + '-icon';
+        icon.href = '#';
+        icon.innerHTML =
+          `<div class="icon-box">${docSvg}</div>` +
+          `<span class="icon-label">${note.icon}</span>`;
+
+        icon.addEventListener('click', (e) => {
+          e.preventDefault();
+          if (win.style.display === 'none') {
+            win.style.display = '';
+            if (!win.classList.contains('is-absolute')) {
+              const vw = document.documentElement.clientWidth;
+              const vh = document.documentElement.clientHeight;
+              win.classList.add('is-absolute');
+              win.style.left = Math.max(20, Math.round((vw - 380) / 2)) + 'px';
+              win.style.top = Math.max(40, Math.round((vh - 300) / 2)) + 'px';
+              win.style.width = '380px';
+            }
+            win.classList.add('open');
+            bringToFront(win);
+          } else {
+            win.style.display = 'none';
+          }
+        });
+
+        iconContainer.appendChild(icon);
+      });
+    }
+
     async function main() {
       const terminal = document.getElementById('terminal');
-      const { user, repos } = await fetchGitHub();
+      const [{ user, repos }, notes] = await Promise.all([fetchGitHub(), fetchNotes()]);
       const lines = buildLines(user, repos);
 
       const elements = lines.map(line => {
@@ -682,7 +984,9 @@
         return { el: div, line };
       });
 
+      renderNotes(notes);
       applyInitialLayout();
+      applyNoteLayout(notes);
       sizeWindowsToContent();
       sizeMainWindowBody();
       sizeDemoCanvas();
@@ -780,6 +1084,26 @@
       });
     }
 
+    function guruMeditation() {
+      const guru = document.createElement('div');
+      guru.className = 'guru-screen';
+      guru.innerHTML =
+        '<div class="guru-box">' +
+          '<div>Software Failure.  Press left mouse button to continue.</div>' +
+          '<div>Guru Meditation #00000004.0000AAC0</div>' +
+        '</div>';
+      document.body.appendChild(guru);
+      guru.addEventListener('click', () => guru.remove());
+    }
+
+    const trash = document.getElementById('trash-icon');
+    if (trash) {
+      trash.addEventListener('click', (e) => {
+        e.preventDefault();
+        guruMeditation();
+      });
+    }
+
     function toggleRec(id) {
       const win = document.getElementById(id);
       if (!win) return;
@@ -810,7 +1134,7 @@
       const wins = document.querySelectorAll('.window');
       const viewportMax = document.documentElement.clientWidth - 8;
       wins.forEach((win) => {
-        if (win.id === 'demo-window') return;
+        if (win.id === 'demo-window' || win.id === 'dpaint-window') return;
         if (win.style.width) return; // already sized, don't ratchet
         const title = win.querySelector('.window-title');
         const body = win.querySelector('.window-body');
@@ -830,9 +1154,6 @@
 
       const starts = {
         'main-window': { x: 40, y: 120, w: 560, h: Math.round(vh * 0.625) },
-        'rec1': { x: 760, y: 330, w: 360 },
-        'rec2': { x: 760, y: 540, w: 360 },
-        'rec3': { x: 760, y: 740, w: 360 },
         'demo-window': { x: Math.max(40, vw - 520), y: 120, w: 480, h: 260 },
       };
 
@@ -846,6 +1167,22 @@
         if (pos.h) {
           win.style.height = Math.min(pos.h, vh - 40) + 'px';
         }
+      });
+    }
+
+    function applyNoteLayout(notes) {
+      const vw = document.documentElement.clientWidth;
+      const vh = document.documentElement.clientHeight;
+      if (vw < 900 || vh < 700) return;
+
+      notes.forEach((note, i) => {
+        if (!note.open) return;
+        const win = document.getElementById(note.id);
+        if (!win) return;
+        win.classList.add('is-absolute');
+        win.style.left = Math.min(760, vw - 260) + 'px';
+        win.style.top = Math.min(330 + i * 210, vh - 140) + 'px';
+        win.style.width = Math.min(360, vw - 16) + 'px';
       });
     }
 
@@ -986,6 +1323,7 @@
     }
 
     document.addEventListener('mousedown', (e) => {
+      if (e.target.closest('#dpaint-close') || e.target.closest('.note-close')) return;
       const titleBar = e.target.closest('.window-title');
       if (!titleBar) {
         // Click on window body still brings to front
@@ -1066,6 +1404,387 @@
     if (demoWin && 'ResizeObserver' in window) {
       const ro2 = new ResizeObserver(() => sizeDemoCanvas());
       ro2.observe(demoWin);
+    }
+
+    // === Deluxe Paint ===
+    const dpaint = {
+      currentTool: 'pencil',
+      brushSize: 1,
+      filled: false,
+      fgColor: '#000000',
+      bgColor: '#a0a0a0',
+      isDrawing: false,
+      startX: 0, startY: 0,
+      lastX: 0, lastY: 0,
+      canvas: null, ctx: null,
+      overlay: null, octx: null,
+      canvasW: 320, canvasH: 256,
+      palette: [
+        '#000000','#a0a0a0','#ec0000','#a80000',
+        '#dc8800','#fcec00','#88fc00','#008800',
+        '#00b864','#00dcdc','#00a8fc','#0074cc',
+        '#0000fc','#7400fc','#cc00ec','#cc0088',
+        '#642000','#ec5420','#a85420','#fccca8',
+        '#303030','#444444','#545454','#646464',
+        '#747474','#888888','#989898','#a8a8a8',
+        '#cccccc','#dcdcdc','#ececec','#fcfcfc'
+      ]
+    };
+
+    function initDPaint() {
+      const canvas = document.getElementById('dpaint-canvas');
+      const overlay = document.getElementById('dpaint-overlay');
+      if (!canvas || !overlay) return;
+      dpaint.canvas = canvas;
+      dpaint.ctx = canvas.getContext('2d');
+      dpaint.overlay = overlay;
+      dpaint.octx = overlay.getContext('2d');
+      canvas.width = dpaint.canvasW;
+      canvas.height = dpaint.canvasH;
+      overlay.width = dpaint.canvasW;
+      overlay.height = dpaint.canvasH;
+      dpaint.ctx.fillStyle = dpaint.bgColor;
+      dpaint.ctx.fillRect(0, 0, dpaint.canvasW, dpaint.canvasH);
+
+      buildDPaintPalette();
+      attachDPaintCanvasEvents();
+      attachDPaintToolbarEvents();
+      attachDPaintKeyboardShortcuts();
+    }
+
+    function dpaintCoords(e) {
+      const rect = dpaint.canvas.getBoundingClientRect();
+      const scaleX = dpaint.canvasW / rect.width;
+      const scaleY = dpaint.canvasH / rect.height;
+      return {
+        x: Math.floor((e.clientX - rect.left) * scaleX),
+        y: Math.floor((e.clientY - rect.top) * scaleY)
+      };
+    }
+
+    function dpaintDrawPixel(x, y, color) {
+      const ctx = dpaint.ctx;
+      ctx.fillStyle = color;
+      const s = dpaint.brushSize;
+      const off = Math.floor(s / 2);
+      ctx.fillRect(x - off, y - off, s, s);
+    }
+
+    function dpaintBresenham(x0, y0, x1, y1, color) {
+      const dx = Math.abs(x1 - x0);
+      const dy = Math.abs(y1 - y0);
+      const sx = x0 < x1 ? 1 : -1;
+      const sy = y0 < y1 ? 1 : -1;
+      let err = dx - dy;
+      while (true) {
+        dpaintDrawPixel(x0, y0, color);
+        if (x0 === x1 && y0 === y1) break;
+        const e2 = 2 * err;
+        if (e2 > -dy) { err -= dy; x0 += sx; }
+        if (e2 < dx) { err += dx; y0 += sy; }
+      }
+    }
+
+    function dpaintPreviewShape(x0, y0, x1, y1, color) {
+      const octx = dpaint.octx;
+      octx.clearRect(0, 0, dpaint.canvasW, dpaint.canvasH);
+      octx.strokeStyle = color;
+      octx.fillStyle = color;
+      octx.lineWidth = dpaint.brushSize;
+      if (dpaint.currentTool === 'line') {
+        octx.beginPath();
+        octx.moveTo(x0 + 0.5, y0 + 0.5);
+        octx.lineTo(x1 + 0.5, y1 + 0.5);
+        octx.stroke();
+      } else if (dpaint.currentTool === 'rect') {
+        const rx = Math.min(x0, x1), ry = Math.min(y0, y1);
+        const rw = Math.abs(x1 - x0), rh = Math.abs(y1 - y0);
+        if (dpaint.filled) {
+          octx.fillRect(rx, ry, rw, rh);
+        } else {
+          octx.strokeRect(rx + 0.5, ry + 0.5, rw, rh);
+        }
+      } else if (dpaint.currentTool === 'circle') {
+        const cx = (x0 + x1) / 2, cy = (y0 + y1) / 2;
+        const rx = Math.abs(x1 - x0) / 2, ry = Math.abs(y1 - y0) / 2;
+        if (rx < 1 && ry < 1) return;
+        octx.beginPath();
+        octx.ellipse(cx, cy, Math.max(rx, 1), Math.max(ry, 1), 0, 0, Math.PI * 2);
+        if (dpaint.filled) octx.fill();
+        else octx.stroke();
+      }
+    }
+
+    function dpaintCommitShape(x0, y0, x1, y1, color) {
+      const ctx = dpaint.ctx;
+      ctx.strokeStyle = color;
+      ctx.fillStyle = color;
+      ctx.lineWidth = dpaint.brushSize;
+      if (dpaint.currentTool === 'line') {
+        ctx.beginPath();
+        ctx.moveTo(x0 + 0.5, y0 + 0.5);
+        ctx.lineTo(x1 + 0.5, y1 + 0.5);
+        ctx.stroke();
+      } else if (dpaint.currentTool === 'rect') {
+        const rx = Math.min(x0, x1), ry = Math.min(y0, y1);
+        const rw = Math.abs(x1 - x0), rh = Math.abs(y1 - y0);
+        if (dpaint.filled) {
+          ctx.fillRect(rx, ry, rw, rh);
+        } else {
+          ctx.strokeRect(rx + 0.5, ry + 0.5, rw, rh);
+        }
+      } else if (dpaint.currentTool === 'circle') {
+        const cx = (x0 + x1) / 2, cy = (y0 + y1) / 2;
+        const rx = Math.abs(x1 - x0) / 2, ry = Math.abs(y1 - y0) / 2;
+        if (rx < 1 && ry < 1) return;
+        ctx.beginPath();
+        ctx.ellipse(cx, cy, Math.max(rx, 1), Math.max(ry, 1), 0, 0, Math.PI * 2);
+        if (dpaint.filled) ctx.fill();
+        else ctx.stroke();
+      }
+    }
+
+    function hexToRGBA(hex) {
+      return {
+        r: parseInt(hex.slice(1, 3), 16),
+        g: parseInt(hex.slice(3, 5), 16),
+        b: parseInt(hex.slice(5, 7), 16),
+        a: 255
+      };
+    }
+
+    function dpaintFloodFill(sx, sy, fillColor) {
+      const ctx = dpaint.ctx;
+      const w = dpaint.canvasW, h = dpaint.canvasH;
+      const imageData = ctx.getImageData(0, 0, w, h);
+      const data = imageData.data;
+      const idx = (sy * w + sx) * 4;
+      const tR = data[idx], tG = data[idx + 1], tB = data[idx + 2], tA = data[idx + 3];
+      const fill = hexToRGBA(fillColor);
+      if (tR === fill.r && tG === fill.g && tB === fill.b && tA === fill.a) return;
+      const stack = [sx, sy];
+      const visited = new Uint8Array(w * h);
+      while (stack.length > 0) {
+        const y = stack.pop(), x = stack.pop();
+        if (x < 0 || x >= w || y < 0 || y >= h) continue;
+        const pos = y * w + x;
+        if (visited[pos]) continue;
+        const i = pos * 4;
+        if (data[i] !== tR || data[i + 1] !== tG || data[i + 2] !== tB || data[i + 3] !== tA) continue;
+        visited[pos] = 1;
+        data[i] = fill.r; data[i + 1] = fill.g; data[i + 2] = fill.b; data[i + 3] = fill.a;
+        stack.push(x + 1, y, x - 1, y, x, y + 1, x, y - 1);
+      }
+      ctx.putImageData(imageData, 0, 0);
+    }
+
+    function dpaintPickColor(x, y, isRight) {
+      const pixel = dpaint.ctx.getImageData(x, y, 1, 1).data;
+      const hex = '#' + [pixel[0], pixel[1], pixel[2]].map(v => v.toString(16).padStart(2, '0')).join('');
+      if (isRight) {
+        dpaint.bgColor = hex;
+        document.getElementById('dp-bg-swatch').style.background = hex;
+      } else {
+        dpaint.fgColor = hex;
+        document.getElementById('dp-fg-swatch').style.background = hex;
+      }
+      updateDPaintPaletteSelection();
+    }
+
+    function attachDPaintCanvasEvents() {
+      const canvas = dpaint.canvas;
+      const win = canvas.closest('.window');
+
+      canvas.addEventListener('mousedown', (e) => {
+        e.stopPropagation();
+        bringToFront(win);
+        const pos = dpaintCoords(e);
+        const isRight = e.button === 2;
+        const color = isRight ? dpaint.bgColor : dpaint.fgColor;
+        dpaint.isDrawing = true;
+        dpaint.startX = pos.x; dpaint.startY = pos.y;
+        dpaint.lastX = pos.x; dpaint.lastY = pos.y;
+
+        if (dpaint.currentTool === 'pencil') {
+          dpaintDrawPixel(pos.x, pos.y, color);
+        } else if (dpaint.currentTool === 'eraser') {
+          dpaintDrawPixel(pos.x, pos.y, dpaint.bgColor);
+        } else if (dpaint.currentTool === 'eyedropper') {
+          dpaintPickColor(pos.x, pos.y, isRight);
+          dpaint.isDrawing = false;
+        } else if (dpaint.currentTool === 'fill') {
+          dpaintFloodFill(pos.x, pos.y, color);
+          dpaint.isDrawing = false;
+        }
+      });
+
+      canvas.addEventListener('contextmenu', (e) => e.preventDefault());
+
+      document.addEventListener('mousemove', (e) => {
+        if (!dpaint.isDrawing) return;
+        const pos = dpaintCoords(e);
+        const color = e.buttons === 2 ? dpaint.bgColor : dpaint.fgColor;
+        if (dpaint.currentTool === 'pencil') {
+          dpaintBresenham(dpaint.lastX, dpaint.lastY, pos.x, pos.y, color);
+          dpaint.lastX = pos.x; dpaint.lastY = pos.y;
+        } else if (dpaint.currentTool === 'eraser') {
+          dpaintBresenham(dpaint.lastX, dpaint.lastY, pos.x, pos.y, dpaint.bgColor);
+          dpaint.lastX = pos.x; dpaint.lastY = pos.y;
+        } else if (dpaint.currentTool === 'line' || dpaint.currentTool === 'rect' || dpaint.currentTool === 'circle') {
+          dpaintPreviewShape(dpaint.startX, dpaint.startY, pos.x, pos.y, color);
+        }
+      });
+
+      document.addEventListener('mouseup', (e) => {
+        if (!dpaint.isDrawing) return;
+        const pos = dpaintCoords(e);
+        const color = e.button === 2 ? dpaint.bgColor : dpaint.fgColor;
+        if (dpaint.currentTool === 'line' || dpaint.currentTool === 'rect' || dpaint.currentTool === 'circle') {
+          dpaintCommitShape(dpaint.startX, dpaint.startY, pos.x, pos.y, color);
+        }
+        dpaint.octx.clearRect(0, 0, dpaint.canvasW, dpaint.canvasH);
+        dpaint.isDrawing = false;
+      });
+    }
+
+    function buildDPaintPalette() {
+      const container = document.getElementById('dp-palette');
+      if (!container) return;
+      dpaint.palette.forEach((color) => {
+        const cell = document.createElement('div');
+        cell.className = 'dp-color';
+        cell.style.background = color;
+        cell.dataset.color = color;
+        cell.addEventListener('mousedown', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          if (e.button === 2) {
+            dpaint.bgColor = color;
+            document.getElementById('dp-bg-swatch').style.background = color;
+          } else {
+            dpaint.fgColor = color;
+            document.getElementById('dp-fg-swatch').style.background = color;
+          }
+          updateDPaintPaletteSelection();
+        });
+        cell.addEventListener('contextmenu', (e) => e.preventDefault());
+        container.appendChild(cell);
+      });
+      updateDPaintPaletteSelection();
+    }
+
+    function updateDPaintPaletteSelection() {
+      document.querySelectorAll('.dp-color').forEach(cell => {
+        cell.classList.toggle('fg-selected', cell.dataset.color === dpaint.fgColor);
+        cell.classList.toggle('bg-selected', cell.dataset.color === dpaint.bgColor);
+      });
+    }
+
+    function attachDPaintToolbarEvents() {
+      document.querySelectorAll('#dpaint-toolbar .dp-tool[data-tool]').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          document.querySelectorAll('#dpaint-toolbar .dp-tool[data-tool]').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          dpaint.currentTool = btn.dataset.tool;
+        });
+      });
+      document.querySelectorAll('#dpaint-toolbar .dp-size').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          document.querySelectorAll('.dp-size').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          dpaint.brushSize = parseInt(btn.dataset.size, 10);
+        });
+      });
+      const filledBtn = document.getElementById('dp-filled-toggle');
+      if (filledBtn) {
+        filledBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          dpaint.filled = !dpaint.filled;
+          filledBtn.classList.toggle('active', dpaint.filled);
+        });
+      }
+      const clearBtn = document.getElementById('dp-clear');
+      if (clearBtn) {
+        clearBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          dpaint.ctx.fillStyle = dpaint.bgColor;
+          dpaint.ctx.fillRect(0, 0, dpaint.canvasW, dpaint.canvasH);
+        });
+      }
+    }
+
+    function attachDPaintKeyboardShortcuts() {
+      document.addEventListener('keydown', (e) => {
+        const win = document.getElementById('dpaint-window');
+        if (!win || win.style.display === 'none') return;
+        if (e.ctrlKey || e.metaKey) return;
+        const key = e.key.toLowerCase();
+        if (e.shiftKey && key === 'f') {
+          dpaint.filled = !dpaint.filled;
+          const btn = document.getElementById('dp-filled-toggle');
+          if (btn) btn.classList.toggle('active', dpaint.filled);
+          return;
+        }
+        const shortcuts = { p:'pencil', l:'line', r:'rect', c:'circle', f:'fill', e:'eraser', i:'eyedropper' };
+        if (shortcuts[key]) {
+          dpaint.currentTool = shortcuts[key];
+          document.querySelectorAll('#dpaint-toolbar .dp-tool[data-tool]').forEach(b => {
+            b.classList.toggle('active', b.dataset.tool === shortcuts[key]);
+          });
+        }
+      });
+    }
+
+    function sizeDPaintCanvas() {
+      const win = document.getElementById('dpaint-window');
+      const body = document.getElementById('dpaint-body');
+      if (!win || !body || win.style.display === 'none') return;
+      const title = win.querySelector('.window-title');
+      const innerH = win.clientHeight - (title ? title.offsetHeight : 0) - 4;
+      body.style.height = Math.max(innerH, 200) + 'px';
+    }
+
+    function toggleDPaintWindow() {
+      const win = document.getElementById('dpaint-window');
+      if (!win) return;
+      if (win.style.display === 'none') {
+        win.style.display = '';
+        if (!win.classList.contains('is-absolute')) {
+          const vw = document.documentElement.clientWidth;
+          const vh = document.documentElement.clientHeight;
+          win.classList.add('is-absolute');
+          win.style.left = Math.max(20, Math.round((vw - 560) / 2)) + 'px';
+          win.style.top = Math.max(40, Math.round((vh - 420) / 2)) + 'px';
+          win.style.width = '560px';
+          win.style.height = '420px';
+        }
+        bringToFront(win);
+        sizeDPaintCanvas();
+      } else {
+        win.style.display = 'none';
+      }
+    }
+
+    document.getElementById('dpaint-icon')?.addEventListener('click', (e) => {
+      e.preventDefault();
+      toggleDPaintWindow();
+    });
+
+    document.getElementById('dpaint-close')?.addEventListener('click', (e) => {
+      e.stopPropagation();
+      document.getElementById('dpaint-window').style.display = 'none';
+    });
+
+    initDPaint();
+
+    window.addEventListener('resize', sizeDPaintCanvas);
+
+    const dpaintWin = document.getElementById('dpaint-window');
+    if (dpaintWin && 'ResizeObserver' in window) {
+      const ro3 = new ResizeObserver(() => sizeDPaintCanvas());
+      ro3.observe(dpaintWin);
     }
   </script>
 </body>
