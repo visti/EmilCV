@@ -3700,7 +3700,6 @@
         basOut('FOR/NEXT, WHILE/WEND, GOTO, GOSUB/RETURN');
         basOut('CLS, BEEP, SLEEP, READ, DATA, DIM');
         basOut('RUN, LIST, NEW, REM, END, SKILLS');
-        basOut('LOAD "ADVENTURE" - text adventure game');
         basOut('');
         basOut('Type line numbers to store a program:');
         basOut('  10 PRINT "Hello, World!"');
@@ -3722,7 +3721,7 @@
         basOut('Ok'); return;
       }
 
-      if (upper === 'LOAD "ADVENTURE"' || upper === "LOAD 'ADVENTURE'") {
+      if (upper === 'QUEST') {
         advStart(); return;
       }
 
@@ -3755,7 +3754,7 @@
         adv.visited = new Set();
         adv.room = adv.data.start;
         adv.active = true;
-        basOut('');
+        basCls();
         basOut('=== ADVENTURE ===');
         basOut('Type HELP for commands.');
         basOut('');
