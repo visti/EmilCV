@@ -1,0 +1,9 @@
+ROOM: chipram
+TITLE: Chip RAM
+DESC: Pulsing memory banks stretch in all directions.
+DESC: Data flows through copper traces like rivers of light.
+DESC: A strange artifact glows in the corner.
+EXIT: DOWN system
+EXIT: SOUTH copper
+ITEM: guru A Guru Meditation crystal, pulsing with red light.
+LOOK: guru The crystal throbs: "Software Failure. Press left mouse button to continue."

@@ -1,0 +1,10 @@
+ROOM: copper
+TITLE: Copper List
+DESC: Rainbow color bars cascade down around you in perfect sync.
+DESC: A shimmering portal to the EAST crackles with energy.
+DESC: It seems to demand something powerful to activate.
+EXIT: NORTH chipram
+EXIT: EAST demoscene
+NEED: EAST guru The portal flickers but won't open. It needs a source of power.
+CONSUME: EAST
+LOOK: portal Swirling colors form and dissolve. You can almost see another world beyond.

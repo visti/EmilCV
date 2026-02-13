@@ -44,6 +44,55 @@ function buildNotesManifest() {
   }
 }
 
+// --- Game manifest ---
+function buildGameManifest() {
+  const gameDir = path.join(PUBLIC, 'game');
+  try {
+    const files = fs.readdirSync(gameDir).filter(f => f.endsWith('.room')).sort();
+    if (!files.length) { console.log('No room files found, skipping game manifest'); return; }
+    const rooms = {};
+    let startRoom = null;
+    for (const file of files) {
+      const lines = fs.readFileSync(path.join(gameDir, file), 'utf8').split('\n');
+      const room = { title: '', desc: '', exits: {}, items: {}, needs: {}, consumes: {}, looks: {}, uses: {}, flags: {}, needflags: {}, hidden: {} };
+      let id = file.replace('.room', '');
+      for (const raw of lines) {
+        const line = raw.trim();
+        if (!line) continue;
+        const colon = line.indexOf(':');
+        if (colon === -1) continue;
+        const key = line.slice(0, colon).trim().toUpperCase();
+        const val = line.slice(colon + 1).trim();
+        if (key === 'ROOM') { id = val; }
+        else if (key === 'TITLE') { room.title = val; }
+        else if (key === 'DESC') { room.desc += (room.desc ? ' ' : '') + val; }
+        else if (key === 'EXIT') { const [dir, ...rest] = val.split(/\s+/); room.exits[dir.toUpperCase()] = rest.join(' '); }
+        else if (key === 'ITEM') { const [iid, ...rest] = val.split(/\s+/); room.items[iid.toLowerCase()] = rest.join(' '); }
+        else if (key === 'NEED') { const [dir, iid, ...rest] = val.split(/\s+/); room.needs[dir.toUpperCase()] = { item: iid.toLowerCase(), msg: rest.join(' ') }; }
+        else if (key === 'CONSUME') { room.consumes[val.toUpperCase()] = true; }
+        else if (key === 'LOOK') { const [iid, ...rest] = val.split(/\s+/); room.looks[iid.toLowerCase()] = rest.join(' '); }
+        else if (key === 'USE') {
+          const m = val.match(/^(\S+)\s+ON\s+(\S+)\s+(.*)/i);
+          if (m) room.uses[m[1].toLowerCase() + ':' + m[2].toLowerCase()] = m[3];
+        }
+        else if (key === 'ONUSE') { const [iid, , flag] = val.split(/\s+/); room.flags[iid.toLowerCase()] = flag; }
+        else if (key === 'NEEDFLAG') { const [dir, flag, ...rest] = val.split(/\s+/); room.needflags[dir.toUpperCase()] = { flag, msg: rest.join(' ') }; }
+        else if (key === 'HIDDEN') {
+          const m = val.match(/^(\S+)\s+NEEDFLAG\s+(\S+)/i);
+          if (m) room.hidden[m[1].toLowerCase()] = m[2];
+        }
+      }
+      rooms[id] = room;
+      if (file === 'start.room' || !startRoom) startRoom = id;
+    }
+    const manifest = JSON.stringify({ start: startRoom, rooms }, null, 2);
+    fs.writeFileSync(path.join(gameDir, 'game.json'), manifest);
+    console.log(`Game manifest: ${Object.keys(rooms).length} room(s)`);
+  } catch (e) {
+    console.log('No game directory found, skipping game manifest');
+  }
+}
+
 // --- Paint directory ---
 fs.mkdirSync(PAINT_DIR, { recursive: true });
 
@@ -286,6 +335,7 @@ const server = http.createServer((req, res) => {
 
 // Start
 buildNotesManifest();
+buildGameManifest();
 server.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
   console.log(`Paint dir: ${PAINT_DIR}`);

@@ -1,0 +1,163 @@
+{
+  "start": "start",
+  "rooms": {
+    "chipram": {
+      "title": "Chip RAM",
+      "desc": "Pulsing memory banks stretch in all directions. Data flows through copper traces like rivers of light. A strange artifact glows in the corner.",
+      "exits": {
+        "DOWN": "system",
+        "SOUTH": "copper"
+      },
+      "items": {
+        "guru": "A Guru Meditation crystal, pulsing with red light."
+      },
+      "needs": {},
+      "consumes": {},
+      "looks": {
+        "guru": "The crystal throbs: \"Software Failure. Press left mouse button to continue.\""
+      },
+      "uses": {},
+      "flags": {},
+      "needflags": {},
+      "hidden": {}
+    },
+    "cli": {
+      "title": "CLI Window",
+      "desc": "A blinking cursor awaits your command. Stacks of floppy disks line the WEST wall. A directory listing scrolls NORTH into darkness.",
+      "exits": {
+        "SOUTH": "start",
+        "NORTH": "directory"
+      },
+      "items": {},
+      "needs": {},
+      "consumes": {},
+      "looks": {
+        "cursor": "It blinks patiently. 1> _"
+      },
+      "uses": {},
+      "flags": {},
+      "needflags": {},
+      "hidden": {}
+    },
+    "copper": {
+      "title": "Copper List",
+      "desc": "Rainbow color bars cascade down around you in perfect sync. A shimmering portal to the EAST crackles with energy. It seems to demand something powerful to activate.",
+      "exits": {
+        "NORTH": "chipram",
+        "EAST": "demoscene"
+      },
+      "items": {},
+      "needs": {
+        "EAST": {
+          "item": "guru",
+          "msg": "The portal flickers but won't open. It needs a source of power."
+        }
+      },
+      "consumes": {
+        "EAST": true
+      },
+      "looks": {
+        "portal": "Swirling colors form and dissolve. You can almost see another world beyond."
+      },
+      "uses": {},
+      "flags": {},
+      "needflags": {},
+      "hidden": {}
+    },
+    "demoscene": {
+      "title": "The Demo Scene",
+      "desc": "You've reached the legendary Demo Scene! Scrolling text congratulates you as impossible 3D graphics render in real-time on custom hardware. Chiptune music fills the air. You have won! Type QUIT to return to the Workbench.",
+      "exits": {
+        "SOUTH": "copper"
+      },
+      "items": {},
+      "needs": {},
+      "consumes": {},
+      "looks": {},
+      "uses": {},
+      "flags": {},
+      "needflags": {},
+      "hidden": {}
+    },
+    "directory": {
+      "title": "File Directory",
+      "desc": "Rows of files sorted alphabetically stretch in every direction. Folders nest within folders like fractal geometry. A locked door leads EAST to the system folder.",
+      "exits": {
+        "SOUTH": "cli",
+        "EAST": "system"
+      },
+      "items": {},
+      "needs": {
+        "EAST": {
+          "item": "disk",
+          "msg": "The door requires system access. You need the right disk."
+        }
+      },
+      "consumes": {
+        "EAST": true
+      },
+      "looks": {
+        "door": "A heavy steel door with a disk slot beside it."
+      },
+      "uses": {},
+      "flags": {},
+      "needflags": {},
+      "hidden": {}
+    },
+    "start": {
+      "title": "Workbench Desktop",
+      "desc": "You are on the Amiga Workbench desktop. Icons float around you like pixelated constellations. A CLI window glows to the NORTH. The trash can sits to the EAST.",
+      "exits": {
+        "NORTH": "cli",
+        "EAST": "trash"
+      },
+      "items": {
+        "manual": "A dog-eared Amiga DOS manual."
+      },
+      "needs": {},
+      "consumes": {},
+      "looks": {
+        "manual": "The cover reads \"AmigaDOS Inside & Out\" - looks well-thumbed."
+      },
+      "uses": {},
+      "flags": {},
+      "needflags": {},
+      "hidden": {}
+    },
+    "system": {
+      "title": "System Folder",
+      "desc": "The heart of the operating system hums around you. Fonts, libs, and devs pulse with quiet energy. A ladder leads UP into the chip architecture.",
+      "exits": {
+        "WEST": "directory",
+        "UP": "chipram"
+      },
+      "items": {},
+      "needs": {},
+      "consumes": {},
+      "looks": {},
+      "uses": {},
+      "flags": {},
+      "needflags": {},
+      "hidden": {}
+    },
+    "trash": {
+      "title": "Trash Can",
+      "desc": "Mountains of deleted files surround you. Broken icons and corrupted data crunch underfoot. Something glints in the pile.",
+      "exits": {
+        "WEST": "start"
+      },
+      "items": {
+        "disk": "A slightly scratched floppy disk labeled \"KEY\"."
+      },
+      "needs": {},
+      "consumes": {},
+      "looks": {
+        "disk": "The label reads \"System Access v1.0\" in faded marker."
+      },
+      "uses": {},
+      "flags": {},
+      "needflags": {},
+      "hidden": {}
+    }
+  }
+}

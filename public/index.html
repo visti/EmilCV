@@ -1130,14 +1130,15 @@
     </a>
     <a class="wb-icon" href="https://soundcloud.com/visti-1" target="_blank" rel="noopener noreferrer">
       <div class="icon-box">
-        <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges">
-          <rect x="12" y="4" width="2" height="18" fill="white"/>
-          <rect x="22" y="2" width="2" height="18" fill="white"/>
-          <rect x="12" y="4" width="12" height="2" fill="white"/>
-          <rect x="6" y="20" width="8" height="6" rx="3" fill="white"/>
-          <rect x="16" y="18" width="8" height="6" rx="3" fill="white"/>
-          <rect x="4" y="28" width="24" height="2" fill="#FF8800"/>
-          <rect x="2" y="26" width="2" height="4" fill="#FF8800"/>
+        <svg viewBox="0 0 36 36" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges">
+          <path d="M0 0 H30 L34 4 V34 H0 Z" fill="#0055AA" stroke="white" stroke-width="2"/>
+          <rect x="14" y="6" width="2" height="16" fill="white"/>
+          <rect x="22" y="4" width="2" height="16" fill="white"/>
+          <rect x="14" y="6" width="10" height="2" fill="white"/>
+          <rect x="9" y="20" width="7" height="5" rx="3" fill="white"/>
+          <rect x="17" y="18" width="7" height="5" rx="3" fill="white"/>
+          <rect x="6" y="28" width="22" height="2" fill="#FF8800"/>
+          <rect x="4" y="26" width="2" height="4" fill="#FF8800"/>
           <rect x="28" y="26" width="2" height="4" fill="#FF8800"/>
         </svg>
       </div>
@@ -1157,15 +1158,20 @@
     <a class="wb-icon" href="#" id="demo-icon" aria-label="Demoscene">
       <div class="icon-box">
         <svg viewBox="0 0 36 36" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges">
-          <path d="M0 0 H30 L34 4 V34 H0 Z" fill="#0055AA" stroke="white" stroke-width="2"/>
-          <rect x="6" y="14" width="22" height="16" fill="#111"/>
-          <circle cx="10" cy="20" r="1.5" fill="#fff"/>
-          <circle cx="22" cy="17" r="1" fill="#ffaa00"/>
-          <circle cx="15" cy="25" r="1" fill="#66ccff"/>
-          <circle cx="26" cy="23" r="1.5" fill="#fff"/>
-          <circle cx="18" cy="18" r="0.8" fill="#ff8800"/>
-          <circle cx="12" cy="27" r="0.8" fill="#fff"/>
-          <circle cx="24" cy="28" r="1" fill="#ffaa00"/>
+          <path d="M0 0 H30 L34 4 V34 H0 Z" fill="#111" stroke="white" stroke-width="2"/>
+          <circle cx="6" cy="8" r="1.5" fill="#fff"/>
+          <circle cx="26" cy="6" r="2" fill="#ffaa00"/>
+          <circle cx="16" cy="12" r="1" fill="#66ccff"/>
+          <circle cx="28" cy="16" r="1.5" fill="#fff"/>
+          <circle cx="8" cy="19" r="0.8" fill="#ff8800"/>
+          <circle cx="20" cy="17" r="1" fill="#fff"/>
+          <circle cx="5" cy="28" r="1" fill="#ffaa00"/>
+          <circle cx="14" cy="24" r="2" fill="#fff"/>
+          <circle cx="28" cy="26" r="0.8" fill="#66ccff"/>
+          <circle cx="20" cy="31" r="1.5" fill="#fff"/>
+          <circle cx="10" cy="32" r="0.8" fill="#ffaa00"/>
+          <circle cx="24" cy="22" r="0.8" fill="#ff8800"/>
+          <circle cx="15" cy="5" r="0.8" fill="#fff"/>
         </svg>
       </div>
       <span class="icon-label">Demo<br>Scene</span>
@@ -1178,8 +1184,8 @@
           <circle cx="11" cy="22" r="3" fill="#ec0000"/>
           <circle cx="19" cy="22" r="3" fill="#fcec00"/>
           <circle cx="15" cy="27" r="3" fill="#0000fc"/>
-          <rect x="19" y="2" width="3" height="10" fill="#ffaa00" transform="rotate(-20 20.5 7)"/>
-          <rect x="18" y="1" width="5" height="3" fill="#642000" transform="rotate(-20 20.5 2.5)"/>
+          <rect x="19" y="5" width="3" height="9" fill="#ffaa00" transform="rotate(-20 20.5 9.5)"/>
+          <rect x="18" y="4" width="5" height="3" fill="#642000" transform="rotate(-20 20.5 5.5)"/>
         </svg>
       </div>
       <span class="icon-label">Deluxe<br>Paint</span>
@@ -1187,10 +1193,11 @@
     <a class="wb-icon" href="#" id="filemgr-icon" aria-label="File Manager">
       <div class="icon-box">
         <svg viewBox="0 0 36 36" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges">
-          <rect x="2" y="6" width="32" height="24" fill="#0055AA" stroke="white" stroke-width="2"/>
-          <rect x="4" y="8" width="28" height="6" fill="#ffaa00"/>
-          <rect x="6" y="16" width="12" height="4" fill="#66ccff"/>
-          <rect x="6" y="22" width="18" height="4" fill="#66ccff"/>
+          <path d="M0 0 H30 L34 4 V34 H0 Z" fill="#0055AA" stroke="white" stroke-width="2"/>
+          <rect x="4" y="6" width="26" height="6" fill="#ffaa00"/>
+          <rect x="6" y="14" width="12" height="4" fill="#66ccff"/>
+          <rect x="6" y="20" width="18" height="4" fill="#66ccff"/>
+          <rect x="6" y="26" width="14" height="4" fill="#66ccff"/>
         </svg>
       </div>
       <span class="icon-label">File<br>Manager</span>
@@ -3660,6 +3667,9 @@
         return;
       }
 
+      // Adventure engine intercept
+      if (adv.active) { advHandleInput(text); return; }
+
       const trimmed = text.trim();
       if (!trimmed) { basOut('Ok'); return; }
 
@@ -3690,6 +3700,7 @@
         basOut('FOR/NEXT, WHILE/WEND, GOTO, GOSUB/RETURN');
         basOut('CLS, BEEP, SLEEP, READ, DATA, DIM');
         basOut('RUN, LIST, NEW, REM, END, SKILLS');
+        basOut('LOAD "ADVENTURE" - text adventure game');
         basOut('');
         basOut('Type line numbers to store a program:');
         basOut('  10 PRINT "Hello, World!"');
@@ -3711,6 +3722,10 @@
         basOut('Ok'); return;
       }
 
+      if (upper === 'LOAD "ADVENTURE"' || upper === "LOAD 'ADVENTURE'") {
+        advStart(); return;
+      }
+
       try {
         await basExecLine(trimmed);
         basOut('Ok');
@@ -3718,6 +3733,206 @@
         basOut('?' + e.message);
         basOut('Ok');
       }
+    }
+
+    // --- Adventure Engine ---
+    const adv = {
+      active: false,
+      data: null,
+      room: null,
+      inventory: [],
+      flags: new Set(),
+      visited: new Set()
+    };
+
+    async function advStart() {
+      try {
+        const res = await fetch('/game/game.json');
+        if (!res.ok) { basOut('?Game data not found'); return; }
+        adv.data = await res.json();
+        adv.inventory = [];
+        adv.flags = new Set();
+        adv.visited = new Set();
+        adv.room = adv.data.start;
+        adv.active = true;
+        basOut('');
+        basOut('=== ADVENTURE ===');
+        basOut('Type HELP for commands.');
+        basOut('');
+        advLook();
+      } catch(e) { basOut('?Failed to load adventure'); }
+    }
+
+    function advLook() {
+      const rm = adv.data.rooms[adv.room];
+      if (!rm) { basOut('?Room not found: ' + adv.room); return; }
+      basOut('--- ' + rm.title + ' ---');
+      basOut(rm.desc);
+      // Show visible items (not hidden or already taken)
+      const visible = Object.keys(rm.items).filter(id => {
+        if (adv.inventory.includes(id)) return false;
+        if (rm.hidden && rm.hidden[id] && !adv.flags.has(rm.hidden[id])) return false;
+        return true;
+      });
+      if (visible.length) basOut('You see: ' + visible.join(', '));
+      const exits = Object.keys(rm.exits);
+      if (exits.length) basOut('Exits: ' + exits.join(', '));
+      adv.visited.add(adv.room);
+    }
+
+    function advHandleInput(text) {
+      const raw = text.trim();
+      if (!raw) return;
+      basOut(raw);
+      const parts = raw.toUpperCase().split(/\s+/);
+      let verb = parts[0];
+      let noun = parts.slice(1).join(' ');
+
+      const dirMap = { N:'NORTH', S:'SOUTH', E:'EAST', W:'WEST', U:'UP', D:'DOWN' };
+      const dirs = ['NORTH','SOUTH','EAST','WEST','UP','DOWN'];
+
+      // Direction shortcuts
+      if (dirMap[verb]) verb = dirMap[verb];
+      if (dirs.includes(verb) && !noun) { noun = verb; verb = 'GO'; }
+      if (verb === 'GO' && dirMap[noun]) noun = dirMap[noun];
+
+      const rm = adv.data.rooms[adv.room];
+
+      if (verb === 'HELP') {
+        basOut('Commands: LOOK, GO, GET, DROP, USE, INVENTORY');
+        basOut('Directions: NORTH/S/E/W/UP/DOWN (or N/S/E/W/U/D)');
+        basOut('SAVE, RESTORE, QUIT');
+        return;
+      }
+
+      if (verb === 'QUIT' || verb === 'EXIT') {
+        adv.active = false;
+        basOut('Returning to BASIC...');
+        basOut('Ok');
+        return;
+      }
+
+      if (verb === 'LOOK' || verb === 'L') {
+        if (!noun) { advLook(); return; }
+        const nLower = noun.toLowerCase();
+        // Check room looks
+        if (rm.looks && rm.looks[nLower]) { basOut(rm.looks[nLower]); return; }
+        // Check room items
+        if (rm.items[nLower] && !adv.inventory.includes(nLower)) { basOut(rm.items[nLower]); return; }
+        // Check inventory
+        if (adv.inventory.includes(nLower)) {
+          // Find description from any room
+          for (const r of Object.values(adv.data.rooms)) {
+            if (r.items[nLower]) { basOut(r.items[nLower]); return; }
+          }
+          basOut('You have it.'); return;
+        }
+        basOut("You don't see that here."); return;
+      }
+
+      if (verb === 'GO') {
+        if (!noun || !dirs.includes(noun)) { basOut('Go where?'); return; }
+        if (!rm.exits[noun]) { basOut("You can't go that way."); return; }
+        // Check NEEDFLAG
+        if (rm.needflags && rm.needflags[noun]) {
+          if (!adv.flags.has(rm.needflags[noun].flag)) { basOut(rm.needflags[noun].msg); return; }
+        }
+        // Check NEED
+        if (rm.needs && rm.needs[noun]) {
+          const need = rm.needs[noun];
+          if (!adv.inventory.includes(need.item)) { basOut(need.msg); return; }
+          // Consume if required
+          if (rm.consumes && rm.consumes[noun]) {
+            adv.inventory = adv.inventory.filter(i => i !== need.item);
+            basOut('(Used ' + need.item + ')');
+          }
+        }
+        adv.room = rm.exits[noun];
+        advLook();
+        return;
+      }
+
+      if (verb === 'GET' || verb === 'TAKE') {
+        if (!noun) { basOut('Get what?'); return; }
+        const nLower = noun.toLowerCase();
+        if (adv.inventory.includes(nLower)) { basOut('You already have it.'); return; }
+        if (!rm.items[nLower]) { basOut("You don't see that here."); return; }
+        if (rm.hidden && rm.hidden[nLower] && !adv.flags.has(rm.hidden[nLower])) { basOut("You don't see that here."); return; }
+        adv.inventory.push(nLower);
+        basOut('Taken.');
+        return;
+      }
+
+      if (verb === 'DROP') {
+        if (!noun) { basOut('Drop what?'); return; }
+        const nLower = noun.toLowerCase();
+        if (!adv.inventory.includes(nLower)) { basOut("You don't have that."); return; }
+        adv.inventory = adv.inventory.filter(i => i !== nLower);
+        // Add to current room if not already there
+        if (!rm.items[nLower]) {
+          for (const r of Object.values(adv.data.rooms)) {
+            if (r.items[nLower]) { rm.items[nLower] = r.items[nLower]; break; }
+          }
+        }
+        basOut('Dropped.');
+        return;
+      }
+
+      if (verb === 'USE') {
+        if (!noun) { basOut('Use what?'); return; }
+        const onIdx = noun.indexOf(' ON ');
+        let item, target;
+        if (onIdx !== -1) {
+          item = noun.slice(0, onIdx).toLowerCase();
+          target = noun.slice(onIdx + 4).toLowerCase();
+        } else {
+          item = noun.toLowerCase();
+          target = null;
+        }
+        if (!adv.inventory.includes(item)) { basOut("You don't have that."); return; }
+        if (target && rm.uses && rm.uses[item + ':' + target]) {
+          basOut(rm.uses[item + ':' + target]);
+          if (rm.flags && rm.flags[item]) adv.flags.add(rm.flags[item]);
+          return;
+        }
+        if (rm.flags && rm.flags[item]) {
+          adv.flags.add(rm.flags[item]);
+          basOut('Used ' + item + '.');
+          return;
+        }
+        basOut("You can't use that here.");
+        return;
+      }
+
+      if (verb === 'INVENTORY' || verb === 'I') {
+        if (!adv.inventory.length) { basOut('You are empty-handed.'); return; }
+        basOut('You are carrying:');
+        adv.inventory.forEach(i => basOut('  ' + i));
+        return;
+      }
+
+      if (verb === 'SAVE') {
+        const state = { room: adv.room, inv: adv.inventory, flags: [...adv.flags], visited: [...adv.visited] };
+        const code = btoa(JSON.stringify(state));
+        basOut('Save code: ' + code);
+        return;
+      }
+
+      if (verb === 'RESTORE') {
+        if (!noun) { basOut('RESTORE <code>'); return; }
+        try {
+          const state = JSON.parse(atob(parts.slice(1).join('')));
+          adv.room = state.room;
+          adv.inventory = state.inv || [];
+          adv.flags = new Set(state.flags || []);
+          adv.visited = new Set(state.visited || []);
+          basOut('Restored.');
+          advLook();
+        } catch(e) { basOut('?Invalid save code'); }
+        return;
+      }
+
+      basOut("I don't understand that. Type HELP for commands.");
     }
 
     // --- BASIC UI ---

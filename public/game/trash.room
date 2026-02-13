@@ -1,0 +1,8 @@
+ROOM: trash
+TITLE: Trash Can
+DESC: Mountains of deleted files surround you.
+DESC: Broken icons and corrupted data crunch underfoot.
+DESC: Something glints in the pile.
+EXIT: WEST start
+ITEM: disk A slightly scratched floppy disk labeled "KEY".
+LOOK: disk The label reads "System Access v1.0" in faded marker.
