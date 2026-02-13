@@ -870,6 +870,24 @@
       .window-body { padding: 6px 8px; }
       .icon-row { gap: 16px; }
     }
+
+    /* Touch device enhancements */
+    @media (pointer: coarse) {
+      .window-title { min-height: 36px; touch-action: none; }
+      .wb-icon { min-width: 60px; min-height: 60px; }
+      .dp-tool { min-width: 36px; min-height: 36px; }
+      .dp-color { min-width: 22px; min-height: 22px; }
+      #dpaint-canvas, #dpaint-overlay { touch-action: none; }
+      #dp-touch-color-toggle {
+        display: inline-flex; align-items: center; justify-content: center;
+        min-width: 36px; min-height: 36px;
+        font-size: 11px; font-weight: bold; letter-spacing: 0.5px;
+      }
+    }
+
+    @media (pointer: fine) {
+      #dp-touch-color-toggle { display: none !important; }
+    }
   </style>
 </head>
 <body>
@@ -969,6 +987,7 @@
           </button>
           <hr class="dp-divider">
           <button class="dp-tool" id="dp-clear" title="Clear canvas">CLR</button>
+          <button class="dp-tool" id="dp-touch-color-toggle" title="Toggle FG/BG draw color">FG</button>
           <hr class="dp-divider">
           <button class="dp-tool dp-save" id="dp-save" title="Save painting (Ctrl+S)">
             <svg viewBox="0 0 18 18"><path d="M3 1h10l3 3v11a2 2 0 01-2 2H3a2 2 0 01-2-2V3a2 2 0 012-2z" fill="none" stroke="#fff" stroke-width="1.5"/><rect x="5" y="1" width="7" height="5" rx="0.5" fill="#fff" opacity="0.7"/><rect x="5" y="10" width="8" height="6" rx="1" fill="#fff" opacity="0.5"/></svg>
@@ -1531,7 +1550,7 @@
             return '<a href="' + escapeHtml(safeUrl(url)) + '" target="_blank" rel="noopener noreferrer">' + text + '</a>';
           });
         if (line.startsWith('> ')) {
-          html = '<div class="dim-text">' + html.slice(2) + '</div>';
+          html = '<div class="dim-text">' + html.slice(4) + '</div>';
         } else {
           html = '<div class="output-text">' + html + '</div>';
         }
@@ -1605,12 +1624,7 @@
           if (win.style.display === 'none') {
             win.style.display = '';
             if (!win.classList.contains('is-absolute')) {
-              const vw = document.documentElement.clientWidth;
-              const vh = document.documentElement.clientHeight;
-              win.classList.add('is-absolute');
-              win.style.left = Math.max(20, Math.round((vw - 380) / 2)) + 'px';
-              win.style.top = Math.max(40, Math.round((vh - 300) / 2)) + 'px';
-              win.style.width = '380px';
+              mobileWindowPos(win, 380, null);
             }
             win.classList.add('open');
             bringToFront(win);
@@ -2267,6 +2281,30 @@
       requestAnimationFrame(render);
     }
 
+    // --- Touch support ---
+    const isTouchDevice = 'ontouchstart' in window;
+    function touchXY(e) {
+      const t = e.touches[0] || e.changedTouches[0];
+      return { clientX: t.clientX, clientY: t.clientY };
+    }
+
+    function mobileWindowPos(win, desiredW, desiredH) {
+      const vw = document.documentElement.clientWidth;
+      const vh = document.documentElement.clientHeight;
+      win.classList.add('is-absolute');
+      if (vw < 600) {
+        win.style.left = '4px';
+        win.style.top = '32px';
+        win.style.width = (vw - 8) + 'px';
+        if (desiredH) win.style.height = Math.min(desiredH, vh - 40) + 'px';
+      } else {
+        win.style.left = Math.max(20, Math.round((vw - desiredW) / 2)) + 'px';
+        win.style.top = Math.max(40, Math.round((vh - (desiredH || 300)) / 2)) + 'px';
+        win.style.width = desiredW + 'px';
+        if (desiredH) win.style.height = desiredH + 'px';
+      }
+    }
+
     // --- Draggable windows ---
     let dragState = null;
     let topZ = 10;
@@ -2344,6 +2382,71 @@
       dragState = null;
     });
 
+    // --- Window dragging: touch events ---
+    document.addEventListener('touchstart', (e) => {
+      const titleBar = e.target.closest('.window-title');
+      if (e.target.closest('#dpaint-close') || e.target.closest('.note-close') || e.target.closest('#mail-close') || e.target.closest('#disk-close') || e.target.closest('#filemgr-close')) return;
+      if (!titleBar) {
+        const win = e.target.closest('.window');
+        if (win) bringToFront(win);
+        return;
+      }
+      const win = titleBar.closest('.window');
+      if (!win) return;
+      bringToFront(win);
+      const pt = touchXY(e);
+      const rect = win.getBoundingClientRect();
+      dragState = {
+        win,
+        titleBar,
+        startX: pt.clientX,
+        startY: pt.clientY,
+        origLeft: rect.left,
+        origTop: rect.top + window.scrollY,
+        origWidth: rect.width,
+        offsetX: pt.clientX - rect.left,
+        offsetY: pt.clientY - rect.top,
+        moved: false
+      };
+      e.preventDefault();
+    }, { passive: false });
+
+    document.addEventListener('touchmove', (e) => {
+      if (!dragState) return;
+      const pt = touchXY(e);
+      const dx = pt.clientX - dragState.startX;
+      const dy = pt.clientY - dragState.startY;
+      if (!dragState.moved && (Math.abs(dx) > 3 || Math.abs(dy) > 3)) {
+        dragState.moved = true;
+        const w = dragState.win;
+        if (!w.classList.contains('is-absolute')) {
+          w.classList.add('is-absolute');
+          w.style.left = dragState.origLeft + 'px';
+          w.style.top = dragState.origTop + 'px';
+          w.style.width = dragState.origWidth + 'px';
+        }
+        w.classList.add('is-dragging');
+      }
+      if (dragState.moved) {
+        dragState.win.style.left = (pt.clientX - dragState.offsetX) + 'px';
+        dragState.win.style.top = (pt.clientY - dragState.offsetY + window.scrollY) + 'px';
+        e.preventDefault();
+      }
+    }, { passive: false });
+
+    document.addEventListener('touchend', (e) => {
+      if (!dragState) return;
+      dragState.win.classList.remove('is-dragging');
+      if (!dragState.moved) {
+        const toggle = dragState.titleBar.closest('.rec-toggle');
+        if (toggle) {
+          const id = toggle.dataset.toggle;
+          if (id) toggleRec(id);
+        }
+      }
+      dragState = null;
+    });
+
     window.addEventListener('resize', sizeWindowsToContent);
     window.addEventListener('resize', sizeMainWindowBody);
     window.addEventListener('resize', sizeDemoCanvas);
@@ -2387,6 +2490,8 @@
       canvas: null, ctx: null,
       overlay: null, octx: null,
       canvasW: 320, canvasH: 256,
+      touchUseBg: false,
+      drawingIsRight: false,
       palette: [
         '#000000','#a0a0a0','#ec0000','#a80000',
         '#dc8800','#fcec00','#88fc00','#008800',
@@ -2612,6 +2717,61 @@
         dpaint.octx.clearRect(0, 0, dpaint.canvasW, dpaint.canvasH);
         dpaint.isDrawing = false;
       });
+
+      // --- DPaint canvas: touch events ---
+      canvas.addEventListener('touchstart', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        bringToFront(win);
+        const pt = touchXY(e);
+        const pos = dpaintCoords(pt);
+        const isRight = dpaint.touchUseBg;
+        dpaint.drawingIsRight = isRight;
+        const color = isRight ? dpaint.bgColor : dpaint.fgColor;
+        dpaint.isDrawing = true;
+        dpaint.startX = pos.x; dpaint.startY = pos.y;
+        dpaint.lastX = pos.x; dpaint.lastY = pos.y;
+        if (dpaint.currentTool === 'pencil') {
+          dpaintDrawPixel(pos.x, pos.y, color);
+        } else if (dpaint.currentTool === 'eraser') {
+          dpaintDrawPixel(pos.x, pos.y, dpaint.bgColor);
+        } else if (dpaint.currentTool === 'eyedropper') {
+          dpaintPickColor(pos.x, pos.y, isRight);
+          dpaint.isDrawing = false;
+        } else if (dpaint.currentTool === 'fill') {
+          dpaintFloodFill(pos.x, pos.y, color);
+          dpaint.isDrawing = false;
+        }
+      }, { passive: false });
+
+      document.addEventListener('touchmove', (e) => {
+        if (!dpaint.isDrawing) return;
+        const pt = touchXY(e);
+        const pos = dpaintCoords(pt);
+        const color = dpaint.drawingIsRight ? dpaint.bgColor : dpaint.fgColor;
+        if (dpaint.currentTool === 'pencil') {
+          dpaintBresenham(dpaint.lastX, dpaint.lastY, pos.x, pos.y, color);
+          dpaint.lastX = pos.x; dpaint.lastY = pos.y;
+        } else if (dpaint.currentTool === 'eraser') {
+          dpaintBresenham(dpaint.lastX, dpaint.lastY, pos.x, pos.y, dpaint.bgColor);
+          dpaint.lastX = pos.x; dpaint.lastY = pos.y;
+        } else if (dpaint.currentTool === 'line' || dpaint.currentTool === 'rect' || dpaint.currentTool === 'circle') {
+          dpaintPreviewShape(dpaint.startX, dpaint.startY, pos.x, pos.y, color);
+        }
+        e.preventDefault();
+      }, { passive: false });
+
+      document.addEventListener('touchend', (e) => {
+        if (!dpaint.isDrawing) return;
+        const pt = touchXY(e);
+        const pos = dpaintCoords(pt);
+        const color = dpaint.drawingIsRight ? dpaint.bgColor : dpaint.fgColor;
+        if (dpaint.currentTool === 'line' || dpaint.currentTool === 'rect' || dpaint.currentTool === 'circle') {
+          dpaintCommitShape(dpaint.startX, dpaint.startY, pos.x, pos.y, color);
+        }
+        dpaint.octx.clearRect(0, 0, dpaint.canvasW, dpaint.canvasH);
+        dpaint.isDrawing = false;
+      });
     }
 
     function buildDPaintPalette() {
@@ -2635,6 +2795,18 @@
           updateDPaintPaletteSelection();
         });
         cell.addEventListener('contextmenu', (e) => e.preventDefault());
+        cell.addEventListener('touchstart', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          if (dpaint.touchUseBg) {
+            dpaint.bgColor = color;
+            document.getElementById('dp-bg-swatch').style.background = color;
+          } else {
+            dpaint.fgColor = color;
+            document.getElementById('dp-fg-swatch').style.background = color;
+          }
+          updateDPaintPaletteSelection();
+        }, { passive: false });
         container.appendChild(cell);
       });
       updateDPaintPaletteSelection();
@@ -2680,6 +2852,14 @@
           dpaint.ctx.fillRect(0, 0, dpaint.canvasW, dpaint.canvasH);
         });
       }
+      const colorToggle = document.getElementById('dp-touch-color-toggle');
+      if (colorToggle) {
+        colorToggle.addEventListener('click', (e) => {
+          e.stopPropagation();
+          dpaint.touchUseBg = !dpaint.touchUseBg;
+          colorToggle.textContent = dpaint.touchUseBg ? 'BG' : 'FG';
+        });
+      }
     }
 
     function sizeDPaintCanvas() {
@@ -2697,13 +2877,7 @@
       if (win.style.display === 'none') {
         win.style.display = '';
         if (!win.classList.contains('is-absolute')) {
-          const vw = document.documentElement.clientWidth;
-          const vh = document.documentElement.clientHeight;
-          win.classList.add('is-absolute');
-          win.style.left = Math.max(20, Math.round((vw - 560) / 2)) + 'px';
-          win.style.top = Math.max(40, Math.round((vh - 420) / 2)) + 'px';
-          win.style.width = '560px';
-          win.style.height = '480px';
+          mobileWindowPos(win, 560, 480);
         }
         bringToFront(win);
         sizeDPaintCanvas();
@@ -2729,13 +2903,7 @@
       if (win.style.display === 'none') {
         win.style.display = '';
         if (!win.classList.contains('is-absolute')) {
-          const vw = document.documentElement.clientWidth;
-          const vh = document.documentElement.clientHeight;
-          win.classList.add('is-absolute');
-          win.style.left = Math.max(20, Math.round((vw - 420) / 2)) + 'px';
-          win.style.top = Math.max(40, Math.round((vh - 320) / 2)) + 'px';
-          win.style.width = '420px';
-          win.style.height = '320px';
+          mobileWindowPos(win, 420, 320);
         }
         bringToFront(win);
         sizeDiskCanvas();
@@ -2795,13 +2963,7 @@
       if (win.style.display === 'none') {
         win.style.display = '';
         if (!win.classList.contains('is-absolute')) {
-          const vw = document.documentElement.clientWidth;
-          const vh = document.documentElement.clientHeight;
-          win.classList.add('is-absolute');
-          win.style.left = Math.max(20, Math.round((vw - 600) / 2)) + 'px';
-          win.style.top = Math.max(40, Math.round((vh - 360) / 2)) + 'px';
-          win.style.width = '600px';
-          win.style.height = '360px';
+          mobileWindowPos(win, 600, 360);
         }
         bringToFront(win);
         sizeFileMgrCanvas();
@@ -2951,12 +3113,7 @@
       if (win.style.display === 'none') {
         win.style.display = '';
         if (!win.classList.contains('is-absolute')) {
-          const vw = document.documentElement.clientWidth;
-          const vh = document.documentElement.clientHeight;
-          win.classList.add('is-absolute');
-          win.style.left = Math.max(20, Math.round((vw - 420) / 2)) + 'px';
-          win.style.top = Math.max(40, Math.round((vh - 300) / 2)) + 'px';
-          win.style.width = '420px';
+          mobileWindowPos(win, 420, null);
         }
         bringToFront(win);
         loadPictures();
@@ -2984,13 +3141,14 @@
       if (existing) { bringToFront(existing); return; }
 
       const win = document.createElement('div');
-      win.className = 'window is-absolute';
+      win.className = 'window';
       win.id = viewerId;
-      const vw = document.documentElement.clientWidth;
-      const vh = document.documentElement.clientHeight;
-      win.style.left = Math.max(20, Math.round((vw - 360) / 2) + Math.random() * 40 - 20) + 'px';
-      win.style.top = Math.max(40, Math.round((vh - 320) / 2) + Math.random() * 40 - 20) + 'px';
-      win.style.width = '360px';
+      mobileWindowPos(win, 360, null);
+      if (document.documentElement.clientWidth >= 600) {
+        const off = Math.round(Math.random() * 40 - 20);
+        win.style.left = (parseInt(win.style.left) + off) + 'px';
+        win.style.top = (parseInt(win.style.top) + off) + 'px';
+      }
       const title = document.createElement('div');
       title.className = 'window-title';
       const close = document.createElement('div');
@@ -3034,17 +3192,7 @@
       trashEl.addEventListener('drop', (e) => {
         e.preventDefault();
         trashEl.classList.remove('drag-over');
-        const filename = e.dataTransfer.getData('text/plain');
-        if (!filename || !filename.startsWith('painting-')) return;
-        fetch('./paint/' + encodeURIComponent(filename), { method: 'DELETE' })
-          .then(res => {
-            if (res.ok) {
-              // Refresh pictures window if open
-              const picWin = document.getElementById('pictures-window');
-              if (picWin && picWin.style.display !== 'none') loadPictures();
-            }
-          })
-          .catch(() => {});
+        guruMeditation();
       });
     }
 
@@ -3087,6 +3235,7 @@
 
     // --- Tokenizer ---
     function basTok(src) {
+      src = src.replace(/[\u201C\u201D\u201E\u201F\u2033\u2036]/g, '"').replace(/[\u2018\u2019\u201A\u201B\u2032\u2035]/g, "'");
       const t = [];
       let i = 0;
       while (i < src.length) {
@@ -3530,6 +3679,11 @@
         }
 
         if (++cycles % 100 === 0) await new Promise(r => setTimeout(r, 0));
+        if (cycles > 3000) {
+          basOut('?Out of memory in ' + bas.lines[bas.pc - 1]);
+          bas.running = false;
+          guruMeditation();
+        }
       }
       bas.running = false;
     }
@@ -3614,6 +3768,15 @@
       basOut('Ok');
 
       input.addEventListener('keydown', (e) => {
+        if ((e.key === 'c' && (e.ctrlKey || e.metaKey)) || e.key === 'Escape') {
+          if (bas.running) {
+            e.preventDefault();
+            bas.running = false;
+            basOut('Break');
+            basOut('Ok');
+            return;
+          }
+        }
         if (e.key === 'Enter') {
           const text = input.value;
           input.value = '';
@@ -3629,13 +3792,7 @@
       if (win.style.display === 'none') {
         win.style.display = '';
         if (!win.classList.contains('is-absolute')) {
-          const vw = document.documentElement.clientWidth;
-          const vh = document.documentElement.clientHeight;
-          win.classList.add('is-absolute');
-          win.style.left = Math.max(20, Math.round((vw - 480) / 2)) + 'px';
-          win.style.top = Math.max(40, Math.round((vh - 380) / 2)) + 'px';
-          win.style.width = '480px';
-          win.style.height = '380px';
+          mobileWindowPos(win, 480, 380);
         }
         bringToFront(win);
         document.getElementById('basic-input')?.focus();
@@ -3669,12 +3826,7 @@
       if (win.style.display === 'none') {
         win.style.display = '';
         if (!win.classList.contains('is-absolute')) {
-          const vw = document.documentElement.clientWidth;
-          const vh = document.documentElement.clientHeight;
-          win.classList.add('is-absolute');
-          win.style.left = Math.max(20, Math.round((vw - 420) / 2)) + 'px';
-          win.style.top = Math.max(40, Math.round((vh - 340) / 2)) + 'px';
-          win.style.width = '420px';
+          mobileWindowPos(win, 420, null);
         }
         bringToFront(win);
       } else {
@@ -3779,6 +3931,7 @@
             if (entries.length > 1) cell.classList.add('multi');
           }
           cell.addEventListener('mouseenter', () => setDetail(y, type, entries));
+          cell.addEventListener('click', () => setDetail(y, type, entries));
           grid.appendChild(cell);
         });
       }
@@ -3797,13 +3950,7 @@
       if (win.style.display === 'none') {
         win.style.display = '';
         if (!win.classList.contains('is-absolute')) {
-          const vw = document.documentElement.clientWidth;
-          const vh = document.documentElement.clientHeight;
-          win.classList.add('is-absolute');
-          win.style.left = Math.max(20, Math.round((vw - 520) / 2)) + 'px';
-          win.style.top = Math.max(40, Math.round((vh - 360) / 2)) + 'px';
-          win.style.width = '520px';
-          win.style.height = '360px';
+          mobileWindowPos(win, 520, 360);
         }
         bringToFront(win);
         buildTimelineMap();
