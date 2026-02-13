@@ -874,6 +874,7 @@
     /* Touch device enhancements */
     @media (pointer: coarse) {
       .window-title { min-height: 36px; touch-action: none; }
+      .window-title .close-gadget { width: 28px; height: 24px; }
       .wb-icon { min-width: 60px; min-height: 60px; }
       .dp-tool { min-width: 36px; min-height: 36px; }
       .dp-color { min-width: 22px; min-height: 22px; }
@@ -916,7 +917,7 @@
   <!-- Main shell window -->
   <div class="window rec-window open" id="main-window">
     <div class="window-title rec-toggle" data-toggle="main-window">
-      <div class="close-gadget"></div>
+      <div class="close-gadget" id="main-close"></div>
       <span class="title-text">AmigaShell - Emil Visti</span>
     </div>
     <div class="window-body rec-body" id="terminal"></div>
@@ -928,7 +929,7 @@
   <!-- Demoscene window -->
   <div class="window" id="demo-window">
     <div class="window-title">
-      <div class="close-gadget"></div>
+      <div class="close-gadget" id="demo-close"></div>
       <span class="title-text">Demoscene - Starfield</span>
     </div>
     <div class="window-body" id="demo-body">
@@ -1100,6 +1101,20 @@
 
   <!-- Icon row at bottom -->
   <div class="icon-row">
+    <a class="wb-icon" href="#" id="cv-icon" aria-label="CV">
+      <div class="icon-box">
+        <svg viewBox="0 0 36 36" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges">
+          <rect x="4" y="2" width="28" height="32" fill="#0055AA" stroke="white" stroke-width="2"/>
+          <rect x="8" y="6" width="20" height="4" fill="#ffaa00"/>
+          <rect x="8" y="12" width="18" height="2" fill="#fff"/>
+          <rect x="8" y="16" width="14" height="2" fill="#fff"/>
+          <rect x="8" y="20" width="18" height="2" fill="#fff"/>
+          <rect x="8" y="24" width="16" height="2" fill="#fff"/>
+          <rect x="8" y="28" width="12" height="2" fill="#fff"/>
+        </svg>
+      </div>
+      <span class="icon-label">CV</span>
+    </a>
     <a class="wb-icon" href="https://github.com/visti" target="_blank" rel="noopener noreferrer">
       <div class="icon-box">
         <svg viewBox="0 0 36 36" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges">
@@ -1138,6 +1153,22 @@
         </svg>
       </div>
       <span class="icon-label">Reboot</span>
+    </a>
+    <a class="wb-icon" href="#" id="demo-icon" aria-label="Demoscene">
+      <div class="icon-box">
+        <svg viewBox="0 0 36 36" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges">
+          <path d="M0 0 H30 L34 4 V34 H0 Z" fill="#0055AA" stroke="white" stroke-width="2"/>
+          <rect x="6" y="14" width="22" height="16" fill="#111"/>
+          <circle cx="10" cy="20" r="1.5" fill="#fff"/>
+          <circle cx="22" cy="17" r="1" fill="#ffaa00"/>
+          <circle cx="15" cy="25" r="1" fill="#66ccff"/>
+          <circle cx="26" cy="23" r="1.5" fill="#fff"/>
+          <circle cx="18" cy="18" r="0.8" fill="#ff8800"/>
+          <circle cx="12" cy="27" r="0.8" fill="#fff"/>
+          <circle cx="24" cy="28" r="1" fill="#ffaa00"/>
+        </svg>
+      </div>
+      <span class="icon-label">Demo<br>Scene</span>
     </a>
     <a class="wb-icon" href="#" id="dpaint-icon" aria-label="Deluxe Paint">
       <div class="icon-box">
@@ -1661,6 +1692,11 @@
       renderNotes(notes);
       applyInitialLayout();
       applyNoteLayout(notes);
+      if (document.documentElement.clientWidth < 600) {
+        document.getElementById('demo-window').style.display = 'none';
+        const mw = document.getElementById('main-window');
+        if (mw) mw.style.height = Math.round(document.documentElement.clientHeight * 0.7) + 'px';
+      }
       sizeWindowsToContent();
       sizeMainWindowBody();
       sizeDemoCanvas();
@@ -2315,7 +2351,7 @@
     }
 
     document.addEventListener('mousedown', (e) => {
-      if (e.target.closest('#dpaint-close') || e.target.closest('.note-close') || e.target.closest('#mail-close') || e.target.closest('#disk-close') || e.target.closest('#filemgr-close')) return;
+      if (e.target.closest('.close-gadget')) return;
       const titleBar = e.target.closest('.window-title');
       if (!titleBar) {
         // Click on window body still brings to front
@@ -2384,8 +2420,8 @@
 
     // --- Window dragging: touch events ---
     document.addEventListener('touchstart', (e) => {
+      if (e.target.closest('.close-gadget')) return;
       const titleBar = e.target.closest('.window-title');
-      if (e.target.closest('#dpaint-close') || e.target.closest('.note-close') || e.target.closest('#mail-close') || e.target.closest('#disk-close') || e.target.closest('#filemgr-close')) return;
       if (!titleBar) {
         const win = e.target.closest('.window');
         if (win) bringToFront(win);
@@ -2871,47 +2907,29 @@
       body.style.height = Math.max(innerH, 200) + 'px';
     }
 
-    function toggleDPaintWindow() {
-      const win = document.getElementById('dpaint-window');
-      if (!win) return;
-      if (win.style.display === 'none') {
-        win.style.display = '';
-        if (!win.classList.contains('is-absolute')) {
-          mobileWindowPos(win, 560, 480);
+    function registerWindow(winId, iconId, closeId, w, h, onOpen) {
+      const toggle = () => {
+        const win = document.getElementById(winId);
+        if (!win) return;
+        if (win.style.display === 'none') {
+          win.style.display = '';
+          if (!win.classList.contains('is-absolute')) mobileWindowPos(win, w, h);
+          bringToFront(win);
+          if (onOpen) onOpen(win);
+        } else {
+          win.style.display = 'none';
         }
-        bringToFront(win);
-        sizeDPaintCanvas();
-      } else {
-        win.style.display = 'none';
-      }
+      };
+      document.getElementById(iconId)?.addEventListener('click', (e) => { e.preventDefault(); toggle(); });
+      document.getElementById(closeId)?.addEventListener('click', (e) => {
+        e.stopPropagation();
+        document.getElementById(winId).style.display = 'none';
+      });
+      return toggle;
     }
 
-    document.getElementById('dpaint-icon')?.addEventListener('click', (e) => {
-      e.preventDefault();
-      toggleDPaintWindow();
-    });
-
-    document.getElementById('dpaint-close')?.addEventListener('click', (e) => {
-      e.stopPropagation();
-      document.getElementById('dpaint-window').style.display = 'none';
-    });
-
-    // === Disk window ===
-    function toggleDiskWindow() {
-      const win = document.getElementById('disk-window');
-      if (!win) return;
-      if (win.style.display === 'none') {
-        win.style.display = '';
-        if (!win.classList.contains('is-absolute')) {
-          mobileWindowPos(win, 420, 320);
-        }
-        bringToFront(win);
-        sizeDiskCanvas();
-        animateDiskPie();
-      } else {
-        win.style.display = 'none';
-      }
-    }
+    const toggleDPaintWindow = registerWindow('dpaint-window', 'dpaint-icon', 'dpaint-close', 560, 480, () => sizeDPaintCanvas());
+    const toggleDiskWindow = registerWindow('disk-window', 'disk-icon', 'disk-close', 420, 320, () => { sizeDiskCanvas(); animateDiskPie(); });
 
     function showDiskWindow() {
       const win = document.getElementById('disk-window');
@@ -2922,16 +2940,6 @@
         bringToFront(win);
       }
     }
-
-    document.getElementById('disk-icon')?.addEventListener('click', (e) => {
-      e.preventDefault();
-      toggleDiskWindow();
-    });
-
-    document.getElementById('disk-close')?.addEventListener('click', (e) => {
-      e.stopPropagation();
-      document.getElementById('disk-window').style.display = 'none';
-    });
 
     // === File Manager ===
     function renderFileMgrList(activeId) {
@@ -2957,31 +2965,8 @@
       });
     }
 
-    function toggleFileMgrWindow() {
-      const win = document.getElementById('filemgr-window');
-      if (!win) return;
-      if (win.style.display === 'none') {
-        win.style.display = '';
-        if (!win.classList.contains('is-absolute')) {
-          mobileWindowPos(win, 600, 360);
-        }
-        bringToFront(win);
-        sizeFileMgrCanvas();
-        renderFileMgrList('disk');
-        drawDefrag('disk');
-      } else {
-        win.style.display = 'none';
-      }
-    }
-
-    document.getElementById('filemgr-icon')?.addEventListener('click', (e) => {
-      e.preventDefault();
-      toggleFileMgrWindow();
-    });
-
-    document.getElementById('filemgr-close')?.addEventListener('click', (e) => {
-      e.stopPropagation();
-      document.getElementById('filemgr-window').style.display = 'none';
+    const toggleFileMgrWindow = registerWindow('filemgr-window', 'filemgr-icon', 'filemgr-close', 600, 360, () => {
+      sizeFileMgrCanvas(); renderFileMgrList('disk'); drawDefrag('disk');
     });
 
     initDPaint();
@@ -3107,30 +3092,7 @@
         });
     }
 
-    function togglePicturesWindow() {
-      const win = document.getElementById('pictures-window');
-      if (!win) return;
-      if (win.style.display === 'none') {
-        win.style.display = '';
-        if (!win.classList.contains('is-absolute')) {
-          mobileWindowPos(win, 420, null);
-        }
-        bringToFront(win);
-        loadPictures();
-      } else {
-        win.style.display = 'none';
-      }
-    }
-
-    document.getElementById('pictures-icon')?.addEventListener('click', (e) => {
-      e.preventDefault();
-      togglePicturesWindow();
-    });
-
-    document.getElementById('pictures-close')?.addEventListener('click', (e) => {
-      e.stopPropagation();
-      document.getElementById('pictures-window').style.display = 'none';
-    });
+    const togglePicturesWindow = registerWindow('pictures-window', 'pictures-icon', 'pictures-close', 420, null, () => loadPictures());
 
     // === Open painting in a Workbench window ===
     function openPaintingWindow(filename, url) {
@@ -3786,20 +3748,9 @@
       document.getElementById('basic-body')?.addEventListener('click', () => input.focus());
     }
 
-    function toggleBasicWindow() {
-      const win = document.getElementById('basic-window');
-      if (!win) return;
-      if (win.style.display === 'none') {
-        win.style.display = '';
-        if (!win.classList.contains('is-absolute')) {
-          mobileWindowPos(win, 480, 380);
-        }
-        bringToFront(win);
-        document.getElementById('basic-input')?.focus();
-      } else {
-        win.style.display = 'none';
-      }
-    }
+    const toggleBasicWindow = registerWindow('basic-window', 'basic-icon', 'basic-close', 480, 380, () => {
+      document.getElementById('basic-input')?.focus();
+    });
 
     function sizeBasicBody() {
       const win = document.getElementById('basic-window');
@@ -3810,38 +3761,8 @@
       body.style.height = Math.max(inner, 100) + 'px';
     }
 
-    document.getElementById('basic-icon')?.addEventListener('click', (e) => {
-      e.preventDefault();
-      toggleBasicWindow();
-    });
-    document.getElementById('basic-close')?.addEventListener('click', (e) => {
-      e.stopPropagation();
-      document.getElementById('basic-window').style.display = 'none';
-    });
-
     // === Mail window ===
-    function toggleMailWindow() {
-      const win = document.getElementById('mail-window');
-      if (!win) return;
-      if (win.style.display === 'none') {
-        win.style.display = '';
-        if (!win.classList.contains('is-absolute')) {
-          mobileWindowPos(win, 420, null);
-        }
-        bringToFront(win);
-      } else {
-        win.style.display = 'none';
-      }
-    }
-
-    document.getElementById('mail-icon')?.addEventListener('click', (e) => {
-      e.preventDefault();
-      toggleMailWindow();
-    });
-    document.getElementById('mail-close')?.addEventListener('click', (e) => {
-      e.stopPropagation();
-      document.getElementById('mail-window').style.display = 'none';
-    });
+    const toggleMailWindow = registerWindow('mail-window', 'mail-icon', 'mail-close', 420, null);
     document.getElementById('mail-send-btn')?.addEventListener('click', () => {
       const subjectRaw = document.getElementById('mail-subject')?.value || '';
       const bodyRaw = document.getElementById('mail-msg')?.value || '';
@@ -3944,29 +3865,16 @@
       };
     }
 
-    function toggleTimelineWindow() {
-      const win = document.getElementById('timeline-window');
-      if (!win) return;
-      if (win.style.display === 'none') {
-        win.style.display = '';
-        if (!win.classList.contains('is-absolute')) {
-          mobileWindowPos(win, 520, 360);
-        }
-        bringToFront(win);
-        buildTimelineMap();
-      } else {
-        win.style.display = 'none';
-      }
-    }
+    const toggleTimelineWindow = registerWindow('timeline-window', 'timeline-icon', 'timeline-close', 520, 360, () => buildTimelineMap());
 
-    document.getElementById('timeline-icon')?.addEventListener('click', (e) => {
-      e.preventDefault();
-      toggleTimelineWindow();
+    // === Main (CV) window ===
+    const toggleMainWindow = registerWindow('main-window', 'cv-icon', 'main-close', 560, null, (win) => {
+      win.classList.add('open');
+      sizeMainWindowBody();
     });
-    document.getElementById('timeline-close')?.addEventListener('click', (e) => {
-      e.stopPropagation();
-      document.getElementById('timeline-window').style.display = 'none';
-    });
+
+    // === Demo window ===
+    const toggleDemoWindow = registerWindow('demo-window', 'demo-icon', 'demo-close', 480, 260, () => sizeDemoCanvas());
 
     // === Print CV ===
     document.getElementById('print-icon')?.addEventListener('click', (e) => {
