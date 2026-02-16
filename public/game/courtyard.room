@@ -10,4 +10,7 @@ EXIT: EAST well
 ITEM: manual A weathered adventurer's journal.
 LOOK: manual Its pages mention a hidden archive seal and a chapel altar that answers flame.
 LOOK: dusty shelves | Broken ledgers and candle stubs litter the shelves. One margin note reads: "Books open seals."
+LOOK: ivy | The plant creeps up the wall like a web of veins.
+LOOK: ravens | Ominous black birds are circling the castle towers.
+LOOK: castle | A large forboding castle stands before you.
 

@@ -6,3 +6,7 @@ DESC: Something glints beneath the rubble.
 EXIT: WEST courtyard
 ITEM: key A heavy iron key etched with a lion crest.
 LOOK: key Its worn teeth look old, but still sharp enough to turn a stubborn lock.
+LOOK: buckets | The rotten wood of the buckets has no hope of retaining water.
+LOOK: rope | Better to not even consider using that rope for anything meaningful.
+LOOK: glint | The sun hits the metal of the key and it shines like a beacon.
+

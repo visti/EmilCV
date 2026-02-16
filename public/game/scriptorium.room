@@ -7,6 +7,9 @@ EXIT: SOUTH archive
 EXIT: EAST vault
 ITEM: glyph A thin slate tablet marked with a spiral glyph.
 LOOK: glyph The spiral mirrors the seal pattern from the archive lectern.
+LOOK: quills | Valuable. If only you know how to write.
+LOOK: inkstones | The smooth stone is filled with the murky remnants of ink.
+LOOK: door | The eastern door look shiny and enticing.
 
 TREASURE: glyph
 

@@ -8,3 +8,6 @@ DESC: You have reached the heart of the keep and claimed victory.
 DESC: Type QUIT to return to the courtyard.
 EXIT: SOUTH gate
 
+LOOK: banners | You don't recognize these banners. They are from before your time.
+LOOK: gold | Unimaginable riches. Enough for you to live your life freely forever.
+LOOK: pillars | You swear you see yourself freshly carved into the pillar, but how?

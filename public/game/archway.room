@@ -7,3 +7,4 @@ EXIT: SOUTH courtyard
 EXIT: NORTH archive
 ITEM: torch A resin torch wrapped in old linen.
 LOOK: torch The cloth is dry. It should still burn.
+LOOK: weapon racks | An assortment of weapons, rusty and chipped.

@@ -5,6 +5,8 @@ DESC: Dust hangs in still air above a single iron stand.
 EXIT: WEST scriptorium
 ITEM: crown A dented but regal crown set with dark green stones.
 LOOK: crown Despite the dents, it still carries the weight of a kingdom.
+LOOK: chests | The chests are beautifully ornante, but sadly empty.
+LOOK: statues | Kings and knights from another time.
 
 TREASURE: crown
 

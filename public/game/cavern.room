@@ -7,6 +7,7 @@ EXIT: DOWN keep
 EXIT: SOUTH gate
 ITEM: gem A clear mountain gem trapped in old mineral growth.
 LOOK: gem It catches light and throws stars across the stone.
+LOOK: crystal | Shimmering and ethereal, the crystals exude innate value.
 
 TREASURE: gem
 

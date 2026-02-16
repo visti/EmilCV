@@ -14,6 +14,7 @@ ITEM: sealshard A shard of rune-stone chipped from the broken archive seal.
 HIDDEN: sealshard NEEDFLAG archive_seal_broken
 LOOK: door A thick iron door marked with the crest of a forgotten house.
 LOOK: lectern A stone lectern carved with a shallow groove shaped like a book.
+LOOK: Scroll cases | A multitude of cobwebbed scrolls, none of which you possess the brain power to decipher.
 
 USE: manual ON lectern The journal's sigils align with the groove. The rune seal cracks open.
 ONUSE: manual -> archive_seal_broken
