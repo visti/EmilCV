@@ -1,8 +1,0 @@
-ROOM: cli
-TITLE: CLI Window
-DESC: A blinking cursor awaits your command.
-DESC: Stacks of floppy disks line the WEST wall.
-DESC: A directory listing scrolls NORTH into darkness.
-EXIT: SOUTH start
-EXIT: NORTH directory
-LOOK: cursor It blinks patiently. 1> _

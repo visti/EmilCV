@@ -1,74 +1,183 @@
 {
-  "start": "start",
+  "start": "courtyard",
   "rooms": {
-    "chipram": {
-      "title": "Chip RAM",
-      "desc": "Pulsing memory banks stretch in all directions. Data flows through copper traces like rivers of light. A strange artifact glows in the corner.",
+    "archive": {
+      "title": "Grand Archive",
+      "desc": "Dusty shelves and chained tomes tower above you. Scroll cases are stacked in neat rows like a scholar's maze. A locked iron door leads EAST. A sealed stair rises NORTH behind a lectern. The runes on the stair match symbols in your journal.",
       "exits": {
-        "DOWN": "system",
-        "SOUTH": "copper"
+        "SOUTH": "archway",
+        "EAST": "keep",
+        "NORTH": "scriptorium"
       },
       "items": {
-        "guru": "A Guru Meditation crystal, pulsing with red light."
+        "sealshard": "A shard of rune-stone chipped from the broken archive seal."
       },
-      "needs": {},
-      "consumes": {},
-      "looks": {
-        "guru": "The crystal throbs: \"Software Failure. Press left mouse button to continue.\""
-      },
-      "uses": {},
-      "flags": {},
-      "needflags": {},
-      "hidden": {}
-    },
-    "cli": {
-      "title": "CLI Window",
-      "desc": "A blinking cursor awaits your command. Stacks of floppy disks line the WEST wall. A directory listing scrolls NORTH into darkness.",
-      "exits": {
-        "SOUTH": "start",
-        "NORTH": "directory"
-      },
-      "items": {},
-      "needs": {},
-      "consumes": {},
-      "looks": {
-        "cursor": "It blinks patiently. 1> _"
-      },
-      "uses": {},
-      "flags": {},
-      "needflags": {},
-      "hidden": {}
-    },
-    "copper": {
-      "title": "Copper List",
-      "desc": "Rainbow color bars cascade down around you in perfect sync. A shimmering portal to the EAST crackles with energy. It seems to demand something powerful to activate.",
-      "exits": {
-        "NORTH": "chipram",
-        "EAST": "demoscene"
-      },
-      "items": {},
       "needs": {
         "EAST": {
-          "item": "guru",
-          "msg": "The portal flickers but won't open. It needs a source of power."
+          "item": "key",
+          "msg": "The door is sealed by an old lock. You need a proper key."
         }
       },
       "consumes": {
         "EAST": true
       },
       "looks": {
-        "portal": "Swirling colors form and dissolve. You can almost see another world beyond."
+        "door": "A thick iron door marked with the crest of a forgotten house.",
+        "lectern": "A stone lectern carved with a shallow groove shaped like a book."
+      },
+      "uses": {
+        "manual:lectern": "The journal's sigils align with the groove. The rune seal cracks open."
+      },
+      "flags": {
+        "manual": "archive_seal_broken"
+      },
+      "needflags": {
+        "NORTH": {
+          "flag": "archive_seal_broken",
+          "msg": "The stair is sealed by a rune. The lectern may hold a clue."
+        }
+      },
+      "hidden": {
+        "sealshard": "archive_seal_broken"
+      }
+    },
+    "archway": {
+      "title": "Torchlit Archway",
+      "desc": "A narrow stone passage flickers with torchlight. Rusted weapon racks line the WEST wall. The corridor stretches NORTH into the older depths of the keep.",
+      "exits": {
+        "SOUTH": "courtyard",
+        "NORTH": "archive"
+      },
+      "items": {
+        "torch": "A resin torch wrapped in old linen."
+      },
+      "needs": {},
+      "consumes": {},
+      "looks": {
+        "torch": "The cloth is dry. It should still burn."
       },
       "uses": {},
       "flags": {},
       "needflags": {},
       "hidden": {}
     },
-    "demoscene": {
-      "title": "The Demo Scene",
-      "desc": "You've reached the legendary Demo Scene! Scrolling text congratulates you as impossible 3D graphics render in real-time on custom hardware. Chiptune music fills the air. You have won! Type QUIT to return to the Workbench.",
+    "cavern": {
+      "title": "Crystal Cavern",
+      "desc": "Veins of pale crystal run through the chamber walls. Cold air hums with ancient magic and distant echoes. A moonlit arch lies SOUTH.",
       "exits": {
-        "SOUTH": "copper"
+        "DOWN": "keep",
+        "SOUTH": "gate"
+      },
+      "items": {
+        "gem": "A clear mountain gem trapped in old mineral growth."
+      },
+      "needs": {},
+      "consumes": {},
+      "looks": {
+        "gem": "It catches light and throws stars across the stone."
+      },
+      "uses": {},
+      "flags": {},
+      "needflags": {},
+      "hidden": {}
+    },
+    "chapel": {
+      "title": "Sunken Chapel",
+      "desc": "A chapel of cracked marble sits in stale silence. A blackened altar stands at the far wall. Stone steps descend DOWN into darkness. The stairwell feels sealed until the altar is rekindled.",
+      "exits": {
+        "WEST": "keep",
+        "DOWN": "crypt"
+      },
+      "items": {},
+      "needs": {},
+      "consumes": {},
+      "looks": {
+        "altar": "Ash and wax coat the altar in thick layers."
+      },
+      "uses": {
+        "torch:altar": "You set the altar ablaze. Warm light floods the chapel and the stair opens."
+      },
+      "flags": {
+        "torch": "chapel_blessed"
+      },
+      "needflags": {
+        "DOWN": {
+          "flag": "chapel_blessed",
+          "msg": "The stairwell rejects you. The altar remains cold."
+        }
+      },
+      "hidden": {}
+    },
+    "courtyard": {
+      "title": "Castle Courtyard",
+      "desc": "You stand in the courtyard of a ruined castle at dusk. Ivy grips cracked stone walls and ravens circle overhead. A torchlit archway yawns to the NORTH. A neglected well lies to the EAST. Dusty shelves sag under a collapsed cloister walk.",
+      "exits": {
+        "NORTH": "archway",
+        "EAST": "well"
+      },
+      "items": {
+        "manual": "A weathered adventurer's journal."
+      },
+      "needs": {},
+      "consumes": {},
+      "looks": {
+        "manual": "Its pages mention a hidden archive seal and a chapel altar that answers flame.",
+        "dusty shelves": "Broken ledgers and candle stubs litter the shelves. One margin note reads: \"Books open seals.\""
+      },
+      "uses": {},
+      "flags": {},
+      "needflags": {},
+      "hidden": {}
+    },
+    "crypt": {
+      "title": "Whispering Crypt",
+      "desc": "Pillars crowd a low crypt where whispers ride the damp air. A narrow stair climbs UP toward the chapel. A red stone gleams on an old tomb.",
+      "exits": {
+        "UP": "chapel"
+      },
+      "items": {
+        "sigil": "An ember-red sigil stone warm to the touch."
+      },
+      "needs": {},
+      "consumes": {},
+      "looks": {
+        "sigil": "The symbol pulses like a heartbeat, as if it belongs to a gate."
+      },
+      "uses": {},
+      "flags": {},
+      "needflags": {},
+      "hidden": {}
+    },
+    "gate": {
+      "title": "Moonlit Gate",
+      "desc": "Moonlight spills through high arches onto runes cut into the floor. A shimmering gate to the EAST flickers in and out of sight. It seems to hunger for a source of arcane power.",
+      "exits": {
+        "NORTH": "cavern",
+        "EAST": "hall"
+      },
+      "items": {},
+      "needs": {
+        "EAST": {
+          "item": "sigil",
+          "msg": "The gate shivers but holds shut. It needs a charged sigil."
+        }
+      },
+      "consumes": {
+        "EAST": true
+      },
+      "looks": {
+        "portal": "Mist curls within the arch, hiding a hall lit by distant fire."
+      },
+      "uses": {},
+      "flags": {},
+      "needflags": {},
+      "hidden": {}
+    },
+    "hall": {
+      "title": "Hall of Legends",
+      "desc": "You step into a vaulted hall of banners, gold, and song. Ancient champions are carved into pillars on every side. Minstrels strike triumphant chords as the firelight dances. You have reached the heart of the keep and claimed victory. Type QUIT to return to the courtyard.",
+      "exits": {
+        "SOUTH": "gate"
       },
       "items": {},
       "needs": {},
@@ -79,57 +188,13 @@
       "needflags": {},
       "hidden": {}
     },
-    "directory": {
-      "title": "File Directory",
-      "desc": "Rows of files sorted alphabetically stretch in every direction. Folders nest within folders like fractal geometry. A locked door leads EAST to the system folder.",
+    "keep": {
+      "title": "Inner Keep",
+      "desc": "The fortress heart is quiet, heavy, and watchful. Torn banners hang above old stone braziers. A spiral stair climbs UP to crystal chambers. A chapel lies EAST.",
       "exits": {
-        "SOUTH": "cli",
-        "EAST": "system"
-      },
-      "items": {},
-      "needs": {
-        "EAST": {
-          "item": "disk",
-          "msg": "The door requires system access. You need the right disk."
-        }
-      },
-      "consumes": {
-        "EAST": true
-      },
-      "looks": {
-        "door": "A heavy steel door with a disk slot beside it."
-      },
-      "uses": {},
-      "flags": {},
-      "needflags": {},
-      "hidden": {}
-    },
-    "start": {
-      "title": "Workbench Desktop",
-      "desc": "You are on the Amiga Workbench desktop. Icons float around you like pixelated constellations. A CLI window glows to the NORTH. The trash can sits to the EAST.",
-      "exits": {
-        "NORTH": "cli",
-        "EAST": "trash"
-      },
-      "items": {
-        "manual": "A dog-eared Amiga DOS manual."
-      },
-      "needs": {},
-      "consumes": {},
-      "looks": {
-        "manual": "The cover reads \"AmigaDOS Inside & Out\" - looks well-thumbed."
-      },
-      "uses": {},
-      "flags": {},
-      "needflags": {},
-      "hidden": {}
-    },
-    "system": {
-      "title": "System Folder",
-      "desc": "The heart of the operating system hums around you. Fonts, libs, and devs pulse with quiet energy. A ladder leads UP into the chip architecture.",
-      "exits": {
-        "WEST": "directory",
-        "UP": "chipram"
+        "WEST": "archive",
+        "UP": "cavern",
+        "EAST": "chapel"
       },
       "items": {},
       "needs": {},
@@ -140,24 +205,70 @@
       "needflags": {},
       "hidden": {}
     },
-    "trash": {
-      "title": "Trash Can",
-      "desc": "Mountains of deleted files surround you. Broken icons and corrupted data crunch underfoot. Something glints in the pile.",
+    "scriptorium": {
+      "title": "Forgotten Scriptorium",
+      "desc": "Desks of rotted oak fill a vaulted writing hall. Quills and inkstones lie where scribes left them centuries ago. A bronze vault door stands EAST.",
       "exits": {
-        "WEST": "start"
+        "SOUTH": "archive",
+        "EAST": "vault"
       },
       "items": {
-        "disk": "A slightly scratched floppy disk labeled \"KEY\"."
+        "glyph": "A thin slate tablet marked with a spiral glyph."
       },
       "needs": {},
       "consumes": {},
       "looks": {
-        "disk": "The label reads \"System Access v1.0\" in faded marker."
+        "glyph": "The spiral mirrors the seal pattern from the archive lectern."
+      },
+      "uses": {},
+      "flags": {},
+      "needflags": {},
+      "hidden": {}
+    },
+    "vault": {
+      "title": "Royal Vault",
+      "desc": "Gilded chests and cracked statues line a narrow vault. Dust hangs in still air above a single iron stand.",
+      "exits": {
+        "WEST": "scriptorium"
+      },
+      "items": {
+        "crown": "A dented but regal crown set with dark green stones."
+      },
+      "needs": {},
+      "consumes": {},
+      "looks": {
+        "crown": "Despite the dents, it still carries the weight of a kingdom."
+      },
+      "uses": {},
+      "flags": {},
+      "needflags": {},
+      "hidden": {}
+    },
+    "well": {
+      "title": "Neglected Well",
+      "desc": "Broken buckets and rotted rope are piled around a dry stone well. Weeds claw through cracks in the flagstones. Something glints beneath the rubble.",
+      "exits": {
+        "WEST": "courtyard"
+      },
+      "items": {
+        "key": "A heavy iron key etched with a lion crest."
+      },
+      "needs": {},
+      "consumes": {},
+      "looks": {
+        "key": "Its worn teeth look old, but still sharp enough to turn a stubborn lock."
       },
       "uses": {},
       "flags": {},
       "needflags": {},
       "hidden": {}
     }
-  }
+  },
+  "winRoom": "hall",
+  "treasures": [
+    "sealshard",
+    "gem",
+    "glyph",
+    "crown"
+  ]
 }

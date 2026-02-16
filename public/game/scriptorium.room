@@ -1,0 +1,12 @@
+ROOM: scriptorium
+TITLE: Forgotten Scriptorium
+DESC: Desks of rotted oak fill a vaulted writing hall.
+DESC: Quills and inkstones lie where scribes left them centuries ago.
+DESC: A bronze vault door stands EAST.
+EXIT: SOUTH archive
+EXIT: EAST vault
+ITEM: glyph A thin slate tablet marked with a spiral glyph.
+LOOK: glyph The spiral mirrors the seal pattern from the archive lectern.
+
+TREASURE: glyph
+

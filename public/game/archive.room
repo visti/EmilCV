@@ -1,0 +1,21 @@
+ROOM: archive
+TITLE: Grand Archive
+DESC: Dusty shelves and chained tomes tower above you.
+DESC: Scroll cases are stacked in neat rows like a scholar's maze.
+DESC: A locked iron door leads EAST. A sealed stair rises NORTH behind a lectern.
+DESC: The runes on the stair match symbols in your journal.
+EXIT: SOUTH archway
+EXIT: EAST keep
+EXIT: NORTH scriptorium
+NEEDFLAG: NORTH archive_seal_broken The stair is sealed by a rune. The lectern may hold a clue.
+NEED: EAST key The door is sealed by an old lock. You need a proper key.
+CONSUME: EAST
+ITEM: sealshard A shard of rune-stone chipped from the broken archive seal.
+HIDDEN: sealshard NEEDFLAG archive_seal_broken
+LOOK: door A thick iron door marked with the crest of a forgotten house.
+LOOK: lectern A stone lectern carved with a shallow groove shaped like a book.
+
+USE: manual ON lectern The journal's sigils align with the groove. The rune seal cracks open.
+ONUSE: manual -> archive_seal_broken
+TREASURE: sealshard
+

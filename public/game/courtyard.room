@@ -1,0 +1,13 @@
+ROOM: courtyard
+START: true
+TITLE: Castle Courtyard
+DESC: You stand in the courtyard of a ruined castle at dusk.
+DESC: Ivy grips cracked stone walls and ravens circle overhead.
+DESC: A torchlit archway yawns to the NORTH. A neglected well lies to the EAST.
+DESC: Dusty shelves sag under a collapsed cloister walk.
+EXIT: NORTH archway
+EXIT: EAST well
+ITEM: manual A weathered adventurer's journal.
+LOOK: manual Its pages mention a hidden archive seal and a chapel altar that answers flame.
+LOOK: dusty shelves | Broken ledgers and candle stubs litter the shelves. One margin note reads: "Books open seals."
+

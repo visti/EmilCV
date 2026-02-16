@@ -1,0 +1,8 @@
+ROOM: well
+TITLE: Neglected Well
+DESC: Broken buckets and rotted rope are piled around a dry stone well.
+DESC: Weeds claw through cracks in the flagstones.
+DESC: Something glints beneath the rubble.
+EXIT: WEST courtyard
+ITEM: key A heavy iron key etched with a lion crest.
+LOOK: key Its worn teeth look old, but still sharp enough to turn a stubborn lock.

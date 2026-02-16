@@ -1,0 +1,10 @@
+ROOM: gate
+TITLE: Moonlit Gate
+DESC: Moonlight spills through high arches onto runes cut into the floor.
+DESC: A shimmering gate to the EAST flickers in and out of sight.
+DESC: It seems to hunger for a source of arcane power.
+EXIT: NORTH cavern
+EXIT: EAST hall
+NEED: EAST sigil The gate shivers but holds shut. It needs a charged sigil.
+CONSUME: EAST
+LOOK: portal Mist curls within the arch, hiding a hall lit by distant fire.

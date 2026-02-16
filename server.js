@@ -52,10 +52,47 @@ function buildGameManifest() {
     if (!files.length) { console.log('No room files found, skipping game manifest'); return; }
     const rooms = {};
     let startRoom = null;
+    let winRoom = null;
+    const treasures = new Set();
+
+    function parseLook(val) {
+      // Preferred: LOOK: key | description
+      const pipe = val.match(/^(.+?)\s+\|\s+(.+)$/);
+      if (pipe) return { key: pipe[1].trim().toLowerCase(), desc: pipe[2].trim() };
+      // Quoted key: LOOK: "dusty shelves" description
+      const quoted = val.match(/^"([^"]+)"\s+(.+)$/);
+      if (quoted) return { key: quoted[1].trim().toLowerCase(), desc: quoted[2].trim() };
+      // Backward compatible single-token key
+      const [key, ...rest] = val.split(/\s+/);
+      return { key: (key || '').toLowerCase(), desc: rest.join(' ').trim() };
+    }
+
+    function parseOnUse(val) {
+      // Supports: ONUSE: item flag  | ONUSE: item -> flag
+      const m = val.match(/^(\S+)\s*(?:->)?\s*(\S+)$/);
+      if (!m) return null;
+      return { item: m[1].toLowerCase(), flag: m[2] };
+    }
+
+    function parseHidden(val) {
+      // Supports: HIDDEN: item NEEDFLAG flag  | HIDDEN: item flag
+      const m1 = val.match(/^(\S+)\s+NEEDFLAG\s+(\S+)$/i);
+      if (m1) return { item: m1[1].toLowerCase(), flag: m1[2] };
+      const m2 = val.match(/^(\S+)\s+(\S+)$/);
+      if (m2) return { item: m2[1].toLowerCase(), flag: m2[2] };
+      return null;
+    }
+
+    function isTrue(val) {
+      return /^(1|true|yes|on)$/i.test(val.trim());
+    }
+
     for (const file of files) {
       const lines = fs.readFileSync(path.join(gameDir, file), 'utf8').split('\n');
       const room = { title: '', desc: '', exits: {}, items: {}, needs: {}, consumes: {}, looks: {}, uses: {}, flags: {}, needflags: {}, hidden: {} };
       let id = file.replace('.room', '');
+      let roomIsStart = false;
+      let roomIsWin = false;
       for (const raw of lines) {
         const line = raw.trim();
         if (!line) continue;
@@ -64,28 +101,50 @@ function buildGameManifest() {
         const key = line.slice(0, colon).trim().toUpperCase();
         const val = line.slice(colon + 1).trim();
         if (key === 'ROOM') { id = val; }
+        else if (key === 'START') { roomIsStart = isTrue(val); }
+        else if (key === 'WINROOM' || key === 'WIN') { roomIsWin = isTrue(val); }
         else if (key === 'TITLE') { room.title = val; }
         else if (key === 'DESC') { room.desc += (room.desc ? ' ' : '') + val; }
         else if (key === 'EXIT') { const [dir, ...rest] = val.split(/\s+/); room.exits[dir.toUpperCase()] = rest.join(' '); }
         else if (key === 'ITEM') { const [iid, ...rest] = val.split(/\s+/); room.items[iid.toLowerCase()] = rest.join(' '); }
+        else if (key === 'TREASURE') { treasures.add(val.toLowerCase()); }
         else if (key === 'NEED') { const [dir, iid, ...rest] = val.split(/\s+/); room.needs[dir.toUpperCase()] = { item: iid.toLowerCase(), msg: rest.join(' ') }; }
         else if (key === 'CONSUME') { room.consumes[val.toUpperCase()] = true; }
-        else if (key === 'LOOK') { const [iid, ...rest] = val.split(/\s+/); room.looks[iid.toLowerCase()] = rest.join(' '); }
-        else if (key === 'USE') {
-          const m = val.match(/^(\S+)\s+ON\s+(\S+)\s+(.*)/i);
-          if (m) room.uses[m[1].toLowerCase() + ':' + m[2].toLowerCase()] = m[3];
+        else if (key === 'LOOK') {
+          const p = parseLook(val);
+          if (p.key && p.desc) room.looks[p.key] = p.desc;
         }
-        else if (key === 'ONUSE') { const [iid, , flag] = val.split(/\s+/); room.flags[iid.toLowerCase()] = flag; }
+        else if (key === 'USE') {
+          // Supports quoted/multi-word item/target:
+          // USE: item ON target message
+          // USE: "item words" ON "target words" message
+          const m = val.match(/^(?:"([^"]+)"|(\S+))\s+ON\s+(?:"([^"]+)"|(\S+))\s+(.+)$/i);
+          if (m) {
+            const item = (m[1] || m[2] || '').toLowerCase();
+            const target = (m[3] || m[4] || '').toLowerCase();
+            room.uses[item + ':' + target] = m[5];
+          }
+        }
+        else if (key === 'ONUSE' || key === 'FLAG') {
+          const p = parseOnUse(val);
+          if (p) room.flags[p.item] = p.flag;
+        }
         else if (key === 'NEEDFLAG') { const [dir, flag, ...rest] = val.split(/\s+/); room.needflags[dir.toUpperCase()] = { flag, msg: rest.join(' ') }; }
         else if (key === 'HIDDEN') {
-          const m = val.match(/^(\S+)\s+NEEDFLAG\s+(\S+)/i);
-          if (m) room.hidden[m[1].toLowerCase()] = m[2];
+          const p = parseHidden(val);
+          if (p) room.hidden[p.item] = p.flag;
         }
       }
       rooms[id] = room;
+      if (roomIsStart) startRoom = id;
+      if (roomIsWin) winRoom = id;
       if (file === 'start.room' || !startRoom) startRoom = id;
+      if (!winRoom && id === 'hall') winRoom = id;
     }
-    const manifest = JSON.stringify({ start: startRoom, rooms }, null, 2);
+    const payload = { start: startRoom, rooms };
+    if (winRoom) payload.winRoom = winRoom;
+    if (treasures.size) payload.treasures = [...treasures];
+    const manifest = JSON.stringify(payload, null, 2);
     fs.writeFileSync(path.join(gameDir, 'game.json'), manifest);
     console.log(`Game manifest: ${Object.keys(rooms).length} room(s)`);
   } catch (e) {

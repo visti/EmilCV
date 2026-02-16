@@ -1,0 +1,12 @@
+ROOM: cavern
+TITLE: Crystal Cavern
+DESC: Veins of pale crystal run through the chamber walls.
+DESC: Cold air hums with ancient magic and distant echoes.
+DESC: A moonlit arch lies SOUTH.
+EXIT: DOWN keep
+EXIT: SOUTH gate
+ITEM: gem A clear mountain gem trapped in old mineral growth.
+LOOK: gem It catches light and throws stars across the stone.
+
+TREASURE: gem
+

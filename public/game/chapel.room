@@ -1,0 +1,14 @@
+ROOM: chapel
+TITLE: Sunken Chapel
+DESC: A chapel of cracked marble sits in stale silence.
+DESC: A blackened altar stands at the far wall.
+DESC: Stone steps descend DOWN into darkness.
+DESC: The stairwell feels sealed until the altar is rekindled.
+EXIT: WEST keep
+EXIT: DOWN crypt
+NEEDFLAG: DOWN chapel_blessed The stairwell rejects you. The altar remains cold.
+LOOK: altar Ash and wax coat the altar in thick layers.
+
+USE: torch ON altar You set the altar ablaze. Warm light floods the chapel and the stair opens.
+ONUSE: torch -> chapel_blessed
+

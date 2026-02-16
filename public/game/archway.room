@@ -1,0 +1,9 @@
+ROOM: archway
+TITLE: Torchlit Archway
+DESC: A narrow stone passage flickers with torchlight.
+DESC: Rusted weapon racks line the WEST wall.
+DESC: The corridor stretches NORTH into the older depths of the keep.
+EXIT: SOUTH courtyard
+EXIT: NORTH archive
+ITEM: torch A resin torch wrapped in old linen.
+LOOK: torch The cloth is dry. It should still burn.

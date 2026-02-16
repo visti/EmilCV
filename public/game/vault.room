@@ -1,0 +1,10 @@
+ROOM: vault
+TITLE: Royal Vault
+DESC: Gilded chests and cracked statues line a narrow vault.
+DESC: Dust hangs in still air above a single iron stand.
+EXIT: WEST scriptorium
+ITEM: crown A dented but regal crown set with dark green stones.
+LOOK: crown Despite the dents, it still carries the weight of a kingdom.
+
+TREASURE: crown
+

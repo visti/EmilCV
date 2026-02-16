@@ -1,7 +1,0 @@
-ROOM: system
-TITLE: System Folder
-DESC: The heart of the operating system hums around you.
-DESC: Fonts, libs, and devs pulse with quiet energy.
-DESC: A ladder leads UP into the chip architecture.
-EXIT: WEST directory
-EXIT: UP chipram

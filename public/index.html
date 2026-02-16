@@ -56,6 +56,8 @@
       border: 2px solid #ffffff;
       margin-bottom: 8px;
       box-shadow: 2px 2px 0 #000;
+      position: relative;
+      z-index: 10;
       resize: both;
       overflow: hidden;
       min-width: 220px;
@@ -108,6 +110,24 @@
     }
     .highlight {
       color: #ffaa00;
+    }
+    .adv-room {
+      color: #ffdd77;
+    }
+    .adv-dir {
+      color: #7fd7ff;
+      font-weight: 700;
+    }
+    .adv-item {
+      color: #8bff9a;
+      font-weight: 700;
+    }
+    .adv-look {
+      color: #ffb36b;
+      font-weight: 700;
+    }
+    .adv-look-output {
+      color: #ff8f8f;
     }
     .star-text {
       color: #ffaa00;
@@ -202,6 +222,8 @@
       gap: 24px;
       flex-wrap: wrap;
       padding: 12px 8px;
+      position: relative;
+      z-index: 1;
     }
     .wb-icon {
       display: flex;
@@ -549,7 +571,7 @@
       position: fixed;
       bottom: 12px;
       right: 12px;
-      z-index: 5;
+      z-index: 2;
     }
 
     /* Guru Meditation */
@@ -3175,16 +3197,39 @@
     function basOut(s) {
       const el = document.getElementById('basic-output');
       if (!el) return;
-      el.textContent += s + '\n';
+      el.appendChild(document.createTextNode(s + '\n'));
       const body = el.closest('#basic-body');
       if (body) body.scrollTop = body.scrollHeight;
     }
     function basOutRaw(s) {
       const el = document.getElementById('basic-output');
       if (!el) return;
-      el.textContent += s;
+      el.appendChild(document.createTextNode(s));
       const body = el.closest('#basic-body');
       if (body) body.scrollTop = body.scrollHeight;
+    }
+    function basOutHtml(html) {
+      const el = document.getElementById('basic-output');
+      if (!el) return;
+      const line = document.createElement('div');
+      line.className = 'output-text';
+      line.innerHTML = html;
+      el.appendChild(line);
+      const body = el.closest('#basic-body');
+      if (body) body.scrollTop = body.scrollHeight;
+    }
+    function basOutMarked(s) {
+      const re = /\[\[(.+?)\]\]/g;
+      let out = '';
+      let last = 0;
+      let m;
+      while ((m = re.exec(s)) !== null) {
+        out += escHtml(s.slice(last, m.index));
+        out += `<span class="highlight">${escHtml(m[1])}</span>`;
+        last = m.index + m[0].length;
+      }
+      out += escHtml(s.slice(last));
+      basOutHtml(out);
     }
     function basCls() {
       const el = document.getElementById('basic-output');
@@ -3699,7 +3744,7 @@
         basOut('Commands: PRINT, LET, INPUT, IF/THEN/ELSE/END IF');
         basOut('FOR/NEXT, WHILE/WEND, GOTO, GOSUB/RETURN');
         basOut('CLS, BEEP, SLEEP, READ, DATA, DIM');
-        basOut('RUN, LIST, NEW, REM, END, SKILLS');
+        basOutMarked('RUN, LIST, NEW, REM, END, SKILLS, [[QUEST]]');
         basOut('');
         basOut('Type line numbers to store a program:');
         basOut('  10 PRINT "Hello, World!"');
@@ -3710,13 +3755,13 @@
 
       if (upper === 'SKILLS') {
         basOut('=== Skills ===');
-        basOut('Languages:  SQL, Python, Bash, Lua, GDScript');
-        basOut('Tools:      SSMS, Access, Navision, Excel, PowerBI');
-        basOut('Data:       Pandas, Matplotlib, visualization');
-        basOut('Systems:    Unix & Windows sysadmin');
-        basOut('Creative:   Photoshop, Premiere, Ableton');
-        basOut('Other:      Metadata standards, digitization');
-        basOut('            Studio technician (music)');
+        basOutMarked('Languages:  [[SQL]], [[Python]], [[Bash]], [[Lua]], [[GDScript]]');
+        basOutMarked('Tools:      [[SSMS]], [[Access]], [[Navision]], [[Excel]], [[PowerBI]]');
+        basOutMarked('Data:       [[Pandas]], [[Matplotlib]], [[visualization]]');
+        basOutMarked('Systems:    [[Unix]] & [[Windows]] sysadmin');
+        basOutMarked('Creative:   [[Photoshop]], [[Premiere]], [[Ableton]]');
+        basOutMarked('Other:      [[Metadata standards]], [[digitization]]');
+        basOutMarked('            [[Studio technician]] (music)');
         basOut('Speaks:     Danish, English');
         basOut('Ok'); return;
       }
@@ -3744,6 +3789,33 @@
       visited: new Set()
     };
 
+    function escHtml(s) {
+      return String(s)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    function escRe(s) {
+      return String(s).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    }
+
+    function highlightLookTargets(text, looks) {
+      let html = escHtml(text);
+      const keys = Object.keys(looks || {}).sort((a, b) => b.length - a.length);
+      keys.forEach((k) => {
+        const re = new RegExp(`\\b${escRe(k)}\\b`, 'gi');
+        html = html.replace(re, (m) => `<span class="adv-look">${escHtml(m)}</span>`);
+      });
+      return html;
+    }
+
+    function advLookOut(text) {
+      basOutHtml(`<span class="adv-look-output">${escHtml(text)}</span>`);
+    }
+
     async function advStart() {
       try {
         const res = await fetch('/game/game.json');
@@ -3765,17 +3837,25 @@
     function advLook() {
       const rm = adv.data.rooms[adv.room];
       if (!rm) { basOut('?Room not found: ' + adv.room); return; }
-      basOut('--- ' + rm.title + ' ---');
-      basOut(rm.desc);
+      basOutHtml(`<span class="adv-room">--- ${escHtml(rm.title)} ---</span>`);
+      basOutHtml(highlightLookTargets(rm.desc, rm.looks));
       // Show visible items (not hidden or already taken)
       const visible = Object.keys(rm.items).filter(id => {
         if (adv.inventory.includes(id)) return false;
         if (rm.hidden && rm.hidden[id] && !adv.flags.has(rm.hidden[id])) return false;
         return true;
       });
-      if (visible.length) basOut('You see: ' + visible.join(', '));
+      if (visible.length) {
+        basOutHtml('You see: ' + visible.map(id => `<span class="adv-item">${escHtml(id.toUpperCase())}</span>`).join(', '));
+      }
+      const lookTargets = Object.keys(rm.looks || {});
+      if (lookTargets.length) {
+        basOutHtml('Look at: ' + lookTargets.map(id => `<span class="adv-look">${escHtml(id.toUpperCase())}</span>`).join(', '));
+      }
       const exits = Object.keys(rm.exits);
-      if (exits.length) basOut('Exits: ' + exits.join(', '));
+      if (exits.length) {
+        basOutHtml('Exits: ' + exits.map(d => `<span class="adv-dir">${escHtml(d)}</span>`).join(', '));
+      }
       adv.visited.add(adv.room);
     }
 
@@ -3797,8 +3877,11 @@
 
       const rm = adv.data.rooms[adv.room];
 
+      if (verb === 'EXAMINE' || verb === 'X') verb = 'LOOK';
+
       if (verb === 'HELP') {
-        basOut('Commands: LOOK, GO, GET, DROP, USE, INVENTORY');
+        basOut('Commands: LOOK, GO, GET, DROP, USE, INVENTORY, SCORE');
+        basOut('LOOK AT <thing> also works (or EXAMINE <thing>).');
         basOut('Directions: NORTH/S/E/W/UP/DOWN (or N/S/E/W/U/D)');
         basOut('SAVE, RESTORE, QUIT');
         return;
@@ -3813,16 +3896,16 @@
 
       if (verb === 'LOOK' || verb === 'L') {
         if (!noun) { advLook(); return; }
-        const nLower = noun.toLowerCase();
+        const nLower = noun.replace(/^AT\s+/i, '').toLowerCase();
         // Check room looks
-        if (rm.looks && rm.looks[nLower]) { basOut(rm.looks[nLower]); return; }
+        if (rm.looks && rm.looks[nLower]) { advLookOut(rm.looks[nLower]); return; }
         // Check room items
-        if (rm.items[nLower] && !adv.inventory.includes(nLower)) { basOut(rm.items[nLower]); return; }
+        if (rm.items[nLower] && !adv.inventory.includes(nLower)) { advLookOut(rm.items[nLower]); return; }
         // Check inventory
         if (adv.inventory.includes(nLower)) {
           // Find description from any room
           for (const r of Object.values(adv.data.rooms)) {
-            if (r.items[nLower]) { basOut(r.items[nLower]); return; }
+            if (r.items[nLower]) { advLookOut(r.items[nLower]); return; }
           }
           basOut('You have it.'); return;
         }
@@ -3907,6 +3990,23 @@
         if (!adv.inventory.length) { basOut('You are empty-handed.'); return; }
         basOut('You are carrying:');
         adv.inventory.forEach(i => basOut('  ' + i));
+        return;
+      }
+
+      if (verb === 'SCORE') {
+        const winRoom = adv.data.winRoom || 'hall';
+        const treasures = new Set(adv.data.treasures || []);
+        const treasureCount = adv.inventory.filter(i => treasures.has(i)).length;
+        const visitPoints = adv.visited.size * 5;
+        const flagPoints = adv.flags.size * 10;
+        const treasurePoints = treasureCount * 20;
+        const winBonus = adv.visited.has(winRoom) ? 50 : 0;
+        const score = visitPoints + flagPoints + treasurePoints + winBonus;
+        basOut('Score: ' + score);
+        basOut('  Rooms explored: ' + adv.visited.size + ' (' + visitPoints + ')');
+        basOut('  Puzzles solved: ' + adv.flags.size + ' (' + flagPoints + ')');
+        basOut('  Treasures carried: ' + treasureCount + ' (' + treasurePoints + ')');
+        if (winBonus) basOut('  Victory bonus: ' + winBonus);
         return;
       }
 

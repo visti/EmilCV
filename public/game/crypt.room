@@ -1,0 +1,8 @@
+ROOM: crypt
+TITLE: Whispering Crypt
+DESC: Pillars crowd a low crypt where whispers ride the damp air.
+DESC: A narrow stair climbs UP toward the chapel.
+DESC: A red stone gleams on an old tomb.
+EXIT: UP chapel
+ITEM: sigil An ember-red sigil stone warm to the touch.
+LOOK: sigil The symbol pulses like a heartbeat, as if it belongs to a gate.

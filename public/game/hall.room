@@ -1,0 +1,10 @@
+ROOM: hall
+WINROOM: true
+TITLE: Hall of Legends
+DESC: You step into a vaulted hall of banners, gold, and song.
+DESC: Ancient champions are carved into pillars on every side.
+DESC: Minstrels strike triumphant chords as the firelight dances.
+DESC: You have reached the heart of the keep and claimed victory.
+DESC: Type QUIT to return to the courtyard.
+EXIT: SOUTH gate
+

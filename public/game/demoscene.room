@@ -1,8 +1,0 @@
-ROOM: demoscene
-TITLE: The Demo Scene
-DESC: You've reached the legendary Demo Scene!
-DESC: Scrolling text congratulates you as impossible
-DESC: 3D graphics render in real-time on custom hardware.
-DESC: Chiptune music fills the air. You have won!
-DESC: Type QUIT to return to the Workbench.
-EXIT: SOUTH copper

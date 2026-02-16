@@ -1,9 +1,0 @@
-ROOM: start
-TITLE: Workbench Desktop
-DESC: You are on the Amiga Workbench desktop.
-DESC: Icons float around you like pixelated constellations.
-DESC: A CLI window glows to the NORTH. The trash can sits to the EAST.
-EXIT: NORTH cli
-EXIT: EAST trash
-ITEM: manual A dog-eared Amiga DOS manual.
-LOOK: manual The cover reads "AmigaDOS Inside & Out" - looks well-thumbed.

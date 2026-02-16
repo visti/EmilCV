@@ -1,0 +1,8 @@
+ROOM: keep
+TITLE: Inner Keep
+DESC: The fortress heart is quiet, heavy, and watchful.
+DESC: Torn banners hang above old stone braziers.
+DESC: A spiral stair climbs UP to crystal chambers. A chapel lies EAST.
+EXIT: WEST archive
+EXIT: UP cavern
+EXIT: EAST chapel
