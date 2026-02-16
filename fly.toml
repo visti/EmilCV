@@ -19,6 +19,7 @@ primary_region = 'fra'
 [env]
   PORT = "3000"
   PAINT_DIR = "/data/paint"
+  ARCHIVE_DIR = "/data/paint-archive"
 
 [mounts]
   source = "paint_data"

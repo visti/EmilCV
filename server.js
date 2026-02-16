@@ -5,6 +5,8 @@ const path = require('path');
 const PORT = parseInt(process.env.PORT, 10) || 3000;
 const PUBLIC = path.join(__dirname, 'public');
 const PAINT_DIR = process.env.PAINT_DIR || path.join(__dirname, 'paint');
+const ARCHIVE_DIR = process.env.ARCHIVE_DIR || path.join(__dirname, 'paint-archive');
+const ARCHIVE_KEY = process.env.ARCHIVE_KEY || '';
 const MAX_BODY = 500 * 1024; // 500 KB
 const MAX_PAINTINGS = 5;
 const RATE_WINDOW = 30 * 1000; // 30 seconds
@@ -152,8 +154,9 @@ function buildGameManifest() {
   }
 }
 
-// --- Paint directory ---
+// --- Paint & archive directories ---
 fs.mkdirSync(PAINT_DIR, { recursive: true });
+fs.mkdirSync(ARCHIVE_DIR, { recursive: true });
 
 // --- Helpers ---
 function readBody(req, limit) {
@@ -233,12 +236,12 @@ function getPaintings() {
 
 function enforcePaintLimit() {
   const files = getPaintings();
-  // files are newest-first, so delete from the end
+  // files are newest-first, so archive from the end
   while (files.length > MAX_PAINTINGS) {
     const oldest = files.pop();
     try {
-      fs.unlinkSync(path.join(PAINT_DIR, oldest));
-      console.log(`Deleted oldest painting: ${oldest}`);
+      fs.renameSync(path.join(PAINT_DIR, oldest), path.join(ARCHIVE_DIR, oldest));
+      console.log(`Archived painting: ${oldest}`);
     } catch {}
   }
 }
@@ -336,6 +339,56 @@ function handlePaintDelete(res, filename) {
   }
 }
 
+// --- Archive API (key-protected) ---
+function checkArchiveKey(url, res) {
+  if (url.searchParams.get('key') !== ARCHIVE_KEY) {
+    res.writeHead(403, { 'Content-Type': 'text/plain' });
+    res.end('Forbidden');
+    return false;
+  }
+  return true;
+}
+
+function getArchivedPaintings() {
+  try {
+    return fs.readdirSync(ARCHIVE_DIR)
+      .filter(f => f.startsWith('painting-') && f.endsWith('.png'))
+      .sort()
+      .reverse();
+  } catch {
+    return [];
+  }
+}
+
+function handleArchiveList(req, res, url) {
+  if (!checkArchiveKey(url, res)) return;
+  const files = getArchivedPaintings();
+  const key = url.searchParams.get('key');
+  const list = files.map(f => ({ filename: f, url: `/paint/archive/${f}?key=${key}` }));
+  jsonResponse(res, 200, list);
+}
+
+function handleArchiveFile(res, filename, url) {
+  if (!checkArchiveKey(url, res)) return;
+  if (!sanitizeFilename(filename)) {
+    res.writeHead(400, { 'Content-Type': 'text/plain' });
+    res.end('Bad Request');
+    return;
+  }
+  const filePath = path.join(ARCHIVE_DIR, filename);
+  try {
+    const stat = fs.statSync(filePath);
+    res.writeHead(200, {
+      'Content-Type': 'image/png',
+      'Content-Length': stat.size,
+    });
+    fs.createReadStream(filePath).pipe(res);
+  } catch {
+    res.writeHead(404, { 'Content-Type': 'text/plain' });
+    res.end('Not Found');
+  }
+}
+
 // --- Server ---
 const server = http.createServer((req, res) => {
   const url = new URL(req.url, `http://${req.headers.host}`);
@@ -349,6 +402,28 @@ const server = http.createServer((req, res) => {
     }
     if (req.method === 'GET') {
       handlePaintList(req, res);
+      return;
+    }
+    res.writeHead(405, { 'Content-Type': 'text/plain' });
+    res.end('Method Not Allowed');
+    return;
+  }
+
+  // Archive API (must match before general /paint/ routes)
+  if (pathname === '/paint/archive' || pathname === '/paint/archive/') {
+    if (req.method === 'GET') {
+      handleArchiveList(req, res, url);
+      return;
+    }
+    res.writeHead(405, { 'Content-Type': 'text/plain' });
+    res.end('Method Not Allowed');
+    return;
+  }
+
+  if (pathname.startsWith('/paint/archive/')) {
+    const filename = pathname.slice('/paint/archive/'.length);
+    if (req.method === 'GET') {
+      handleArchiveFile(res, filename, url);
       return;
     }
     res.writeHead(405, { 'Content-Type': 'text/plain' });
@@ -398,4 +473,5 @@ buildGameManifest();
 server.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
   console.log(`Paint dir: ${PAINT_DIR}`);
+  console.log(`Archive dir: ${ARCHIVE_DIR}`);
 });
