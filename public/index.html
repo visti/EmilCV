@@ -252,12 +252,6 @@
     .adv-look-output {
       color: #ff8f8f;
     }
-    .star-text {
-      color: #ffaa00;
-    }
-    .bar-text {
-      color: #ffaa00;
-    }
 
     a {
       color: #ffaa00;
@@ -934,41 +928,6 @@
       caret-color: #ffaa00;
     }
 
-    /* Print CV (hidden on screen) */
-    #print-cv {
-      display: none;
-      font-family: 'Segoe UI', Arial, Helvetica, sans-serif;
-      color: #000;
-      background: #fff;
-      max-width: 700px;
-      margin: 0 auto;
-      padding: 24px 32px;
-      font-size: 11pt;
-      line-height: 1.5;
-    }
-    #print-cv h1 { font-size: 22pt; margin: 0 0 2px; }
-    #print-cv .cv-contact { color: #555; font-size: 10pt; margin-bottom: 16px; }
-    #print-cv h2 { font-size: 13pt; border-bottom: 1.5px solid #333; padding-bottom: 2px; margin: 14px 0 6px; }
-    #print-cv h3 { font-size: 11pt; margin: 6px 0 1px; }
-    #print-cv .cv-date { float: right; font-weight: normal; color: #555; }
-    #print-cv .cv-role { font-style: italic; margin: 0 0 2px; }
-    #print-cv .cv-detail { color: #444; margin: 0 0 2px; font-size: 10pt; }
-    #print-cv ul { margin: 4px 0 4px 18px; padding: 0; }
-    #print-cv li { margin-bottom: 2px; }
-    #print-cv a { color: #0055aa; }
-
-    @media print {
-      body * { visibility: hidden !important; }
-      #print-cv, #print-cv * { visibility: visible !important; }
-      #print-cv {
-        display: block !important;
-        position: absolute;
-        left: 0; top: 0;
-        width: 100%;
-      }
-      body { background: #fff !important; padding: 0 !important; }
-    }
-
     /* Mail window */
     #mail-body {
       padding: 8px 10px;
@@ -1425,7 +1384,7 @@
       </div>
       <span class="icon-label">Timeline</span>
     </a>
-    <a class="wb-icon" href="#" id="print-icon" aria-label="Print CV">
+    <a class="wb-icon" href="files/Emil_Visti_CV.pdf" target="_blank" id="print-icon" aria-label="Print CV">
       <div class="icon-box">
         <svg viewBox="0 0 36 36" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges">
           <path d="M0 0 H30 L34 4 V34 H0 Z" fill="#0055AA" stroke="white" stroke-width="2"/>
@@ -1459,60 +1418,6 @@
     <span class="icon-label">Trashcan</span>
   </a>
 
-  <!-- Print-only CV (hidden on screen, shown in print) -->
-  <div id="print-cv">
-    <h1>Emil Visti</h1>
-    <div class="cv-contact">Copenhagen &middot; emilvisti@gmail.com &middot; <a href="https://github.com/visti">github.com/visti</a></div>
-
-    <h2>Experience</h2>
-
-    <h3>Data Specialist <span class="cv-date">2017 &ndash; present</span></h3>
-    <p class="cv-role">Gramex, Copenhagen</p>
-    <p class="cv-detail">SQL / Python / Excel / Access / Navision / SSMS</p>
-    <p class="cv-detail">Processing 350k+ plays/month for royalty payouts to artists and labels across Denmark</p>
-    <p class="cv-detail">Reports for public display, legal &amp; internal use</p>
-    <p class="cv-detail">PowerBI / Matplotlib / Pandas / Python automation</p>
-
-    <h3>Metadata Expert <span class="cv-date">2014 &ndash; 2016</span></h3>
-    <p class="cv-role">Sandrew Metronome, Aalborg</p>
-
-    <h3>Asst. Producer &mdash; Video / Music / Graphics <span class="cv-date">2012 &ndash; 2014</span></h3>
-    <p class="cv-role">Big Beard Productions, Aalborg</p>
-
-    <h3>Writer &mdash; SEO, Articles, Podcasts <span class="cv-date">2012 &ndash; 2015</span></h3>
-    <p class="cv-role">Rotation.dk</p>
-
-    <h3>PR Associate <span class="cv-date">2011 &ndash; 2012</span></h3>
-    <p class="cv-role">ORA (Org. af Rytmiske Amat&oslash;rmusikere)</p>
-
-    <h2>Education</h2>
-
-    <h3>Librarian DB <span class="cv-date">2014 &ndash; 2015</span></h3>
-    <p class="cv-role">IVA Aalborg</p>
-
-    <h3>BSc Information Science <span class="cv-date">2008 &ndash; 2014</span></h3>
-    <p class="cv-role">IVA Aalborg</p>
-
-    <h3>Gymnasium <span class="cv-date">2003 &ndash; 2006</span></h3>
-    <p class="cv-role">Dronninglund</p>
-
-    <h2>Skills</h2>
-    <ul>
-      <li>SQL, Python, Bash, Lua, GDScript</li>
-      <li>SSMS, Access, Navision, Excel, PowerBI</li>
-      <li>Pandas, Matplotlib, data visualization</li>
-      <li>Unix &amp; Windows sysadmin</li>
-      <li>Photoshop, Premiere, Ableton</li>
-      <li>Metadata standards &amp; digitization</li>
-      <li>Studio technician (music)</li>
-    </ul>
-
-    <h2>Languages</h2>
-    <p>Danish, English</p>
-
-    <h2>Links</h2>
-    <p><a href="https://github.com/visti">github.com/visti</a> &middot; <a href="https://soundcloud.com/visti-1">soundcloud.com/visti-1</a></p>
-  </div>
   </div><!-- end #wb-container -->
 
   <script>
@@ -1649,7 +1554,7 @@
       ownRepos.forEach(r => {
         const name = pad(r.name, 24);
         const lang = r.language ? `<span class="highlight">${pad(r.language, 10)}</span>` : pad('-', 10);
-        const star = r.stargazers_count > 0 ? `<span class="star-text">\u2605 ${r.stargazers_count}</span>  ` : '     ';
+        const star = r.stargazers_count > 0 ? `<span class="highlight">\u2605 ${r.stargazers_count}</span>  ` : '     ';
         const desc = r.description || '';
         lines.push({ type: 'out', html: `<span class="output-text">  ${name}${lang}${star}<span class="dim-text">${desc}</span></span>` });
       });
@@ -1661,7 +1566,7 @@
         const label = pad(lang, 12);
         const bar = makeBar(count, maxLang);
         const num = count === 1 ? '1 repo' : `${count} repos`;
-        lines.push({ type: 'out', html: `<span class="output-text">  ${label}<span class="bar-text">${bar}</span> ${num}</span>` });
+        lines.push({ type: 'out', html: `<span class="output-text">  ${label}<span class="highlight">${bar}</span> ${num}</span>` });
       });
       lines.push({ type: 'blank' });
 
@@ -2082,25 +1987,31 @@
       });
     }
 
-    function sizeMainWindowBody() {
-      const win = document.getElementById('main-window');
-      if (!win) return;
+    function sizeWindowBody(winId, bodyId, padding, minH) {
+      const win = document.getElementById(winId);
+      if (!win) return null;
+      const body = bodyId ? document.getElementById(bodyId) : win.querySelector('.window-body');
+      if (!body) return null;
       const title = win.querySelector('.window-title');
-      const body = win.querySelector('.window-body');
-      if (!title || !body) return;
-      const inner = win.clientHeight - title.offsetHeight - 4;
-      body.style.height = Math.max(inner, 140) + 'px';
+      const inner = win.clientHeight - (title ? title.offsetHeight : 0) - padding;
+      body.style.height = Math.max(inner, minH) + 'px';
+      return body;
+    }
+
+    function observeResize(el, fn) {
+      if (el && 'ResizeObserver' in window) new ResizeObserver(fn).observe(el);
+    }
+
+    function sizeMainWindowBody() {
+      sizeWindowBody('main-window', null, 4, 140);
     }
 
     function sizeDemoCanvas() {
-      const win = document.getElementById('demo-window');
-      const body = document.getElementById('demo-body');
+      const body = sizeWindowBody('demo-window', 'demo-body', 12, 120);
+      if (!body) return;
       const canvas = document.getElementById('demo-canvas');
       const scroller = document.getElementById('scroller');
-      if (!win || !body || !canvas) return;
-      const title = win.querySelector('.window-title');
-      const inner = win.clientHeight - (title ? title.offsetHeight : 0) - 12;
-      body.style.height = Math.max(inner, 120) + 'px';
+      if (!canvas) return;
       const rect = body.getBoundingClientRect();
       const w = Math.max(120, Math.floor(rect.width - 12));
       const h = Math.max(90, Math.floor(rect.height - 12));
@@ -2119,12 +2030,11 @@
 
     function sizeDiskCanvas() {
       const win = document.getElementById('disk-window');
-      const body = document.getElementById('disk-body');
+      if (win?.style.display === 'none') return;
+      const body = sizeWindowBody('disk-window', 'disk-body', 12, 160);
+      if (!body) return;
       const canvas = document.getElementById('disk-canvas');
-      if (!win || !body || !canvas || win.style.display === 'none') return;
-      const title = win.querySelector('.window-title');
-      const inner = win.clientHeight - (title ? title.offsetHeight : 0) - 12;
-      body.style.height = Math.max(inner, 160) + 'px';
+      if (!canvas) return;
       const rect = body.getBoundingClientRect();
       const w = Math.max(160, Math.floor(rect.width - 12));
       const h = Math.max(160, Math.floor(rect.height - 12));
@@ -2136,12 +2046,11 @@
 
     function sizeFileMgrCanvas() {
       const win = document.getElementById('filemgr-window');
+      if (win?.style.display === 'none') return;
+      const body = sizeWindowBody('filemgr-window', 'filemgr-body', 12, 200);
+      if (!body) return;
       const canvas = document.getElementById('filemgr-canvas');
-      const body = document.getElementById('filemgr-body');
-      if (!win || !canvas || !body || win.style.display === 'none') return;
-      const title = win.querySelector('.window-title');
-      const inner = win.clientHeight - (title ? title.offsetHeight : 0) - 12;
-      body.style.height = Math.max(inner, 200) + 'px';
+      if (!canvas) return;
       const rect = canvas.getBoundingClientRect();
       const w = Math.max(200, Math.floor(rect.width));
       const h = Math.max(180, Math.floor(rect.height));
@@ -2490,7 +2399,6 @@
     }
 
     // --- Touch support ---
-    const isTouchDevice = 'ontouchstart' in window;
     function touchXY(e) {
       const t = e.touches[0] || e.changedTouches[0];
       return { clientX: t.clientX, clientY: t.clientY };
@@ -2655,35 +2563,20 @@
       dragState = null;
     });
 
-    window.addEventListener('resize', sizeWindowsToContent);
-    window.addEventListener('resize', sizeMainWindowBody);
-    window.addEventListener('resize', sizeDemoCanvas);
-    window.addEventListener('resize', sizeDiskCanvas);
-    window.addEventListener('resize', sizeFileMgrCanvas);
+    window.addEventListener('resize', () => {
+      sizeWindowsToContent();
+      sizeMainWindowBody();
+      sizeDemoCanvas();
+      sizeDiskCanvas();
+      sizeFileMgrCanvas();
+      sizeDPaintCanvas();
+      sizeBasicBody();
+    });
 
-    const mainWin = document.getElementById('main-window');
-    if (mainWin && 'ResizeObserver' in window) {
-      const ro = new ResizeObserver(() => sizeMainWindowBody());
-      ro.observe(mainWin);
-    }
-
-    const demoWin = document.getElementById('demo-window');
-    if (demoWin && 'ResizeObserver' in window) {
-      const ro2 = new ResizeObserver(() => sizeDemoCanvas());
-      ro2.observe(demoWin);
-    }
-
-    const diskWin = document.getElementById('disk-window');
-    if (diskWin && 'ResizeObserver' in window) {
-      const roDisk = new ResizeObserver(() => sizeDiskCanvas());
-      roDisk.observe(diskWin);
-    }
-
-    const fileMgrWin = document.getElementById('filemgr-window');
-    if (fileMgrWin && 'ResizeObserver' in window) {
-      const roFm = new ResizeObserver(() => sizeFileMgrCanvas());
-      roFm.observe(fileMgrWin);
-    }
+    observeResize(document.getElementById('main-window'), () => sizeMainWindowBody());
+    observeResize(document.getElementById('demo-window'), () => sizeDemoCanvas());
+    observeResize(document.getElementById('disk-window'), () => sizeDiskCanvas());
+    observeResize(document.getElementById('filemgr-window'), () => sizeFileMgrCanvas());
 
     // === Deluxe Paint ===
     const dpaint = {
@@ -2765,62 +2658,31 @@
       }
     }
 
-    function dpaintPreviewShape(x0, y0, x1, y1, color) {
-      const octx = dpaint.octx;
-      octx.clearRect(0, 0, dpaint.canvasW, dpaint.canvasH);
-      octx.strokeStyle = color;
-      octx.fillStyle = color;
-      octx.lineWidth = dpaint.brushSize;
+    function dpaintDrawShape(tgt, x0, y0, x1, y1, color) {
+      tgt.strokeStyle = color;
+      tgt.fillStyle = color;
+      tgt.lineWidth = dpaint.brushSize;
       if (dpaint.currentTool === 'line') {
-        octx.beginPath();
-        octx.moveTo(x0 + 0.5, y0 + 0.5);
-        octx.lineTo(x1 + 0.5, y1 + 0.5);
-        octx.stroke();
+        tgt.beginPath();
+        tgt.moveTo(x0 + 0.5, y0 + 0.5);
+        tgt.lineTo(x1 + 0.5, y1 + 0.5);
+        tgt.stroke();
       } else if (dpaint.currentTool === 'rect') {
         const rx = Math.min(x0, x1), ry = Math.min(y0, y1);
         const rw = Math.abs(x1 - x0), rh = Math.abs(y1 - y0);
         if (dpaint.filled) {
-          octx.fillRect(rx, ry, rw, rh);
+          tgt.fillRect(rx, ry, rw, rh);
         } else {
-          octx.strokeRect(rx + 0.5, ry + 0.5, rw, rh);
+          tgt.strokeRect(rx + 0.5, ry + 0.5, rw, rh);
         }
       } else if (dpaint.currentTool === 'circle') {
         const cx = (x0 + x1) / 2, cy = (y0 + y1) / 2;
         const rx = Math.abs(x1 - x0) / 2, ry = Math.abs(y1 - y0) / 2;
         if (rx < 1 && ry < 1) return;
-        octx.beginPath();
-        octx.ellipse(cx, cy, Math.max(rx, 1), Math.max(ry, 1), 0, 0, Math.PI * 2);
-        if (dpaint.filled) octx.fill();
-        else octx.stroke();
-      }
-    }
-
-    function dpaintCommitShape(x0, y0, x1, y1, color) {
-      const ctx = dpaint.ctx;
-      ctx.strokeStyle = color;
-      ctx.fillStyle = color;
-      ctx.lineWidth = dpaint.brushSize;
-      if (dpaint.currentTool === 'line') {
-        ctx.beginPath();
-        ctx.moveTo(x0 + 0.5, y0 + 0.5);
-        ctx.lineTo(x1 + 0.5, y1 + 0.5);
-        ctx.stroke();
-      } else if (dpaint.currentTool === 'rect') {
-        const rx = Math.min(x0, x1), ry = Math.min(y0, y1);
-        const rw = Math.abs(x1 - x0), rh = Math.abs(y1 - y0);
-        if (dpaint.filled) {
-          ctx.fillRect(rx, ry, rw, rh);
-        } else {
-          ctx.strokeRect(rx + 0.5, ry + 0.5, rw, rh);
-        }
-      } else if (dpaint.currentTool === 'circle') {
-        const cx = (x0 + x1) / 2, cy = (y0 + y1) / 2;
-        const rx = Math.abs(x1 - x0) / 2, ry = Math.abs(y1 - y0) / 2;
-        if (rx < 1 && ry < 1) return;
-        ctx.beginPath();
-        ctx.ellipse(cx, cy, Math.max(rx, 1), Math.max(ry, 1), 0, 0, Math.PI * 2);
-        if (dpaint.filled) ctx.fill();
-        else ctx.stroke();
+        tgt.beginPath();
+        tgt.ellipse(cx, cy, Math.max(rx, 1), Math.max(ry, 1), 0, 0, Math.PI * 2);
+        if (dpaint.filled) tgt.fill();
+        else tgt.stroke();
       }
     }
 
@@ -2911,7 +2773,8 @@
           dpaintBresenham(dpaint.lastX, dpaint.lastY, pos.x, pos.y, dpaint.bgColor);
           dpaint.lastX = pos.x; dpaint.lastY = pos.y;
         } else if (dpaint.currentTool === 'line' || dpaint.currentTool === 'rect' || dpaint.currentTool === 'circle') {
-          dpaintPreviewShape(dpaint.startX, dpaint.startY, pos.x, pos.y, color);
+          dpaint.octx.clearRect(0, 0, dpaint.canvasW, dpaint.canvasH);
+          dpaintDrawShape(dpaint.octx, dpaint.startX, dpaint.startY, pos.x, pos.y, color);
         }
       });
 
@@ -2920,7 +2783,7 @@
         const pos = dpaintCoords(e);
         const color = e.button === 2 ? dpaint.bgColor : dpaint.fgColor;
         if (dpaint.currentTool === 'line' || dpaint.currentTool === 'rect' || dpaint.currentTool === 'circle') {
-          dpaintCommitShape(dpaint.startX, dpaint.startY, pos.x, pos.y, color);
+          dpaintDrawShape(dpaint.ctx, dpaint.startX, dpaint.startY, pos.x, pos.y, color);
         }
         dpaint.octx.clearRect(0, 0, dpaint.canvasW, dpaint.canvasH);
         dpaint.isDrawing = false;
@@ -2964,7 +2827,8 @@
           dpaintBresenham(dpaint.lastX, dpaint.lastY, pos.x, pos.y, dpaint.bgColor);
           dpaint.lastX = pos.x; dpaint.lastY = pos.y;
         } else if (dpaint.currentTool === 'line' || dpaint.currentTool === 'rect' || dpaint.currentTool === 'circle') {
-          dpaintPreviewShape(dpaint.startX, dpaint.startY, pos.x, pos.y, color);
+          dpaint.octx.clearRect(0, 0, dpaint.canvasW, dpaint.canvasH);
+          dpaintDrawShape(dpaint.octx, dpaint.startX, dpaint.startY, pos.x, pos.y, color);
         }
         e.preventDefault();
       }, { passive: false });
@@ -2975,7 +2839,7 @@
         const pos = dpaintCoords(pt);
         const color = dpaint.drawingIsRight ? dpaint.bgColor : dpaint.fgColor;
         if (dpaint.currentTool === 'line' || dpaint.currentTool === 'rect' || dpaint.currentTool === 'circle') {
-          dpaintCommitShape(dpaint.startX, dpaint.startY, pos.x, pos.y, color);
+          dpaintDrawShape(dpaint.ctx, dpaint.startX, dpaint.startY, pos.x, pos.y, color);
         }
         dpaint.octx.clearRect(0, 0, dpaint.canvasW, dpaint.canvasH);
         dpaint.isDrawing = false;
@@ -3072,11 +2936,8 @@
 
     function sizeDPaintCanvas() {
       const win = document.getElementById('dpaint-window');
-      const body = document.getElementById('dpaint-body');
-      if (!win || !body || win.style.display === 'none') return;
-      const title = win.querySelector('.window-title');
-      const innerH = win.clientHeight - (title ? title.offsetHeight : 0) - 4;
-      body.style.height = Math.max(innerH, 200) + 'px';
+      if (win?.style.display === 'none') return;
+      sizeWindowBody('dpaint-window', 'dpaint-body', 4, 200);
     }
 
     function registerWindow(winId, iconId, closeId, w, h, onOpen) {
@@ -3131,7 +2992,6 @@
         row.addEventListener('click', () => {
           renderFileMgrList(item.id);
           drawDefrag(item.id);
-          if (item.id === 'disk') showDiskWindow();
         });
         list.appendChild(row);
       });
@@ -3143,13 +3003,7 @@
 
     initDPaint();
 
-    window.addEventListener('resize', sizeDPaintCanvas);
-
-    const dpaintWin = document.getElementById('dpaint-window');
-    if (dpaintWin && 'ResizeObserver' in window) {
-      const ro3 = new ResizeObserver(() => sizeDPaintCanvas());
-      ro3.observe(dpaintWin);
-    }
+    observeResize(document.getElementById('dpaint-window'), () => sizeDPaintCanvas());
 
     // === Save painting ===
     function dpaintSave() {
@@ -3338,32 +3192,24 @@
       data: [], dataPtr: 0, inputResolve: null,
     };
 
-    function basOut(s) {
+    function _basAppend(node) {
       const el = document.getElementById('basic-output');
       if (!el) return;
-      el.appendChild(document.createTextNode(s + '\n'));
+      el.appendChild(node);
       const body = el.closest('#basic-body');
       if (body) body.scrollTop = body.scrollHeight;
+    }
+    function basOut(s) {
+      _basAppend(document.createTextNode(s + '\n'));
     }
     function basOutRaw(s) {
-      const el = document.getElementById('basic-output');
-      if (!el) return;
-      el.appendChild(document.createTextNode(s));
-      const body = el.closest('#basic-body');
-      if (body) body.scrollTop = body.scrollHeight;
+      _basAppend(document.createTextNode(s));
     }
     function basOutHtml(html) {
-      const el = document.getElementById('basic-output');
-      if (!el) return;
       const line = document.createElement('div');
       line.className = 'output-text';
       line.innerHTML = html;
-      el.appendChild(line);
-      const body = el.closest('#basic-body');
-      if (body) body.scrollTop = body.scrollHeight;
-    }
-    function basOutBlank() {
-      basOut('');
+      _basAppend(line);
     }
     function basOutMarked(s) {
       const re = /\[\[(.+?)\]\]/g;
@@ -3371,11 +3217,11 @@
       let last = 0;
       let m;
       while ((m = re.exec(s)) !== null) {
-        out += escHtml(s.slice(last, m.index));
-        out += `<span class="highlight">${escHtml(m[1])}</span>`;
+        out += escapeHtml(s.slice(last, m.index));
+        out += `<span class="highlight">${escapeHtml(m[1])}</span>`;
         last = m.index + m[0].length;
       }
-      out += escHtml(s.slice(last));
+      out += escapeHtml(s.slice(last));
       basOutHtml(out);
     }
     function basCls() {
@@ -3892,7 +3738,7 @@
         basOutMarked('FOR/NEXT, WHILE/WEND, GOTO, GOSUB/RETURN');
         basOutMarked('CLS, BEEP, SLEEP, READ, DATA, DIM');
         basOutMarked('RUN, LIST, NEW, REM, END, SKILLS, [[QUEST]]');
-        basOutBlank();
+        basOut('');
         basOutMarked('Type line numbers to store a program:');
         basOutMarked('  [[10 PRINT "Hello, World!"]]');
         basOutMarked('  [[20 GOTO 10]]');
@@ -3936,31 +3782,22 @@
       visited: new Set()
     };
 
-    function escHtml(s) {
-      return String(s)
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;')
-        .replace(/'/g, '&#39;');
-    }
-
     function escRe(s) {
       return String(s).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
     }
 
     function highlightLookTargets(text, looks) {
-      let html = escHtml(text);
+      let html = escapeHtml(text);
       const keys = Object.keys(looks || {}).sort((a, b) => b.length - a.length);
       keys.forEach((k) => {
         const re = new RegExp(`\\b${escRe(k)}\\b`, 'gi');
-        html = html.replace(re, (m) => `<span class="adv-look">${escHtml(m)}</span>`);
+        html = html.replace(re, (m) => `<span class="adv-look">${escapeHtml(m)}</span>`);
       });
       return html;
     }
 
     function advLookOut(text) {
-      basOutHtml(`<span class="adv-look-output">${escHtml(text)}</span>`);
+      basOutHtml(`<span class="adv-look-output">${escapeHtml(text)}</span>`);
     }
 
     const advMusic = new Audio('/music/music.mp3');
@@ -3990,7 +3827,7 @@
         basCls();
         basOut('=== ADVENTURE ===');
         basOut('Type HELP for commands.');
-        basOutBlank();
+        basOut('');
         advLook();
         advMusicStart();
       } catch(e) { basOut('?Failed to load adventure'); }
@@ -3999,7 +3836,7 @@
     function advLook() {
       const rm = adv.data.rooms[adv.room];
       if (!rm) { basOut('?Room not found: ' + adv.room); return; }
-      basOutHtml(`<span class="adv-room">--- ${escHtml(rm.title)} ---</span>`);
+      basOutHtml(`<span class="adv-room">--- ${escapeHtml(rm.title)} ---</span>`);
       basOutHtml(highlightLookTargets(rm.desc, rm.looks));
       // Show visible items (not hidden or already taken)
       const visible = Object.keys(rm.items).filter(id => {
@@ -4008,15 +3845,15 @@
         return true;
       });
       if (visible.length) {
-        basOutHtml('You see: ' + visible.map(id => `<span class="adv-item">${escHtml(id.toUpperCase())}</span>`).join(', '));
+        basOutHtml('You see: ' + visible.map(id => `<span class="adv-item">${escapeHtml(id.toUpperCase())}</span>`).join(', '));
       }
       const lookTargets = Object.keys(rm.looks || {});
       if (lookTargets.length) {
-        basOutHtml('Look at: ' + lookTargets.map(id => `<span class="adv-look">${escHtml(id.toUpperCase())}</span>`).join(', '));
+        basOutHtml('Look at: ' + lookTargets.map(id => `<span class="adv-look">${escapeHtml(id.toUpperCase())}</span>`).join(', '));
       }
       const exits = Object.keys(rm.exits);
       if (exits.length) {
-        basOutHtml('Exits: ' + exits.map(d => `<span class="adv-dir">${escHtml(d)}</span>`).join(', '));
+        basOutHtml('Exits: ' + exits.map(d => `<span class="adv-dir">${escapeHtml(d)}</span>`).join(', '));
       }
       adv.visited.add(adv.room);
     }
@@ -4204,6 +4041,7 @@
       basOut('AmigaBASIC v3.4');
       basOut('(c) 2026 Workbench Edition');
       basOut('32768 bytes free');
+      basOutMarked('Use [[HELP]] for a list of commands');
       basOut('Ok');
 
       input.addEventListener('keydown', (e) => {
@@ -4234,11 +4072,8 @@
 
     function sizeBasicBody() {
       const win = document.getElementById('basic-window');
-      const body = document.getElementById('basic-body');
-      if (!win || !body || win.style.display === 'none') return;
-      const title = win.querySelector('.window-title');
-      const inner = win.clientHeight - (title ? title.offsetHeight : 0) - 4;
-      body.style.height = Math.max(inner, 100) + 'px';
+      if (win?.style.display === 'none') return;
+      sizeWindowBody('basic-window', 'basic-body', 4, 100);
     }
 
     // === Mail window ===
@@ -4356,12 +4191,6 @@
     // === Demo window ===
     const toggleDemoWindow = registerWindow('demo-window', 'demo-icon', 'demo-close', 480, 260, () => sizeDemoCanvas());
 
-    // === Print CV ===
-    document.getElementById('print-icon')?.addEventListener('click', (e) => {
-      e.preventDefault();
-      window.print();
-    });
-
     // === Hidden Terminal (Screen Depth Gadget) ===
     const htermState = {
       open: false,
@@ -4382,14 +4211,6 @@
       div.className = 'hterm-line';
       if (cls) div.innerHTML = `<span class="${cls}">${text}</span>`;
       else div.innerHTML = text;
-      htermOutput.appendChild(div);
-      htermOutput.scrollTop = htermOutput.scrollHeight;
-    }
-
-    function htermPrintRaw(html) {
-      const div = document.createElement('div');
-      div.className = 'hterm-line';
-      div.innerHTML = html;
       htermOutput.appendChild(div);
       htermOutput.scrollTop = htermOutput.scrollHeight;
     }
@@ -4447,7 +4268,7 @@
       htermState.histIdx = htermState.history.length;
 
       // Echo the command
-      htermPrintRaw(`<span class="hterm-prompt-echo">guest@amiga:~$</span> <span class="hterm-cmd">${trimmed}</span>`);
+      htermPrint(`<span class="hterm-prompt-echo">guest@amiga:~$</span> <span class="hterm-cmd">${trimmed}</span>`, null);
 
       const parts = trimmed.split(/\s+/);
       const cmd = parts[0].toLowerCase();
@@ -4490,15 +4311,15 @@
               ['rm -rf /',   'Don\'t do it'],
             ]],
           ];
-          htermPrintRaw('<span class="hterm-accent">╔══════════════════════════════════════╗</span>');
-          htermPrintRaw('<span class="hterm-accent">║</span>     AmigaOS CLI — Help Menu          <span class="hterm-accent">║</span>');
-          htermPrintRaw('<span class="hterm-accent">╚══════════════════════════════════════╝</span>');
+          htermPrint('<span class="hterm-accent">╔══════════════════════════════════════╗</span>', null);
+          htermPrint('<span class="hterm-accent">║</span>     AmigaOS CLI — Help Menu          <span class="hterm-accent">║</span>', null);
+          htermPrint('<span class="hterm-accent">╚══════════════════════════════════════╝</span>', null);
           htermPrint('');
           helpSections.forEach(([title, cmds]) => {
-            htermPrintRaw(`<span class="hterm-accent">── ${title} ${'─'.repeat(33 - title.length)}</span>`);
+            htermPrint(`<span class="hterm-accent">── ${title} ${'─'.repeat(33 - title.length)}</span>`, null);
             cmds.forEach(([c, d]) => {
               const padded = c.padEnd(16);
-              htermPrintRaw(`  <span class="hterm-cmd">${padded}</span><span class="hterm-info">${d}</span>`);
+              htermPrint(`  <span class="hterm-cmd">${padded}</span><span class="hterm-info">${d}</span>`, null);
             });
             htermPrint('');
           });
@@ -4631,7 +4452,7 @@
           for (let i = 0; i < Math.max(neoArt.length, neoInfo.length); i++) {
             const art = (neoArt[i] || '').padEnd(40);
             const info = neoInfo[i] || '';
-            htermPrintRaw(`${art} ${info}`);
+            htermPrint(`${art} ${info}`, null);
           }
           break;
         }
@@ -5177,11 +4998,7 @@
     htermInit();
 
     basInit();
-    window.addEventListener('resize', sizeBasicBody);
-    const basicWin = document.getElementById('basic-window');
-    if (basicWin && 'ResizeObserver' in window) {
-      new ResizeObserver(() => sizeBasicBody()).observe(basicWin);
-    }
+    observeResize(document.getElementById('basic-window'), () => sizeBasicBody());
   </script>
 </body>
 </html>
