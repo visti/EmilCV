@@ -53,6 +53,9 @@
       pointer-events: auto;
       z-index: 10;
     }
+    #hterm-screen.behind {
+      z-index: 0;
+    }
     .hterm-bar {
       background: linear-gradient(to bottom, #222 0%, #111 100%);
       color: #33ff33;
@@ -80,6 +83,8 @@
       font-size: 10px;
       cursor: pointer;
     }
+    .hterm-bar .gadget:hover { background: #0a3a0a; }
+    .hterm-bar .gadget:active { background: #33ff33; color: #000; }
     #hterm-output {
       flex: 1;
       min-height: 0;
@@ -172,6 +177,8 @@
       font-size: 10px;
       cursor: pointer;
     }
+    .wb-screen-bar .gadget:hover { background: #ccccee; }
+    .wb-screen-bar .gadget:active { background: #6666aa; }
 
     /* Amiga-style window */
     .window {
@@ -206,7 +213,10 @@
       background: #0055aa;
       margin-right: 6px;
       flex-shrink: 0;
+      cursor: pointer;
     }
+    .window-title .close-gadget:hover { background: #3377cc; }
+    .window-title .close-gadget:active { background: #001a44; }
     .window-title .title-text {
       flex: 1;
       white-space: nowrap;
@@ -719,6 +729,23 @@
       50% { border-color: #000; }
     }
 
+    /* CRT overlay */
+    #crt {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 99990;
+      background:
+        repeating-linear-gradient(
+          to bottom,
+          transparent 0px,
+          transparent 1px,
+          rgba(0,0,0,0.07) 1px,
+          rgba(0,0,0,0.07) 2px
+        ),
+        radial-gradient(ellipse at center, transparent 55%, rgba(0,0,0,0.45) 100%);
+    }
+
     /* Save button */
     .dp-save {
       background: #4a4;
@@ -974,6 +1001,7 @@
       body { padding: 2px; font-size: 12px; }
       .window-body { padding: 6px 8px; }
       .icon-row { gap: 16px; }
+      #hterm-input, #basic-input, .mail-field input, .mail-field textarea { font-size: 16px; }
     }
 
     /* Touch device enhancements */
@@ -1056,7 +1084,7 @@
       <span class="title-text">Demoscene - Starfield</span>
     </div>
     <div class="window-body" id="demo-body">
-      <canvas id="demo-canvas"></canvas>
+      <canvas id="demo-canvas" width="320" height="200"></canvas>
       <div id="scroller" aria-hidden="true"></div>
     </div>
   </div>
@@ -1070,8 +1098,8 @@
     <div class="window-body" id="dpaint-body">
       <div id="dpaint-layout">
         <div id="dpaint-canvas-wrap">
-          <canvas id="dpaint-canvas"></canvas>
-          <canvas id="dpaint-overlay"></canvas>
+          <canvas id="dpaint-canvas" width="320" height="256"></canvas>
+          <canvas id="dpaint-overlay" width="320" height="256"></canvas>
         </div>
         <div id="dpaint-toolbar">
           <button class="dp-tool active" data-tool="pencil" title="Pencil (P)">
@@ -1184,7 +1212,7 @@
       <span class="title-text">Disk Map</span>
     </div>
     <div class="window-body" id="disk-body">
-      <canvas id="disk-canvas"></canvas>
+      <canvas id="disk-canvas" width="200" height="200"></canvas>
     </div>
   </div>
 
@@ -1201,7 +1229,7 @@
       </div>
       <div class="fm-pane fm-right">
         <div class="fm-title" id="filemgr-title">Defrag View</div>
-        <canvas id="filemgr-canvas"></canvas>
+        <canvas id="filemgr-canvas" width="200" height="180"></canvas>
       </div>
     </div>
   </div>
@@ -1238,7 +1266,7 @@
       </div>
       <span class="icon-label">CV</span>
     </a>
-    <a class="wb-icon" href="https://github.com/visti" target="_blank" rel="noopener noreferrer">
+    <a class="wb-icon" href="https://github.com/visti" target="_blank" rel="noopener noreferrer" aria-label="GitHub">
       <div class="icon-box">
         <svg viewBox="0 0 36 36" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges">
           <path d="M0 0 H30 L34 4 V34 H0 Z" fill="#0055AA" stroke="white" stroke-width="2"/>
@@ -1251,7 +1279,7 @@
       </div>
       <span class="icon-label">GitHub</span>
     </a>
-    <a class="wb-icon" href="https://soundcloud.com/visti-1" target="_blank" rel="noopener noreferrer">
+    <a class="wb-icon" href="https://soundcloud.com/visti-1" target="_blank" rel="noopener noreferrer" aria-label="SoundCloud">
       <div class="icon-box">
         <svg viewBox="0 0 36 36" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges">
           <path d="M0 0 H30 L34 4 V34 H0 Z" fill="#0055AA" stroke="white" stroke-width="2"/>
@@ -1404,7 +1432,7 @@
   </div>
 
   <!-- Trashcan (lower-right, like real Workbench) -->
-  <a class="wb-icon" id="trash-icon" href="#">
+  <a class="wb-icon" id="trash-icon" href="#" aria-label="Trashcan">
     <div class="icon-box">
       <svg viewBox="0 0 36 36" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges">
         <rect x="6" y="8" width="24" height="24" fill="#888" stroke="white" stroke-width="2"/>
@@ -1447,12 +1475,13 @@
     ];
 
     async function fetchGitHub() {
+      const sig = AbortSignal.timeout(5000);
       try {
         const [userRes, reposRes, commitsRes] = await Promise.all([
-          fetch(`https://api.github.com/users/${GITHUB_USER}`),
-          fetch(`https://api.github.com/users/${GITHUB_USER}/repos?sort=updated&per_page=100`),
+          fetch(`https://api.github.com/users/${GITHUB_USER}`, { signal: sig }),
+          fetch(`https://api.github.com/users/${GITHUB_USER}/repos?sort=updated&per_page=100`, { signal: sig }),
           fetch(`https://api.github.com/search/commits?q=author:${GITHUB_USER}`, {
-            headers: { 'Accept': 'application/vnd.github.cloak-preview+json' }
+            headers: { 'Accept': 'application/vnd.github.cloak-preview+json' }, signal: sig
           })
         ]);
         if (!userRes.ok || !reposRes.ok) throw new Error('API error');
@@ -1582,12 +1611,13 @@
     }
 
     async function fetchNotes() {
+      const sig = AbortSignal.timeout(5000);
       try {
-        const res = await fetch('./notes/manifest.json');
+        const res = await fetch('./notes/manifest.json', { signal: sig });
         if (!res.ok) throw new Error('manifest fetch failed');
         const filenames = await res.json();
         const notes = await Promise.all(filenames.map(async (name, index) => {
-          const r = await fetch('./notes/' + name);
+          const r = await fetch('./notes/' + name, { signal: sig });
           if (!r.ok) return null;
           const md = await r.text();
           return parseNote(md, index);
@@ -1716,6 +1746,7 @@
         win.querySelector('.note-close').addEventListener('click', (e) => {
           e.stopPropagation();
           win.style.display = 'none';
+          playWinClose();
         });
 
         // Create icon
@@ -1736,8 +1767,10 @@
             }
             win.classList.add('open');
             bringToFront(win);
+            playWinOpen();
           } else {
             win.style.display = 'none';
+            playWinClose();
           }
         });
 
@@ -2060,7 +2093,10 @@
       }
     }
 
+    const demoAnim = { starfield: 0, scroller: 0 };
+
     function startStarfield() {
+      cancelAnimationFrame(demoAnim.starfield);
       const canvas = document.getElementById('demo-canvas');
       if (!canvas) return;
       const ctx = canvas.getContext('2d');
@@ -2073,6 +2109,8 @@
       }));
 
       function render() {
+        const win = document.getElementById('demo-window');
+        if (win && win.style.display === 'none') { demoAnim.starfield = requestAnimationFrame(render); return; }
         sizeDemoCanvas();
         const w = canvas.width;
         const h = canvas.height;
@@ -2098,10 +2136,10 @@
           ctx.fillStyle = `rgb(${shade}, ${shade}, ${shade})`;
           ctx.fillRect(x, y, size, size);
         }
-        requestAnimationFrame(render);
+        demoAnim.starfield = requestAnimationFrame(render);
       }
 
-      requestAnimationFrame(render);
+      demoAnim.starfield = requestAnimationFrame(render);
     }
 
     // === Disk pie animation ===
@@ -2381,6 +2419,8 @@
       function render() {
         const canvas = document.getElementById('demo-canvas');
         if (!canvas) return;
+        const win = document.getElementById('demo-window');
+        if (win && win.style.display === 'none') { demoAnim.scroller = requestAnimationFrame(render); return; }
         const speed = 1.6;
         const loopWidth = inner.scrollWidth / 2 || 1;
         offset = (offset - speed) % loopWidth;
@@ -2392,10 +2432,10 @@
           span.style.transform = `translate(${offset}px, ${wave + baseY}px)`;
         });
         t += 0.08;
-        requestAnimationFrame(render);
+        demoAnim.scroller = requestAnimationFrame(render);
       }
 
-      requestAnimationFrame(render);
+      demoAnim.scroller = requestAnimationFrame(render);
     }
 
     // --- Touch support ---
@@ -2529,6 +2569,7 @@
 
     document.addEventListener('touchmove', (e) => {
       if (!dragState) return;
+      e.preventDefault();
       const pt = touchXY(e);
       const dx = pt.clientX - dragState.startX;
       const dy = pt.clientY - dragState.startY;
@@ -2546,7 +2587,6 @@
       if (dragState.moved) {
         dragState.win.style.left = (pt.clientX - dragState.offsetX) + 'px';
         dragState.win.style.top = (pt.clientY - dragState.offsetY + window.scrollY) + 'px';
-        e.preventDefault();
       }
     }, { passive: false });
 
@@ -2563,14 +2603,19 @@
       dragState = null;
     });
 
+    let resizeRaf = 0;
     window.addEventListener('resize', () => {
-      sizeWindowsToContent();
-      sizeMainWindowBody();
-      sizeDemoCanvas();
-      sizeDiskCanvas();
-      sizeFileMgrCanvas();
-      sizeDPaintCanvas();
-      sizeBasicBody();
+      if (resizeRaf) return;
+      resizeRaf = requestAnimationFrame(() => {
+        resizeRaf = 0;
+        sizeWindowsToContent();
+        sizeMainWindowBody();
+        sizeDemoCanvas();
+        sizeDiskCanvas();
+        sizeFileMgrCanvas();
+        sizeDPaintCanvas();
+        sizeBasicBody();
+      });
     });
 
     observeResize(document.getElementById('main-window'), () => sizeMainWindowBody());
@@ -2948,18 +2993,32 @@
           win.style.display = '';
           if (!win.classList.contains('is-absolute')) mobileWindowPos(win, w, h);
           bringToFront(win);
+          playWinOpen();
           if (onOpen) onOpen(win);
         } else {
           win.style.display = 'none';
+          playWinClose();
         }
       };
       document.getElementById(iconId)?.addEventListener('click', (e) => { e.preventDefault(); toggle(); });
       document.getElementById(closeId)?.addEventListener('click', (e) => {
         e.stopPropagation();
         document.getElementById(winId).style.display = 'none';
+        playWinClose();
       });
       return toggle;
     }
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key !== 'Escape') return;
+      if (typeof bas !== 'undefined' && bas.running) return;
+      if (typeof htermState !== 'undefined' && htermState.open) { htermToggle(); return; }
+      const wins = [...document.querySelectorAll('.window')].filter(w => w.style.display !== 'none');
+      if (!wins.length) return;
+      const top = wins.reduce((a, b) => (parseInt(b.style.zIndex || 0) > parseInt(a.style.zIndex || 0) ? b : a));
+      top.style.display = 'none';
+      playWinClose();
+    });
 
     const toggleDPaintWindow = registerWindow('dpaint-window', 'dpaint-icon', 'dpaint-close', 560, 480, () => sizeDPaintCanvas());
     const toggleDiskWindow = registerWindow('disk-window', 'disk-icon', 'disk-close', 420, 320, () => { sizeDiskCanvas(); animateDiskPie(); });
@@ -3161,10 +3220,12 @@
       close.addEventListener('click', (e) => {
         e.stopPropagation();
         win.remove();
+        playWinClose();
       });
 
       document.body.appendChild(win);
       bringToFront(win);
+      playWinOpen();
     }
 
     // === Drag pictures to trashcan to delete ===
@@ -3228,6 +3289,38 @@
       const el = document.getElementById('basic-output');
       if (el) el.textContent = '';
     }
+    let uiAudioCtx = null;
+    function playWinOpen() {
+      try {
+        if (!uiAudioCtx) uiAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const t = uiAudioCtx.currentTime;
+        const o = uiAudioCtx.createOscillator();
+        const g = uiAudioCtx.createGain();
+        o.connect(g); g.connect(uiAudioCtx.destination);
+        o.type = 'square';
+        o.frequency.setValueAtTime(440, t);
+        o.frequency.exponentialRampToValueAtTime(880, t + 0.04);
+        g.gain.setValueAtTime(0.05, t);
+        g.gain.exponentialRampToValueAtTime(0.001, t + 0.12);
+        o.start(t); o.stop(t + 0.12);
+      } catch {}
+    }
+    function playWinClose() {
+      try {
+        if (!uiAudioCtx) uiAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const t = uiAudioCtx.currentTime;
+        const o = uiAudioCtx.createOscillator();
+        const g = uiAudioCtx.createGain();
+        o.connect(g); g.connect(uiAudioCtx.destination);
+        o.type = 'square';
+        o.frequency.setValueAtTime(660, t);
+        o.frequency.exponentialRampToValueAtTime(220, t + 0.06);
+        g.gain.setValueAtTime(0.05, t);
+        g.gain.exponentialRampToValueAtTime(0.001, t + 0.10);
+        o.start(t); o.stop(t + 0.10);
+      } catch {}
+    }
+
     let basAudioCtx = null;
     function basBeep() {
       try {
@@ -4228,12 +4321,16 @@
     function htermToggle() {
       htermState.open = !htermState.open;
       if (htermState.open) {
+        htermScreen.classList.remove('behind');
         htermScreen.classList.add('visible');
         wbContainer.classList.add('slid-down');
         setTimeout(() => htermInput.focus(), 500);
       } else {
+        htermScreen.classList.add('behind');
         wbContainer.classList.remove('slid-down');
-        setTimeout(() => htermScreen.classList.remove('visible'), 500);
+        setTimeout(() => {
+          htermScreen.classList.remove('visible', 'behind');
+        }, 500);
         htermCancelTimers();
       }
     }
@@ -5000,5 +5097,6 @@
     basInit();
     observeResize(document.getElementById('basic-window'), () => sizeBasicBody());
   </script>
+  <div id="crt" aria-hidden="true"></div>
 </body>
 </html>
