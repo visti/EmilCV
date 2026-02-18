@@ -33,10 +33,9 @@
       min-height: 100vh;
       background: #0055aa;
       padding: 4px;
-      transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
     }
     #wb-container.slid-down {
-      transform: translateY(calc(100vh - 24px));
+      /* position managed by GSAP */
     }
 
     /* Hidden terminal screen */
@@ -4273,13 +4272,23 @@
         htermScreen.classList.remove('behind');
         htermScreen.classList.add('visible');
         wbContainer.classList.add('slid-down');
-        setTimeout(() => htermInput.focus(), 500);
+        gsap.to(wbContainer, {
+          y: window.innerHeight - 24,
+          duration: 0.6,
+          ease: 'back.out(1.4)',
+          onComplete: () => htermInput.focus()
+        });
       } else {
         htermScreen.classList.add('behind');
         wbContainer.classList.remove('slid-down');
-        setTimeout(() => {
-          htermScreen.classList.remove('visible', 'behind');
-        }, 500);
+        gsap.to(wbContainer, {
+          y: 0,
+          duration: 0.5,
+          ease: 'back.in(1.4)',
+          onComplete: () => {
+            htermScreen.classList.remove('visible', 'behind');
+          }
+        });
         htermCancelTimers();
       }
     }
