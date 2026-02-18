@@ -14,7 +14,7 @@ A retro-themed personal CV website styled after the Commodore Amiga Workbench 3.
 ### Desktop & Shell
 - **Amiga boot sequence** — animated startup with disk-insert hand GIF, memory check counter, and chipset/drive messages; skipped after first view via `localStorage`
 - **Typewriter terminal** — CV content rendered line-by-line in an AmigaShell-styled window with GitHub API integration (live repo stats, commit counts, language breakdowns; hardcoded fallbacks if API is unavailable)
-- **Draggable windows** — full desktop-like window management: drag, collapse/expand, z-ordering via depth gadgets, and a trashcan for deleting paintings
+- **Draggable windows** — full desktop-like window management: drag, collapse/expand, z-ordering via depth gadgets
 - **Hidden terminal** — slide the Workbench down to reveal a green-on-black CLI underneath, toggled via a depth gadget; supports a custom command set
 - **Retro aesthetics** — custom Amiga-orange cursor, Silkscreen pixel font, authentic Amiga color palette, Guru Meditation easter egg
 
@@ -48,7 +48,7 @@ Full pixel art editor inspired by the classic Amiga app:
 ### Pictures Gallery
 - Thumbnail grid of all saved server-side paintings
 - Click a thumbnail to open the painting in a Workbench-style viewer window
-- Drag a viewer window to the trashcan to delete the painting (with archive on server)
+- Drag anything to the trashcan to trigger the Guru Meditation easter egg
 
 ### AmigaBASIC Interpreter
 Interactive BASIC shell with:
