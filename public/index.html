@@ -3312,6 +3312,8 @@
       fetch('/files/audio/load.wav').then(r => r.arrayBuffer()).catch(() => null),
       fetch('/files/audio/deload.wav').then(r => r.arrayBuffer()).catch(() => null),
     ]);
+    // Decode on first user gesture so buffers are ready before any window opens
+    document.addEventListener('pointerdown', () => ensureUiSounds(), { once: true });
     let uiAudioCtx = null;
     let uiSounds = null;
     let uiDecoding = false;
