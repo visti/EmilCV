@@ -402,6 +402,15 @@
     .wb-icon:hover .icon-box svg {
       filter: drop-shadow(2px 2px 0 #000) brightness(1.25);
     }
+    .icon-box img {
+      width: 100%;
+      height: 100%;
+      filter: invert(1) drop-shadow(2px 2px 0 #000);
+      transition: filter 0.12s ease;
+    }
+    .wb-icon:hover .icon-box img {
+      filter: invert(1) drop-shadow(2px 2px 0 #000) brightness(1.25);
+    }
     .icon-label {
       font-size: 11px;
       text-align: center;
@@ -845,8 +854,8 @@
     }
 
     /* Trashcan drop target */
-    #trash-icon.drag-over .icon-box svg rect:first-of-type {
-      fill: #c44;
+    #trash-icon.drag-over .icon-box img {
+      filter: invert(1) sepia(1) hue-rotate(295deg) saturate(4) brightness(1.3) drop-shadow(2px 2px 0 #000);
     }
     #trash-icon.drag-over .icon-label {
       color: #ff6644;
@@ -1293,15 +1302,7 @@
   <div class="icon-row">
     <a class="wb-icon" href="#" id="cv-icon" aria-label="CV">
       <div class="icon-box">
-        <svg viewBox="0 0 36 36" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges">
-          <rect x="4" y="2" width="28" height="32" fill="#0055AA" stroke="white" stroke-width="2"/>
-          <rect x="8" y="6" width="20" height="4" fill="#ffaa00"/>
-          <rect x="8" y="12" width="18" height="2" fill="#fff"/>
-          <rect x="8" y="16" width="14" height="2" fill="#fff"/>
-          <rect x="8" y="20" width="18" height="2" fill="#fff"/>
-          <rect x="8" y="24" width="16" height="2" fill="#fff"/>
-          <rect x="8" y="28" width="12" height="2" fill="#fff"/>
-        </svg>
+        <img src="files/icons/CVmain.svg" alt="">
       </div>
       <span class="icon-label">CV</span>
     </a>
@@ -1320,150 +1321,61 @@
     </a>
     <a class="wb-icon" href="https://soundcloud.com/visti-1" target="_blank" rel="noopener noreferrer" aria-label="SoundCloud">
       <div class="icon-box">
-        <svg viewBox="0 0 36 36" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges">
-          <path d="M0 0 H30 L34 4 V34 H0 Z" fill="#0055AA" stroke="white" stroke-width="2"/>
-          <rect x="14" y="6" width="2" height="16" fill="white"/>
-          <rect x="22" y="4" width="2" height="16" fill="white"/>
-          <rect x="14" y="6" width="10" height="2" fill="white"/>
-          <rect x="9" y="20" width="7" height="5" rx="3" fill="white"/>
-          <rect x="17" y="18" width="7" height="5" rx="3" fill="white"/>
-          <rect x="6" y="28" width="22" height="2" fill="#FF8800"/>
-          <rect x="4" y="26" width="2" height="4" fill="#FF8800"/>
-          <rect x="28" y="26" width="2" height="4" fill="#FF8800"/>
-        </svg>
+        <img src="files/icons/soundcloud.svg" alt="">
       </div>
       <span class="icon-label">SoundCloud</span>
     </a>
     <a class="wb-icon" href="#" id="reboot-icon" aria-label="Reboot">
       <div class="icon-box">
-        <svg viewBox="0 0 36 36" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges">
-          <path d="M0 0 H30 L34 4 V34 H0 Z" fill="#0055AA" stroke="white" stroke-width="2"/>
-          <rect x="6" y="14" width="22" height="16" fill="white"/>
-          <rect x="8" y="2" width="14" height="8" fill="white" stroke="black" stroke-width="1"/>
-          <path d="M10 22 L15 27 L24 16" stroke="#FF8800" stroke-width="3" fill="none"/>
-        </svg>
+        <img src="files/icons/reboot.svg" alt="">
       </div>
       <span class="icon-label">Reboot</span>
     </a>
     <a class="wb-icon" href="#" id="demo-icon" aria-label="Demoscene">
       <div class="icon-box">
-        <svg viewBox="0 0 36 36" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges">
-          <path d="M0 0 H30 L34 4 V34 H0 Z" fill="#111" stroke="white" stroke-width="2"/>
-          <circle cx="6" cy="8" r="1.5" fill="#fff"/>
-          <circle cx="26" cy="6" r="2" fill="#ffaa00"/>
-          <circle cx="16" cy="12" r="1" fill="#66ccff"/>
-          <circle cx="28" cy="16" r="1.5" fill="#fff"/>
-          <circle cx="8" cy="19" r="0.8" fill="#ff8800"/>
-          <circle cx="20" cy="17" r="1" fill="#fff"/>
-          <circle cx="5" cy="28" r="1" fill="#ffaa00"/>
-          <circle cx="14" cy="24" r="2" fill="#fff"/>
-          <circle cx="28" cy="26" r="0.8" fill="#66ccff"/>
-          <circle cx="20" cy="31" r="1.5" fill="#fff"/>
-          <circle cx="10" cy="32" r="0.8" fill="#ffaa00"/>
-          <circle cx="24" cy="22" r="0.8" fill="#ff8800"/>
-          <circle cx="15" cy="5" r="0.8" fill="#fff"/>
-        </svg>
+        <img src="files/icons/demo.svg" alt="">
       </div>
       <span class="icon-label">Demo<br>Scene</span>
     </a>
     <a class="wb-icon" href="#" id="dpaint-icon" aria-label="Deluxe Paint">
       <div class="icon-box">
-        <svg viewBox="0 0 36 36" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges">
-          <path d="M0 0 H30 L34 4 V34 H0 Z" fill="#0055AA" stroke="white" stroke-width="2"/>
-          <rect x="6" y="14" width="22" height="16" fill="white"/>
-          <circle cx="11" cy="22" r="3" fill="#ec0000"/>
-          <circle cx="19" cy="22" r="3" fill="#fcec00"/>
-          <circle cx="15" cy="27" r="3" fill="#0000fc"/>
-          <rect x="19" y="5" width="3" height="9" fill="#ffaa00" transform="rotate(-20 20.5 9.5)"/>
-          <rect x="18" y="4" width="5" height="3" fill="#642000" transform="rotate(-20 20.5 5.5)"/>
-        </svg>
+        <img src="files/icons/paint.svg" alt="">
       </div>
       <span class="icon-label">Deluxe<br>Paint</span>
     </a>
     <a class="wb-icon" href="#" id="filemgr-icon" aria-label="File Manager">
       <div class="icon-box">
-        <svg viewBox="0 0 36 36" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges">
-          <path d="M0 0 H30 L34 4 V34 H0 Z" fill="#0055AA" stroke="white" stroke-width="2"/>
-          <rect x="4" y="6" width="26" height="6" fill="#ffaa00"/>
-          <rect x="6" y="14" width="12" height="4" fill="#66ccff"/>
-          <rect x="6" y="20" width="18" height="4" fill="#66ccff"/>
-          <rect x="6" y="26" width="14" height="4" fill="#66ccff"/>
-        </svg>
+        <img src="files/icons/filemanager.svg" alt="">
       </div>
       <span class="icon-label">File<br>Manager</span>
     </a>
     <a class="wb-icon" href="#" id="pictures-icon" aria-label="Pictures">
       <div class="icon-box">
-        <svg viewBox="0 0 36 36" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges">
-          <path d="M0 0 H30 L34 4 V34 H0 Z" fill="#0055AA" stroke="white" stroke-width="2"/>
-          <rect x="6" y="14" width="22" height="16" fill="white"/>
-          <rect x="8" y="2" width="14" height="8" fill="white" stroke="black" stroke-width="1"/>
-          <circle cx="13" cy="21" r="2" fill="#ffaa00"/>
-          <path d="M8 28 L14 22 L18 26 L22 20 L28 28 Z" fill="#4a8"/>
-        </svg>
+        <img src="files/icons/pictures.svg" alt="">
       </div>
       <span class="icon-label">Pictures</span>
     </a>
     <a class="wb-icon" href="#" id="basic-icon" aria-label="AmigaBASIC">
       <div class="icon-box">
-        <svg viewBox="0 0 36 36" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges">
-          <path d="M0 0 H30 L34 4 V34 H0 Z" fill="#0055AA" stroke="white" stroke-width="2"/>
-          <rect x="6" y="14" width="22" height="16" fill="#0022aa"/>
-          <rect x="8" y="2" width="14" height="8" fill="white" stroke="black" stroke-width="1"/>
-          <rect x="8" y="16" width="4" height="2" fill="#ffaa00"/>
-          <rect x="14" y="16" width="10" height="2" fill="white"/>
-          <rect x="8" y="20" width="4" height="2" fill="#ffaa00"/>
-          <rect x="14" y="20" width="8" height="2" fill="white"/>
-          <rect x="8" y="24" width="4" height="2" fill="#ffaa00"/>
-          <rect x="14" y="24" width="6" height="2" fill="white"/>
-        </svg>
+        <img src="files/icons/basic.svg" alt="">
       </div>
       <span class="icon-label">Amiga<br>BASIC</span>
     </a>
     <a class="wb-icon" href="#" id="mail-icon" aria-label="Mail">
       <div class="icon-box">
-        <svg viewBox="0 0 36 36" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges">
-          <path d="M0 0 H30 L34 4 V34 H0 Z" fill="#0055AA" stroke="white" stroke-width="2"/>
-          <rect x="6" y="14" width="22" height="16" fill="white"/>
-          <rect x="8" y="2" width="14" height="8" fill="white" stroke="black" stroke-width="1"/>
-          <rect x="6" y="14" width="22" height="14" fill="#ffffcc" stroke="#888" stroke-width="1"/>
-          <path d="M6 14 L17 23 L28 14" fill="none" stroke="#0055AA" stroke-width="2"/>
-          <path d="M6 28 L14 22" fill="none" stroke="#0055AA" stroke-width="1"/>
-          <path d="M28 28 L20 22" fill="none" stroke="#0055AA" stroke-width="1"/>
-        </svg>
+        <img src="files/icons/email.svg" alt="">
       </div>
       <span class="icon-label">Mail</span>
     </a>
     <a class="wb-icon" href="#" id="timeline-icon" aria-label="Timeline">
       <div class="icon-box">
-        <svg viewBox="0 0 36 36" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges">
-          <rect x="2" y="4" width="32" height="28" fill="#0055AA" stroke="white" stroke-width="2"/>
-          <rect x="6" y="8" width="6" height="6" fill="#ffaa00"/>
-          <rect x="14" y="8" width="6" height="6" fill="#66ccff"/>
-          <rect x="22" y="8" width="6" height="6" fill="#ffaa00"/>
-          <rect x="6" y="16" width="6" height="6" fill="#66ccff"/>
-          <rect x="14" y="16" width="6" height="6" fill="#ffaa00"/>
-          <rect x="22" y="16" width="6" height="6" fill="#66ccff"/>
-          <rect x="6" y="24" width="6" height="6" fill="#ffaa00"/>
-          <rect x="14" y="24" width="6" height="6" fill="#66ccff"/>
-          <rect x="22" y="24" width="6" height="6" fill="#ffaa00"/>
-        </svg>
+        <img src="files/icons/timeline.svg" alt="">
       </div>
       <span class="icon-label">Timeline</span>
     </a>
     <a class="wb-icon" href="files/Emil_Visti_CV.pdf" target="_blank" id="print-icon" aria-label="Print CV">
       <div class="icon-box">
-        <svg viewBox="0 0 36 36" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges">
-          <path d="M0 0 H30 L34 4 V34 H0 Z" fill="#0055AA" stroke="white" stroke-width="2"/>
-          <rect x="6" y="14" width="22" height="16" fill="white"/>
-          <rect x="8" y="2" width="14" height="8" fill="white" stroke="black" stroke-width="1"/>
-          <rect x="4" y="16" width="26" height="12" fill="#ccc" stroke="#666" stroke-width="1"/>
-          <rect x="8" y="10" width="18" height="8" fill="#fff" stroke="#888" stroke-width="1"/>
-          <rect x="8" y="26" width="18" height="8" fill="#fff" stroke="#888" stroke-width="1"/>
-          <rect x="10" y="28" width="12" height="2" fill="#0055AA"/>
-          <rect x="10" y="31" width="8" height="2" fill="#0055AA"/>
-          <rect x="22" y="20" width="4" height="2" fill="#4a4" rx="1"/>
-        </svg>
+        <img src="files/icons/program.svg" alt="">
       </div>
       <span class="icon-label">Print CV</span>
     </a>
@@ -1473,14 +1385,7 @@
   <!-- Trashcan (lower-right, like real Workbench) -->
   <a class="wb-icon" id="trash-icon" href="#" aria-label="Trashcan">
     <div class="icon-box">
-      <svg viewBox="0 0 36 36" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges">
-        <rect x="6" y="8" width="24" height="24" fill="#888" stroke="white" stroke-width="2"/>
-        <rect x="10" y="4" width="16" height="6" fill="#aaa" stroke="white" stroke-width="2"/>
-        <rect x="14" y="2" width="8" height="4" fill="#aaa" stroke="white" stroke-width="2"/>
-        <rect x="10" y="14" width="2" height="14" fill="#555"/>
-        <rect x="17" y="14" width="2" height="14" fill="#555"/>
-        <rect x="24" y="14" width="2" height="14" fill="#555"/>
-      </svg>
+      <img src="files/icons/trash.svg" alt="">
     </div>
     <span class="icon-label">Trashcan</span>
   </a>
@@ -1753,14 +1658,7 @@
       const iconContainer = document.getElementById('note-icons');
       if (!container || !iconContainer) return;
 
-      const docSvg = `<svg viewBox="0 0 30 36" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges">
-        <path d="M2 0 H22 L28 6 V34 H2 Z" fill="white" stroke="#0055AA" stroke-width="2"/>
-        <path d="M22 0 V6 H28" fill="none" stroke="#0055AA" stroke-width="2"/>
-        <rect x="6" y="10" width="18" height="2" fill="#0055AA"/>
-        <rect x="6" y="15" width="18" height="2" fill="#0055AA"/>
-        <rect x="6" y="20" width="18" height="2" fill="#0055AA"/>
-        <rect x="6" y="25" width="12" height="2" fill="#0055AA"/>
-      </svg>`;
+      const docSvg = `<img src="files/icons/note.svg" alt="">`;
 
       notes.forEach(note => {
         // Create window
