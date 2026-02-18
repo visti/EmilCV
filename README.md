@@ -4,19 +4,19 @@ A retro-themed personal CV website styled after the Commodore Amiga Workbench 3.
 
 ## Tech Stack
 
-- **Frontend:** Vanilla HTML, CSS & JavaScript — no frameworks or build tools
+- **Frontend:** Vanilla HTML, CSS & JavaScript — GSAP, Howler.js, Marked.js via CDN
 - **Backend:** Node.js (zero dependencies) — static file serving + paint API + notes manifest
 - **Hosting:** [Fly.io](https://fly.io) with persistent volume storage
-- **CI/CD:** GitHub Actions — auto-deploys on push to `main`
+- **CI/CD:** GitHub Actions — auto-deploys on push to `master`
 
 ## Features
 
 ### Desktop & Shell
-- **Amiga boot sequence** — animated startup with disk-insert hand GIF, memory check counter, and chipset/drive messages; skipped after first view via `localStorage`
-- **Typewriter terminal** — CV content rendered line-by-line in an AmigaShell-styled window with GitHub API integration (live repo stats, commit counts, language breakdowns; hardcoded fallbacks if API is unavailable)
-- **Draggable windows** — full desktop-like window management: drag, collapse/expand, z-ordering via depth gadgets
+- **Amiga boot sequence** — animated startup visible from first paint (no flash), with disk-insert hand GIF, memory check counter, and chipset/drive messages
+- **Typewriter terminal** — CV content rendered line-by-line in an AmigaShell-styled window with GitHub API integration (live repo stats, commit counts, language breakdowns; hardcoded fallbacks if API is unavailable); skill keywords highlighted in amber
+- **Draggable windows** — full desktop-like window management: drag, collapse/expand, z-ordering via depth gadgets; GSAP spring animations on open/close
 - **Hidden terminal** — slide the Workbench down to reveal a green-on-black CLI underneath, toggled via a depth gadget; supports a custom command set
-- **Retro aesthetics** — custom Amiga-orange cursor, Silkscreen pixel font, authentic Amiga color palette, Guru Meditation easter egg
+- **Retro aesthetics** — custom Amiga-orange cursor, Silkscreen pixel font, authentic Amiga color palette, CRT scanline + vignette overlay, Amiga-orange text selection, Guru Meditation easter egg
 
 ### Apps (icon row)
 | Icon | App | Description |
@@ -57,9 +57,10 @@ Interactive BASIC shell with:
 - `GOTO`, `GOSUB/RETURN`
 - `DATA/READ/RESTORE`
 - `DIM` arrays, `REM` comments
-- `END`, `STOP`, `CLS`
+- `END`, `STOP`, `CLS`, `BEEP`
 - CV shortcut commands: `CV`, `SKILLS`, `PROJECTS`, `CONTACT`
 - `ADVENTURE` — launches the text adventure game inside the BASIC window
+- Blinking block cursor
 
 ### Text Adventure
 A multi-room fantasy adventure game (`/game/game.json` + individual `.room` files):
@@ -74,8 +75,8 @@ A multi-room fantasy adventure game (`/game/game.json` + individual `.room` file
 
 ### Notes System
 - Markdown notes served from `/notes/` with auto-generated `manifest.json`
+- Rendered via Marked.js (GFM, safe links)
 - Each note gets its own desktop icon and opens in a draggable viewer window
-- Supports bold, italic, inline code, headings, links, horizontal rules, and blockquotes
 
 ### File Manager / Disk Info
 - Animated pie chart of GitHub repo languages
@@ -99,7 +100,8 @@ A multi-room fantasy adventure game (`/game/game.json` + individual `.room` file
     ├── index.html           # Entire site in a single HTML file
     ├── boot-hand.gif        # Disk-insert animation for boot screen
     ├── files/
-    │   └── Emil_Visti_CV.pdf
+    │   ├── Emil_Visti_CV.pdf
+    │   └── audio/           # UI sound effects (load.wav, deload.wav)
     ├── game/
     │   ├── game.json        # Room graph, items, flags, win condition
     │   └── *.room           # Individual room data files

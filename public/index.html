@@ -10,6 +10,10 @@
 
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
+    ::selection {
+      background: #ff8800;
+      color: #000;
+    }
     body {
       background: #0a0a0a;
       color: #ffffff;
@@ -139,7 +143,8 @@
       font-size: 13px;
     }
     #hterm-input {
-      flex: 1;
+      min-width: 1ch;
+      field-sizing: content;
       background: transparent;
       border: none;
       outline: none;
@@ -975,13 +980,14 @@
       white-space: pre;
     }
     #basic-input {
+      min-width: 1ch;
+      field-sizing: content;
       background: transparent;
       border: none;
       color: #fff;
       font-family: 'Silkscreen', monospace;
       font-size: 13px;
       outline: none;
-      flex: 1;
       padding: 0;
       caret-color: transparent;
     }
@@ -1075,7 +1081,7 @@
 
   <!-- Workbench container (slides down to reveal terminal) -->
   <div id="wb-container">
-  <div class="boot-screen" id="boot-screen">
+  <div class="boot-screen active" id="boot-screen">
     <div class="boot-box">
       <div class="boot-line">Kickstart ROM v3.1</div>
       <img id="boot-hand" alt="Insert Workbench disk animation" src="/boot-hand.gif">
@@ -1576,11 +1582,11 @@
       lines.push({ type: 'cmd', html: `<span class="prompt-text">1.SYS:&gt;</span> <span class="cmd-text">type DH0:experience.log</span>` });
       lines.push({ type: 'out', html: `<span class="highlight">  Gramex, Copenhagen ......................... 2017-now</span>` });
       lines.push({ type: 'out', html: `<span class="output-text">  Data Specialist</span>` });
-      lines.push({ type: 'out', html: `<span class="dim-text">  SQL / Python / Excel / Access / Navision / SSMS</span>` });
+      lines.push({ type: 'out', html: `<span class="dim-text">  <span class="highlight">SQL</span> / <span class="highlight">Python</span> / <span class="highlight">Excel</span> / <span class="highlight">Access</span> / <span class="highlight">Navision</span> / <span class="highlight">SSMS</span></span>` });
       lines.push({ type: 'out', html: `<span class="dim-text">  Processing 350k+ plays/month for royalty payouts</span>` });
       lines.push({ type: 'out', html: `<span class="dim-text">  to artists and labels across Denmark</span>` });
       lines.push({ type: 'out', html: `<span class="dim-text">  Reports for public display, legal & internal use</span>` });
-      lines.push({ type: 'out', html: `<span class="dim-text">  PowerBI / Matplotlib / Pandas / Python automation</span>` });
+      lines.push({ type: 'out', html: `<span class="dim-text">  <span class="highlight">PowerBI</span> / <span class="highlight">Matplotlib</span> / <span class="highlight">Pandas</span> / <span class="highlight">Python</span> automation</span>` });
       lines.push({ type: 'blank' });
       lines.push({ type: 'out', html: `<span class="highlight">  Sandrew Metronome, Aalborg ................. 2014-2016</span>` });
       lines.push({ type: 'out', html: `<span class="output-text">  Metadata Expert</span>` });
@@ -1604,11 +1610,11 @@
 
       // Skills
       lines.push({ type: 'cmd', html: `<span class="prompt-text">1.SYS:&gt;</span> <span class="cmd-text">type DH0:skills.cfg</span>` });
-      lines.push({ type: 'out', html: '<span class="output-text">  SQL / Python / Bash / Lua / GDScript</span>' });
-      lines.push({ type: 'out', html: '<span class="output-text">  SSMS / Access / Navision / Excel / PowerBI</span>' });
-      lines.push({ type: 'out', html: '<span class="output-text">  Pandas / Matplotlib / data visualization</span>' });
+      lines.push({ type: 'out', html: '<span class="output-text">  <span class="highlight">SQL</span> / <span class="highlight">Python</span> / <span class="highlight">Bash</span> / <span class="highlight">Lua</span></span>' });
+      lines.push({ type: 'out', html: '<span class="output-text">  <span class="highlight">SSMS</span> / <span class="highlight">Access</span> / <span class="highlight">Navision</span> / <span class="highlight">Excel</span> / <span class="highlight">PowerBI</span></span>' });
+      lines.push({ type: 'out', html: '<span class="output-text">  <span class="highlight">Pandas</span> / <span class="highlight">Matplotlib</span> / data visualization</span>' });
       lines.push({ type: 'out', html: '<span class="output-text">  Unix & Windows sysadmin</span>' });
-      lines.push({ type: 'out', html: '<span class="output-text">  Photoshop / Premiere / Ableton</span>' });
+      lines.push({ type: 'out', html: '<span class="output-text">  <span class="highlight">Photoshop</span> / <span class="highlight">Premiere</span> / <span class="highlight">Ableton</span></span>' });
       lines.push({ type: 'out', html: '<span class="output-text">  Metadata standards & digitization</span>' });
       lines.push({ type: 'out', html: '<span class="output-text">  Studio technician (music)</span>' });
       lines.push({ type: 'out', html: '<span class="dim-text">  Languages: Danish, English</span>' });
@@ -1703,11 +1709,6 @@
       breaks: true,
       walkTokens(token) {
         if (token.type === 'link') token.href = safeUrl(token.href || '');
-      },
-      renderer: {
-        link({ href, text }) {
-          return `<a href="${escapeHtml(href || '')}" target="_blank" rel="noopener noreferrer">${text}</a>`;
-        }
       }
     });
 
@@ -1729,7 +1730,13 @@
         meta[m[1]] = val;
       });
 
-      const bodyHtml = marked.parse(body);
+      const parsedDiv = document.createElement('div');
+      parsedDiv.innerHTML = marked.parse(body);
+      parsedDiv.querySelectorAll('a').forEach(a => {
+        a.target = '_blank';
+        a.rel = 'noopener noreferrer';
+      });
+      const bodyHtml = parsedDiv.innerHTML;
 
       return {
         title: meta.title || 'Note',
@@ -1910,7 +1917,7 @@
       const drives = document.getElementById('boot-drives');
       const load = document.getElementById('boot-load');
       if (!screen || !mem || !scan || !chipset || !drives || !load) return;
-      screen.classList.add('active');
+      screen.classList.add('active'); // ensure visible on reboot
       load.style.visibility = 'hidden';
       scan.style.visibility = 'hidden';
       chipset.style.visibility = 'hidden';
@@ -3870,7 +3877,7 @@
 
       if (upper === 'SKILLS') {
         basOut('=== Skills ===');
-        basOutMarked('Languages:  [[SQL]], [[Python]], [[Bash]], [[Lua]], [[GDScript]]');
+        basOutMarked('Languages:  [[SQL]], [[Python]], [[Bash]], [[Lua]]');
         basOutMarked('Tools:      [[SSMS]], [[Access]], [[Navision]], [[Excel]], [[PowerBI]]');
         basOutMarked('Data:       [[Pandas]], [[Matplotlib]], [[visualization]]');
         basOutMarked('Systems:    [[Unix]] & [[Windows]] sysadmin');
@@ -4166,6 +4173,7 @@
       basOutMarked('Use [[HELP]] for a list of commands');
       basOut('Ok');
 
+      input.addEventListener('input', () => syncInputWidth(input));
       input.addEventListener('keydown', (e) => {
         if ((e.key === 'c' && (e.ctrlKey || e.metaKey)) || e.key === 'Escape') {
           if (bas.running) {
@@ -4179,6 +4187,7 @@
         if (e.key === 'Enter') {
           const text = input.value;
           input.value = '';
+          syncInputWidth(input);
           basHandleInput(text);
         }
       });
@@ -4492,9 +4501,8 @@
               htermPrint('004    Data Viz           █████████████    80');
               htermPrint('005    Excel/PowerBI      ██████████████   85');
               htermPrint('006    Lua                ████████         50');
-              htermPrint('007    GDScript           ████████         50');
-              htermPrint('008    Photoshop          ███████████      70');
-              htermPrint('009    Music Production   █████████████    80');
+              htermPrint('007    Photoshop          ███████████      70');
+              htermPrint('008    Music Production   █████████████    80');
               htermPrint('-----------------------------------');
               htermPrint('END OF RECORD');
               break;
@@ -5085,25 +5093,35 @@
       }
     }
 
+    // Sync input width to content for browsers without field-sizing support
+    function syncInputWidth(el) {
+      el.style.width = Math.max(1, el.value.length) + 'ch';
+    }
+    htermInput.addEventListener('input', () => syncInputWidth(htermInput));
+
     // Input handler
     htermInput.addEventListener('keydown', (e) => {
       if (e.key === 'Enter') {
         htermExec(htermInput.value);
         htermInput.value = '';
+        syncInputWidth(htermInput);
       } else if (e.key === 'ArrowUp') {
         e.preventDefault();
         if (htermState.histIdx > 0) {
           htermState.histIdx--;
           htermInput.value = htermState.history[htermState.histIdx];
+          syncInputWidth(htermInput);
         }
       } else if (e.key === 'ArrowDown') {
         e.preventDefault();
         if (htermState.histIdx < htermState.history.length - 1) {
           htermState.histIdx++;
           htermInput.value = htermState.history[htermState.histIdx];
+          syncInputWidth(htermInput);
         } else {
           htermState.histIdx = htermState.history.length;
           htermInput.value = '';
+          syncInputWidth(htermInput);
         }
       }
     });
