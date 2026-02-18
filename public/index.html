@@ -387,20 +387,12 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      transition: transform 0.1s ease;
-    }
-    .wb-icon:hover .icon-box {
-      transform: scale(1.08);
-    }
-    .wb-icon:active .icon-box {
-      transform: scale(0.90);
-      transition: transform 0.05s ease;
     }
     .icon-box svg {
       width: 100%;
       height: 100%;
       filter: drop-shadow(2px 2px 0 #000);
-      transition: filter 0.1s ease;
+      transition: filter 0.12s ease;
     }
     .wb-icon:hover .icon-box svg {
       filter: drop-shadow(2px 2px 0 #000) brightness(1.25);
@@ -712,6 +704,17 @@
     .rec-window.open .window-title {
       border-bottom: 2px solid #fff;
     }
+    /* Markdown output from marked.js inside note windows */
+    .rec-body p { margin: 4px 0; }
+    .rec-body h1, .rec-body h2, .rec-body h3 { color: #ffaa00; margin: 10px 0 4px; }
+    .rec-body strong { color: #ffaa00; }
+    .rec-body em { color: #aaccff; font-style: normal; }
+    .rec-body blockquote { border-left: 3px solid #444; margin: 4px 0; padding-left: 8px; color: #aaa; }
+    .rec-body ul, .rec-body ol { padding-left: 18px; margin: 4px 0; }
+    .rec-body li { margin: 2px 0; }
+    .rec-body code { background: #111; padding: 1px 4px; font-family: 'Silkscreen', monospace; }
+    .rec-body pre { background: #111; padding: 8px; overflow-x: auto; margin: 4px 0; }
+    .rec-body hr { border: none; border-top: 1px solid #444; margin: 8px 0; }
 
     /* Draggable windows */
     .window.is-dragging {
@@ -1478,6 +1481,9 @@
 
   </div><!-- end #wb-container -->
 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.4/howler.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/marked@12/marked.min.js"></script>
   <script>
     const GITHUB_USER = 'visti';
 
@@ -1691,6 +1697,20 @@
       return cleaned || 'file';
     }
 
+    // Configure marked: secure links, GFM, line breaks
+    marked.use({
+      gfm: true,
+      breaks: true,
+      walkTokens(token) {
+        if (token.type === 'link') token.href = safeUrl(token.href || '');
+      },
+      renderer: {
+        link({ href, text }) {
+          return `<a href="${escapeHtml(href || '')}" target="_blank" rel="noopener noreferrer">${text}</a>`;
+        }
+      }
+    });
+
     function parseNote(md, index) {
       const text = md.replace(/\r\n/g, '\n');
       const fmMatch = text.match(/^---\n([\s\S]*?)\n---\n([\s\S]*)$/);
@@ -1709,21 +1729,7 @@
         meta[m[1]] = val;
       });
 
-      const bodyHtml = body.split('\n').map(line => {
-        if (line.trim() === '') return '<br>';
-        // Process inline markdown
-        let html = escapeHtml(line)
-          .replace(/\*\*(.+?)\*\*/g, '<span class="highlight">$1</span>')
-          .replace(/\[([^\]]+)\]\(([^)]+)\)/g, (m, text, url) => {
-            return '<a href="' + escapeHtml(safeUrl(url)) + '" target="_blank" rel="noopener noreferrer">' + text + '</a>';
-          });
-        if (line.startsWith('> ')) {
-          html = '<div class="dim-text">' + html.slice(4) + '</div>';
-        } else {
-          html = '<div class="output-text">' + html + '</div>';
-        }
-        return html;
-      }).join('\n');
+      const bodyHtml = marked.parse(body);
 
       return {
         title: meta.title || 'Note',
@@ -1775,8 +1781,8 @@
         // Close gadget hides the window
         win.querySelector('.note-close').addEventListener('click', (e) => {
           e.stopPropagation();
-          win.style.display = 'none';
           playWinClose();
+          winHide(win);
         });
 
         // Create icon
@@ -1792,17 +1798,17 @@
           e.preventDefault();
           if (win.style.display === 'none') {
             win.style.display = '';
-            if (!win.classList.contains('is-absolute')) {
-              mobileWindowPos(win, 380, null);
-            }
+            if (!win.classList.contains('is-absolute')) mobileWindowPos(win, 380, null);
             win.classList.add('open');
             bringToFront(win);
             playWinOpen();
+            winShow(win);
           } else {
-            win.style.display = 'none';
             playWinClose();
+            winHide(win);
           }
         });
+        applyIconGsap(icon);
 
         iconContainer.appendChild(icon);
       });
@@ -1955,6 +1961,7 @@
           '<div>Guru Meditation #00000004.0000AAC0</div>' +
         '</div>';
       document.body.appendChild(guru);
+      gsap.fromTo(guru, { x: -10 }, { x: 10, duration: 0.05, repeat: 8, yoyo: true, ease: 'none', onComplete: () => gsap.set(guru, { x: 0 }) });
       guru.addEventListener('click', () => guru.remove());
     }
 
@@ -3015,6 +3022,22 @@
       sizeWindowBody('dpaint-window', 'dpaint-body', 4, 200);
     }
 
+    function winShow(win) {
+      gsap.killTweensOf(win);
+      gsap.fromTo(win,
+        { scale: 0.88, opacity: 0 },
+        { scale: 1, opacity: 1, duration: 0.18, ease: 'back.out(1.5)', clearProps: 'scale,opacity' }
+      );
+    }
+    function winHide(win, onDone) {
+      gsap.killTweensOf(win);
+      gsap.to(win, { scale: 0.88, opacity: 0, duration: 0.12, ease: 'power2.in', onComplete: () => {
+        win.style.display = 'none';
+        gsap.set(win, { clearProps: 'scale,opacity' });
+        if (onDone) onDone();
+      }});
+    }
+
     function registerWindow(winId, iconId, closeId, w, h, onOpen) {
       const toggle = () => {
         const win = document.getElementById(winId);
@@ -3024,17 +3047,19 @@
           if (!win.classList.contains('is-absolute')) mobileWindowPos(win, w, h);
           bringToFront(win);
           playWinOpen();
+          winShow(win);
           if (onOpen) onOpen(win);
         } else {
-          win.style.display = 'none';
           playWinClose();
+          winHide(win);
         }
       };
       document.getElementById(iconId)?.addEventListener('click', (e) => { e.preventDefault(); toggle(); });
       document.getElementById(closeId)?.addEventListener('click', (e) => {
         e.stopPropagation();
-        document.getElementById(winId).style.display = 'none';
+        const win = document.getElementById(winId);
         playWinClose();
+        winHide(win);
       });
       return toggle;
     }
@@ -3046,8 +3071,8 @@
       const wins = [...document.querySelectorAll('.window')].filter(w => w.style.display !== 'none');
       if (!wins.length) return;
       const top = wins.reduce((a, b) => (parseInt(b.style.zIndex || 0) > parseInt(a.style.zIndex || 0) ? b : a));
-      top.style.display = 'none';
       playWinClose();
+      winHide(top);
     });
 
     const toggleDPaintWindow = registerWindow('dpaint-window', 'dpaint-icon', 'dpaint-close', 560, 480, () => sizeDPaintCanvas());
@@ -3249,13 +3274,14 @@
 
       close.addEventListener('click', (e) => {
         e.stopPropagation();
-        win.remove();
         playWinClose();
+        winHide(win, () => win.remove());
       });
 
       document.body.appendChild(win);
       bringToFront(win);
       playWinOpen();
+      winShow(win);
     }
 
     // === Drag pictures to trashcan to delete ===
@@ -3319,55 +3345,10 @@
       const el = document.getElementById('basic-output');
       if (el) el.textContent = '';
     }
-    // Pre-fetch audio bytes immediately — no AudioContext needed for fetch
-    const uiRawAudio = Promise.all([
-      fetch('/files/audio/load.wav').then(r => r.arrayBuffer()).catch(() => null),
-      fetch('/files/audio/deload.wav').then(r => r.arrayBuffer()).catch(() => null),
-    ]);
-    // Decode on first user gesture so buffers are ready before any window opens
-    document.addEventListener('pointerdown', () => ensureUiSounds(), { once: true });
-    let uiAudioCtx = null;
-    let uiSounds = null;
-    let uiDecoding = false;
-    async function ensureUiSounds() {
-      if (uiSounds || uiDecoding) return;
-      uiDecoding = true;
-      try {
-        if (!uiAudioCtx) uiAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        const [loadArr, deloadArr] = await uiRawAudio;
-        if (loadArr && deloadArr) {
-          const [load, deload] = await Promise.all([
-            uiAudioCtx.decodeAudioData(loadArr),
-            uiAudioCtx.decodeAudioData(deloadArr),
-          ]);
-          uiSounds = { load, deload };
-        }
-      } catch {}
-    }
-    function playWinOpen() {
-      try {
-        if (!uiAudioCtx) uiAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        if (uiAudioCtx.state === 'suspended') uiAudioCtx.resume();
-        ensureUiSounds();
-        if (!uiSounds) return;
-        const src = uiAudioCtx.createBufferSource();
-        src.buffer = uiSounds.load;
-        src.connect(uiAudioCtx.destination);
-        src.start();
-      } catch {}
-    }
-    function playWinClose() {
-      try {
-        if (!uiAudioCtx) uiAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        if (uiAudioCtx.state === 'suspended') uiAudioCtx.resume();
-        ensureUiSounds();
-        if (!uiSounds) return;
-        const src = uiAudioCtx.createBufferSource();
-        src.buffer = uiSounds.deload;
-        src.connect(uiAudioCtx.destination);
-        src.start();
-      } catch {}
-    }
+    const uiHowl     = new Howl({ src: ['/files/audio/load.wav'],   preload: true });
+    const uiHowlClose = new Howl({ src: ['/files/audio/deload.wav'], preload: true });
+    function playWinOpen()  { try { uiHowl.play(); }      catch {} }
+    function playWinClose() { try { uiHowlClose.play(); } catch {} }
 
     let basAudioCtx = null;
     function basBeep() {
@@ -5144,6 +5125,28 @@
 
     basInit();
     observeResize(document.getElementById('basic-window'), () => sizeBasicBody());
+
+    // === GSAP icon interactions ===
+    function applyIconGsap(icon) {
+      const box = icon.querySelector('.icon-box');
+      if (!box) return;
+      let hovered = false;
+      icon.addEventListener('mouseenter', () => {
+        hovered = true;
+        gsap.to(box, { scale: 1.08, duration: 0.15, ease: 'power2.out' });
+      });
+      icon.addEventListener('mouseleave', () => {
+        hovered = false;
+        gsap.to(box, { scale: 1, duration: 0.12, ease: 'power2.out' });
+      });
+      icon.addEventListener('mousedown', () => {
+        gsap.to(box, { scale: 0.88, duration: 0.06, ease: 'power3.in' });
+      });
+      icon.addEventListener('mouseup', () => {
+        gsap.to(box, { scale: hovered ? 1.08 : 1, duration: 0.2, ease: 'back.out(2)' });
+      });
+    }
+    document.querySelectorAll('.wb-icon').forEach(applyIconGsap);
   </script>
   <div id="crt" aria-hidden="true"></div>
 </body>
