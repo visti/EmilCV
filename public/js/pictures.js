@@ -2,10 +2,15 @@ import { safeUrl, safeId, escapeHtml } from './utils.js';
 import { mobileWindowPos, bringToFront, winShow, winHide, registerWindow, guruMeditation } from './windows.js';
 import { playWinOpen, playWinClose } from './sound.js';
 
+let _picturesAbort = null;
+
 export function loadPictures() {
   const body = document.getElementById('pictures-body');
   if (!body) return;
-  fetch('./paint/')
+  if (_picturesAbort) { _picturesAbort.abort(); }
+  _picturesAbort = new AbortController();
+  const signal = _picturesAbort.signal;
+  fetch('./paint/', { signal })
     .then(res => res.ok ? res.json() : [])
     .then(list => {
       body.innerHTML = '';
@@ -46,7 +51,8 @@ export function loadPictures() {
         body.appendChild(a);
       });
     })
-    .catch(() => {
+    .catch(err => {
+      if (err.name === 'AbortError') return;
       body.innerHTML = '<div class="pic-empty">Could not load paintings</div>';
     });
 }

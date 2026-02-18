@@ -563,7 +563,7 @@ export function resetSaveBtn() {
   btn.innerHTML = '<svg viewBox="0 0 18 18"><path d="M3 1h10l3 3v11a2 2 0 01-2 2H3a2 2 0 01-2-2V3a2 2 0 012-2z" fill="none" stroke="#fff" stroke-width="1.5"/><rect x="5" y="1" width="7" height="5" rx="0.5" fill="#fff" opacity="0.7"/><rect x="5" y="10" width="8" height="6" rx="1" fill="#fff" opacity="0.5"/></svg>';
 }
 
-export const toggleDPaintWindow = registerWindow('dpaint-window', 'dpaint-icon', 'dpaint-close', 560, 480, () => sizeDPaintCanvas());
+export const toggleDPaintWindow = registerWindow('dpaint-window', 'dpaint-icon', 'dpaint-close', 560, 600, () => sizeDPaintCanvas());
 
 // Save button
 document.getElementById('dp-save')?.addEventListener('click', (e) => {
