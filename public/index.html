@@ -146,7 +146,7 @@
       color: #33ff33;
       font-family: 'Silkscreen', 'Courier New', monospace;
       font-size: 13px;
-      caret-color: #33ff33;
+      caret-color: transparent;
     }
 
     /* Workbench title bar at top of screen */
@@ -283,6 +283,22 @@
     @keyframes blink {
       0%, 100% { opacity: 1; }
       50%      { opacity: 0; }
+    }
+    .block-cursor {
+      display: none;
+      width: 8px;
+      height: 13px;
+      flex-shrink: 0;
+      align-self: center;
+      animation: blink 1s step-end infinite;
+    }
+    #hterm-input:focus + .block-cursor {
+      display: block;
+      background: #33ff33;
+    }
+    #basic-input:focus + .block-cursor {
+      display: block;
+      background: #ffaa00;
     }
     /* Boot sequence overlay */
     .boot-screen {
@@ -952,7 +968,7 @@
       outline: none;
       flex: 1;
       padding: 0;
-      caret-color: #ffaa00;
+      caret-color: transparent;
     }
 
     /* Mail window */
@@ -1038,6 +1054,7 @@
     <div id="hterm-input-line">
       <span class="hterm-prompt">guest@amiga:~$&nbsp;</span>
       <input type="text" id="hterm-input" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+      <span class="block-cursor"></span>
     </div>
   </div>
 
@@ -1178,6 +1195,7 @@
       <div id="basic-input-line">
         <span id="basic-prompt"></span>
         <input type="text" id="basic-input" autocomplete="off" spellcheck="false">
+        <span class="block-cursor"></span>
       </div>
     </div>
   </div>
