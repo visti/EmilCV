@@ -426,19 +426,13 @@
       color: #ffcc44;
     }
     #cv-icon .icon-box img {
-      filter: invert(1) brightness(0.5) sepia(1) saturate(8)
-        drop-shadow(0 0 4px #ff8800) drop-shadow(2px 2px 0 #000);
+      filter: invert(1) brightness(0.5) sepia(1) saturate(8) drop-shadow(2px 2px 0 #000);
     }
     #cv-icon:hover .icon-box img {
-      filter: invert(1) brightness(0.5) sepia(1) saturate(8) brightness(1.25)
-        drop-shadow(0 0 6px #ffaa00) drop-shadow(2px 2px 0 #000);
+      filter: invert(1) brightness(0.5) sepia(1) saturate(8) brightness(1.25) drop-shadow(2px 2px 0 #000);
     }
 
-    /* ── Notes: smaller footprint, same color treatment as programs ── */
-    #note-icons .icon-box {
-      transform: scale(0.8);
-      transform-origin: bottom center;
-    }
+    /* ── Notes: smaller footprint — scale managed by GSAP to avoid hover conflict ── */
 
     .line {
       opacity: 0;
@@ -1331,14 +1325,7 @@
     </a>
     <a class="wb-icon" href="https://github.com/visti" target="_blank" rel="noopener noreferrer" aria-label="GitHub">
       <div class="icon-box">
-        <svg viewBox="0 0 36 36" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges">
-          <path d="M0 0 H30 L34 4 V34 H0 Z" fill="#0055AA" stroke="white" stroke-width="2"/>
-          <rect x="6" y="14" width="22" height="16" fill="white"/>
-          <rect x="8" y="2" width="14" height="8" fill="white" stroke="black" stroke-width="1"/>
-          <rect x="12" y="18" width="14" height="2" fill="#0055AA"/>
-          <rect x="12" y="22" width="14" height="2" fill="#0055AA"/>
-          <rect x="12" y="26" width="10" height="2" fill="#0055AA"/>
-        </svg>
+        <img src="files/icons/github.svg" alt="">
       </div>
       <span class="icon-label">GitHub</span>
     </a>
@@ -5069,20 +5056,22 @@
     function applyIconGsap(icon) {
       const box = icon.querySelector('.icon-box');
       if (!box) return;
+      const base = icon.closest('#note-icons') ? 0.8 : 1;
+      gsap.set(box, { scale: base });
       let hovered = false;
       icon.addEventListener('mouseenter', () => {
         hovered = true;
-        gsap.to(box, { scale: 1.08, duration: 0.15, ease: 'power2.out' });
+        gsap.to(box, { scale: base * 1.08, duration: 0.15, ease: 'power2.out' });
       });
       icon.addEventListener('mouseleave', () => {
         hovered = false;
-        gsap.to(box, { scale: 1, duration: 0.12, ease: 'power2.out' });
+        gsap.to(box, { scale: base, duration: 0.12, ease: 'power2.out' });
       });
       icon.addEventListener('mousedown', () => {
-        gsap.to(box, { scale: 0.88, duration: 0.06, ease: 'power3.in' });
+        gsap.to(box, { scale: base * 0.88, duration: 0.06, ease: 'power3.in' });
       });
       icon.addEventListener('mouseup', () => {
-        gsap.to(box, { scale: hovered ? 1.08 : 1, duration: 0.2, ease: 'back.out(2)' });
+        gsap.to(box, { scale: hovered ? base * 1.08 : base, duration: 0.2, ease: 'back.out(2)' });
       });
     }
     document.querySelectorAll('.wb-icon').forEach(applyIconGsap);
