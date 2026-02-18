@@ -3289,33 +3289,57 @@
       const el = document.getElementById('basic-output');
       if (el) el.textContent = '';
     }
+    // Pre-fetch audio bytes immediately — no AudioContext needed for fetch
+    const uiRawAudio = Promise.all([
+      fetch('/files/audio/load.mp3').then(r => r.arrayBuffer()).catch(() => null),
+      fetch('/files/audio/deload.mp3').then(r => r.arrayBuffer()).catch(() => null),
+    ]);
     let uiAudioCtx = null;
+    let uiSounds = null;
+    let uiDecoding = false;
+    async function ensureUiSounds() {
+      if (uiSounds || uiDecoding) return;
+      uiDecoding = true;
+      try {
+        if (!uiAudioCtx) uiAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const [loadArr, deloadArr] = await uiRawAudio;
+        if (loadArr && deloadArr) {
+          const [load, deload] = await Promise.all([
+            uiAudioCtx.decodeAudioData(loadArr),
+            uiAudioCtx.decodeAudioData(deloadArr),
+          ]);
+          uiSounds = { load, deload };
+        }
+      } catch {}
+    }
     function playWinOpen() {
       try {
         if (!uiAudioCtx) uiAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        const t = uiAudioCtx.currentTime;
-        const o = uiAudioCtx.createOscillator();
-        const g = uiAudioCtx.createGain();
-        o.connect(g); g.connect(uiAudioCtx.destination);
-        o.type = 'square';
-        o.frequency.value = 180;
-        g.gain.setValueAtTime(0.12, t);
-        g.gain.exponentialRampToValueAtTime(0.001, t + 0.035);
-        o.start(t); o.stop(t + 0.035);
+        if (uiAudioCtx.state === 'suspended') uiAudioCtx.resume();
+        ensureUiSounds();
+        if (!uiSounds) return;
+        const src = uiAudioCtx.createBufferSource();
+        src.buffer = uiSounds.load;
+        src.connect(uiAudioCtx.destination);
+        src.start();
       } catch {}
     }
     function playWinClose() {
       try {
         if (!uiAudioCtx) uiAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        const t = uiAudioCtx.currentTime;
-        const o = uiAudioCtx.createOscillator();
+        if (uiAudioCtx.state === 'suspended') uiAudioCtx.resume();
+        ensureUiSounds();
+        if (!uiSounds) return;
+        const src = uiAudioCtx.createBufferSource();
+        src.buffer = uiSounds.deload;
         const g = uiAudioCtx.createGain();
-        o.connect(g); g.connect(uiAudioCtx.destination);
-        o.type = 'square';
-        o.frequency.value = 130;
-        g.gain.setValueAtTime(0.12, t);
-        g.gain.exponentialRampToValueAtTime(0.001, t + 0.035);
-        o.start(t); o.stop(t + 0.035);
+        src.connect(g); g.connect(uiAudioCtx.destination);
+        const dur = uiSounds.deload.duration;
+        const t = uiAudioCtx.currentTime;
+        g.gain.setValueAtTime(1, t);
+        g.gain.setValueAtTime(1, t + Math.max(0, dur - 0.15));
+        g.gain.linearRampToValueAtTime(0, t + dur);
+        src.start(t);
       } catch {}
     }
 
