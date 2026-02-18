@@ -3309,7 +3309,7 @@
     }
     // Pre-fetch audio bytes immediately — no AudioContext needed for fetch
     const uiRawAudio = Promise.all([
-      fetch('/files/audio/load.mp3').then(r => r.arrayBuffer()).catch(() => null),
+      fetch('/files/audio/load.wav').then(r => r.arrayBuffer()).catch(() => null),
       fetch('/files/audio/deload.wav').then(r => r.arrayBuffer()).catch(() => null),
     ]);
     let uiAudioCtx = null;
