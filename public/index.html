@@ -184,7 +184,7 @@
     .wb-screen-bar .gadget:hover { background: #ccccee; }
     .wb-screen-bar .gadget:active { background: #6666aa; }
 
-    /* Amiga-style window */
+    /* VistiOS-style window */
     .window {
       background: #0055aa;
       border: 2px solid #ffffff;
@@ -976,7 +976,7 @@
       font-size: 11px;
     }
 
-    /* AmigaBASIC window */
+    /* VistiBASIC window */
     #basic-body {
       background: #0022aa;
       color: #fff;
@@ -1097,7 +1097,7 @@
     </div>
     <div id="hterm-output"></div>
     <div id="hterm-input-line">
-      <span class="hterm-prompt">guest@amiga:~$&nbsp;</span>
+      <span class="hterm-prompt">guest@vistios:~$&nbsp;</span>
       <input type="text" id="hterm-input" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
       <span class="block-cursor"></span>
     </div>
@@ -1129,7 +1129,7 @@
   <div class="window rec-window open" id="main-window">
     <div class="window-title rec-toggle" data-toggle="main-window">
       <div class="close-gadget" id="main-close"></div>
-      <span class="title-text">AmigaShell - Emil Visti</span>
+      <span class="title-text">VistiShell - Emil Visti</span>
     </div>
     <div class="window-body rec-body" id="terminal"></div>
   </div>
@@ -1227,11 +1227,11 @@
     </div>
   </div>
 
-  <!-- AmigaBASIC window (hidden by default) -->
+  <!-- VistiBASIC window (hidden by default) -->
   <div class="window" id="basic-window" style="display:none">
     <div class="window-title">
       <div class="close-gadget" id="basic-close"></div>
-      <span class="title-text">AmigaBASIC</span>
+      <span class="title-text">VistiBASIC</span>
     </div>
     <div class="window-body" id="basic-body">
       <div id="basic-output"></div>
@@ -1361,11 +1361,11 @@
       </div>
       <span class="icon-label">Pictures</span>
     </a>
-    <a class="wb-icon" href="#" id="basic-icon" aria-label="AmigaBASIC">
+    <a class="wb-icon" href="#" id="basic-icon" aria-label="VistiBASIC">
       <div class="icon-box">
         <img src="files/icons/basic.svg" alt="">
       </div>
-      <span class="icon-label">Amiga<br>BASIC</span>
+      <span class="icon-label">Visti<br>BASIC</span>
     </a>
     <a class="wb-icon" href="#" id="mail-icon" aria-label="Mail">
       <div class="icon-box">
@@ -1470,7 +1470,7 @@
       const lines = [];
 
       // Boot
-      lines.push({ type: 'boot', html: '<span class="dim-text">Amiga Kickstart ROM v3.1</span>' });
+      lines.push({ type: 'boot', html: '<span class="dim-text">VistiOS Kickstart ROM v1.0</span>' });
       lines.push({ type: 'boot', html: '<span class="dim-text">68030 CPU @ 25MHz  -  2MB Chip RAM  -  8MB Fast RAM</span>' });
       lines.push({ type: 'boot', html: '<span class="dim-text">Loading Workbench...</span>' });
       lines.push({ type: 'blank' });
@@ -1805,7 +1805,7 @@
 |   ║                                              ║  |
 |   ║  Stack: HTML + inline CSS/JS + GitHub API    ║  |
 |   ║  Host:  Fly.io (node:20-alpine)               ║  |
-|   ║  Aesthetic: Amiga Workbench 3.1              ║  |
+|   ║  Aesthetic: VistiOS Workbench              ║  |
 |   ║                                              ║  |
 |   ║  > github.com/visti                          ║  |
 |   ║  > soundcloud.com/visti-1                    ║  |
@@ -3395,7 +3395,7 @@
       });
     }
 
-    // === AmigaBASIC Interpreter ===
+    // === VistiBASIC Interpreter ===
     const bas = {
       prog: {}, vars: {}, running: false, pc: 0,
       lines: [], callStack: [], forStack: [], whileStack: [],
@@ -4255,7 +4255,7 @@
     function basInit() {
       const input = document.getElementById('basic-input');
       if (!input) return;
-      basOut('AmigaBASIC v3.4');
+      basOut('VistiBASIC v3.4');
       basOut('(c) 2026 Workbench Edition');
       basOut('32768 bytes free');
       basOutMarked('Use [[HELP]] for a list of commands');
@@ -4502,7 +4502,7 @@
       htermState.histIdx = htermState.history.length;
 
       // Echo the command
-      htermPrint(`<span class="hterm-prompt-echo">guest@amiga:~$</span> <span class="hterm-cmd">${trimmed}</span>`, null);
+      htermPrint(`<span class="hterm-prompt-echo">guest@vistios:~$</span> <span class="hterm-cmd">${trimmed}</span>`, null);
 
       const parts = trimmed.split(/\s+/);
       const cmd = parts[0].toLowerCase();
@@ -4546,7 +4546,7 @@
             ]],
           ];
           htermPrint('<span class="hterm-accent">╔══════════════════════════════════════╗</span>', null);
-          htermPrint('<span class="hterm-accent">║</span>     AmigaOS CLI — Help Menu          <span class="hterm-accent">║</span>', null);
+          htermPrint('<span class="hterm-accent">║</span>     VistiOS CLI — Help Menu          <span class="hterm-accent">║</span>', null);
           htermPrint('<span class="hterm-accent">╚══════════════════════════════════════╝</span>', null);
           htermPrint('');
           helpSections.forEach(([title, cmds]) => {
@@ -4576,10 +4576,10 @@
           switch (args.toLowerCase()) {
             case 'readme.txt':
               htermPrint('=== README ===', 'hterm-accent');
-              htermPrint('This site is a love letter to the Commodore Amiga.');
+              htermPrint('This site is a love letter to VistiOS.');
               htermPrint('Built with HTML, CSS, and vanilla JS.');
               htermPrint('No frameworks were harmed in the making of this page.');
-              htermPrint('The Amiga Workbench 3.1 aesthetic is recreated from memory');
+              htermPrint('The VistiOS Workbench aesthetic is recreated from memory');
               htermPrint('and screenshots — every pixel placed with care.');
               break;
             case 'about.txt':
@@ -4648,11 +4648,11 @@
         }
 
         case 'uname':
-          htermPrint('AmigaOS 3.1  68030 @ 25MHz  A1200  Kickstart 40.68');
+          htermPrint('VistiOS 3.1  68030 @ 25MHz  A1200  Kickstart 40.68');
           break;
 
         case 'neofetch': {
-          // Amiga rainbow checkmark logo
+          // VistiOS rainbow logo
           const r = '#ff0000', o = '#ff8800', y = '#ffcc00', g = '#33cc33', b = '#0088ff', p = '#8833cc';
           const neoArt = [
             `                <span style="color:${r}">██</span>`,
@@ -4669,9 +4669,9 @@
             `     <span style="color:${r}">██</span><span style="color:${o}">██</span>`,
           ];
           const neoInfo = [
-            '<span class="hterm-accent">guest</span>@<span class="hterm-accent">amiga</span>',
+            '<span class="hterm-accent">guest</span>@<span class="hterm-accent">vistios</span>',
             '─────────────',
-            `<span class="hterm-accent">OS:</span> AmigaOS 3.1`,
+            `<span class="hterm-accent">OS:</span> VistiOS 3.1`,
             `<span class="hterm-accent">Host:</span> Commodore A1200`,
             `<span class="hterm-accent">Kernel:</span> Kickstart 40.68`,
             `<span class="hterm-accent">CPU:</span> MC68030 @ 25MHz`,
@@ -4738,7 +4738,7 @@
           htermPrint('─────────────────────────────────────────');
           htermPrint('    1  system    2.1   4.0  Kickstart');
           htermPrint('   12  system    1.5   3.2  Workbench');
-          htermPrint('   23  guest     8.4  12.1  AmigaShell');
+          htermPrint('   23  guest     8.4  12.1  VistiShell');
           htermPrint('   34  guest    15.2  18.5  DPaint');
           htermPrint('   45  guest     4.7   8.3  Demoscene');
           htermPrint('   56  guest     0.8   2.1  Trashcan');
@@ -4753,7 +4753,7 @@
             htermPrint('  Connected.', 'hterm-accent');
             htermPrint('  HTTP/1.1 200 OK');
             htermPrint('  Content-Type: text/html; charset=UTF-8');
-            htermPrint('  Server: AmigaHTTPd/1.0');
+            htermPrint('  Server: VistiHTTPd/1.0');
             htermPrint('  X-Powered-By: MC68030');
             htermPrint('');
             htermPrint('  &lt;html&gt;&lt;body&gt;Nothing to see here. Go back to Workbench.&lt;/body&gt;&lt;/html&gt;');
@@ -5173,7 +5173,7 @@
             cancelAnimationFrame(mxRaf);
             htermState.raf = 0;
             mxWrap.remove();
-            htermPrint('Just kidding. This is an Amiga, not the Matrix.', 'hterm-accent');
+            htermPrint('Just kidding. This is VistiOS, not the Matrix.', 'hterm-accent');
             htermPrint('Type "help" to see what else is here.', 'hterm-accent');
           }, 10500));
           break;
@@ -5231,7 +5231,7 @@
     });
 
     function htermInit() {
-      htermPrint('AmigaOS CLI v3.1', 'hterm-accent');
+      htermPrint('VistiOS CLI v3.1', 'hterm-accent');
       htermPrint('MC68030 @ 25MHz  |  2MB Chip + 8MB Fast RAM');
       htermPrint('');
       htermPrint('Type "help" for available commands.');
