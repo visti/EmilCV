@@ -1919,7 +1919,7 @@
       const logoSz = Math.min(W * 0.14, 112);
       const logoY  = H * 0.4;
 
-      // "Amiga" with rainbow vertical gradient
+      // "VistiOS" with rainbow vertical gradient
       ctx.save();
       ctx.font = `italic bold ${logoSz}px Palatino, Georgia, serif`;
       ctx.textAlign = 'center';
@@ -1929,7 +1929,7 @@
       rg.addColorStop(0.40, '#ffee00'); rg.addColorStop(0.60, '#22cc44');
       rg.addColorStop(0.80, '#2255ff'); rg.addColorStop(1.00, '#8822ff');
       ctx.fillStyle = rg;
-      ctx.fillText('Amiga', W / 2, logoY);
+      ctx.fillText('VistiOS', W / 2, logoY);
       ctx.restore();
 
       // Rainbow underline bar
@@ -1951,9 +1951,9 @@
       ctx.textAlign = 'center';
       ctx.fillStyle = '#6677aa';
       const infoY = barY + 48;
-      ctx.fillText('Kickstart Release 3.1, Revision 40.68', W / 2, infoY);
+      ctx.fillText('VistiOS Release 1.0, Revision 2026', W / 2, infoY);
       await wait(300);
-      ctx.fillText('\u00A9 1985\u20131993 Commodore-Amiga, Inc. All Rights Reserved', W / 2, infoY + infoSz + 10);
+      ctx.fillText('\u00A9 2026 Emil Visti. All Rights Reserved', W / 2, infoY + infoSz + 10);
       await wait(560);
 
       // Cursor + insert-disk prompt
