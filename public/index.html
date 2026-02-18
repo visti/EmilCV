@@ -1712,8 +1712,10 @@
           e.preventDefault();
           if (win.style.display === 'none') {
             win.style.display = '';
-            if (!win.classList.contains('is-absolute')) mobileWindowPos(win, 380, null);
             win.classList.add('open');
+            win.style.height = '';
+            delete win.dataset.prevHeight;
+            if (!win.classList.contains('is-absolute')) mobileWindowPos(win, 380, null);
             bringToFront(win);
             playWinOpen();
             winShow(win);
@@ -2958,6 +2960,11 @@
         if (!win) return;
         if (win.style.display === 'none') {
           win.style.display = '';
+          if (!win.classList.contains('open')) {
+            win.classList.add('open');
+            win.style.height = '';
+            delete win.dataset.prevHeight;
+          }
           if (!win.classList.contains('is-absolute')) mobileWindowPos(win, w, h);
           bringToFront(win);
           playWinOpen();
