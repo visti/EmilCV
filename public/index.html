@@ -425,10 +425,6 @@
     #cv-icon:hover {
       color: #ffcc44;
     }
-    #cv-icon .icon-box {
-      transform: scale(1.25);
-      transform-origin: bottom center;
-    }
     #cv-icon .icon-box img {
       filter: invert(1) brightness(0.5) sepia(1) saturate(8)
         drop-shadow(0 0 4px #ff8800) drop-shadow(2px 2px 0 #000);
@@ -438,22 +434,10 @@
         drop-shadow(0 0 6px #ffaa00) drop-shadow(2px 2px 0 #000);
     }
 
-    /* ── Notes: recessed project files — less visual weight ── */
-    #note-icons .wb-icon {
-      color: #888;
-    }
-    #note-icons .wb-icon:hover {
-      color: #ffaa00;
-    }
+    /* ── Notes: smaller footprint, same color treatment as programs ── */
     #note-icons .icon-box {
       transform: scale(0.8);
       transform-origin: bottom center;
-    }
-    #note-icons .icon-box img {
-      filter: invert(1) brightness(0.55) drop-shadow(2px 2px 0 #000);
-    }
-    #note-icons .wb-icon:hover .icon-box img {
-      filter: invert(1) brightness(0.5) sepia(1) saturate(8) drop-shadow(2px 2px 0 #000);
     }
 
     .line {
