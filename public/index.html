@@ -418,18 +418,18 @@
       white-space: pre-line;
     }
 
-    /* ── CV: main attraction — permanently "selected" (Amiga-authentic) ── */
+    /* ── CV: main attraction — gold, distinct from the orange hover ── */
     #cv-icon {
-      color: #ffaa00;
+      color: #ffe040;
     }
     #cv-icon:hover {
-      color: #ffcc44;
+      color: #fff0a0;
     }
     #cv-icon .icon-box img {
-      filter: invert(1) brightness(0.5) sepia(1) saturate(8) drop-shadow(2px 2px 0 #000);
+      filter: invert(1) brightness(0.5) sepia(1) saturate(8) hue-rotate(20deg) drop-shadow(2px 2px 0 #000);
     }
     #cv-icon:hover .icon-box img {
-      filter: invert(1) brightness(0.5) sepia(1) saturate(8) brightness(1.25) drop-shadow(2px 2px 0 #000);
+      filter: invert(1) brightness(0.5) sepia(1) saturate(8) hue-rotate(20deg) brightness(1.25) drop-shadow(2px 2px 0 #000);
     }
 
     /* ── Notes: smaller footprint — scale managed by GSAP to avoid hover conflict ── */
