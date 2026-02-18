@@ -47,7 +47,7 @@ export function htermToggle() {
     gsap.to(wbContainer, {
       y: window.innerHeight - 24,
       duration: 0.9,
-      ease: 'back.out(3)',
+      ease: 'back.out(1.4)',
       onComplete: () => htermInput.focus()
     });
   } else {
@@ -56,7 +56,7 @@ export function htermToggle() {
     gsap.to(wbContainer, {
       y: 0,
       duration: 0.65,
-      ease: 'back.in(2)',
+      ease: 'back.out(1.4)',
       onComplete: () => {
         htermScreen.classList.remove('visible', 'behind');
       }
@@ -67,7 +67,6 @@ export function htermToggle() {
 
 // Depth gadget listeners
 document.getElementById('wb-depth-back')?.addEventListener('click', htermToggle);
-document.getElementById('hterm-depth-front')?.addEventListener('click', htermToggle);
 document.getElementById('hterm-depth-back')?.addEventListener('click', htermToggle);
 // Click the visible sliver of workbench bar to pull it back up
 document.querySelector('.wb-screen-bar')?.addEventListener('click', (e) => {

@@ -4,9 +4,10 @@ import { fetchNotes, renderNotes } from './notes.js';
 import { sizeDemoCanvas, startStarfield, startScroller } from './demo.js';
 import { sizeDiskCanvas } from './disk.js';
 import { sizeFileMgrCanvas } from './filemanager.js';
-import { sizeDPaintCanvas, dpaintSave } from './dpaint.js';
+import { sizeDPaintCanvas, dpaintSave, dpaintUndo, dpaintRedo } from './dpaint.js';
 import { bas, basInit, sizeBasicBody } from './basic.js';
 import { htermState, htermToggle, htermInit } from './terminal.js';
+import './pictures.js';
 import {
   registerWindow, guruMeditation, applyIconGsap,
   observeResize, sizeMainWindowBody, sizeWindowsToContent,
@@ -103,9 +104,15 @@ async function main() {
 }
 
 (async () => {
+  const mainPromise = main();
+  await new Promise(resolve => {
+    const prompt = document.getElementById('boot-prompt');
+    const handler = () => { prompt.style.display = 'none'; resolve(); };
+    prompt.addEventListener('click', handler, { once: true });
+  });
   const [, startTypewriter] = await Promise.all([
     runBootSequence(),
-    main()
+    mainPromise
   ]);
   if (startTypewriter) startTypewriter();
 })();
@@ -255,15 +262,20 @@ document.addEventListener('keydown', (e) => {
   winHide(top);
 });
 
-// === Ctrl+S: save DPaint canvas ===
+// === Ctrl+S / Ctrl+Z / Ctrl+Y: DPaint shortcuts ===
 document.addEventListener('keydown', (e) => {
   if (htermState.open) return;
+  const win = document.getElementById('dpaint-window');
+  if (!win || win.style.display === 'none') return;
   if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 's') {
-    const win = document.getElementById('dpaint-window');
-    if (win && win.style.display !== 'none') {
-      e.preventDefault();
-      dpaintSave();
-    }
+    e.preventDefault();
+    dpaintSave();
+  } else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z') {
+    e.preventDefault();
+    dpaintUndo();
+  } else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'y') {
+    e.preventDefault();
+    dpaintRedo();
   }
 });
 

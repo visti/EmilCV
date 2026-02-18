@@ -13,7 +13,6 @@
     <div class="hterm-bar">
       <span>CLI Screen</span>
       <div class="gadgets">
-        <div class="gadget hterm-depth" id="hterm-depth-front"></div>
         <div class="gadget hterm-depth" id="hterm-depth-back"></div>
       </div>
     </div>
@@ -28,7 +27,8 @@
   <!-- Workbench container (slides down to reveal terminal) -->
   <div id="wb-container">
   <div class="boot-screen active" id="boot-screen">
-    <canvas id="boot-canvas"></canvas>
+    <div id="boot-prompt">CLICK TO BOOT</div>
+    <canvas id="boot-canvas" style="display:none"></canvas>
     <div id="boot-post">
       <div class="boot-line" id="boot-mem">Memory check: <span class="highlight">0 KB</span></div>
       <div class="boot-line" id="boot-scan">Scanning expansion devices...</div>
@@ -42,7 +42,6 @@
   <div class="wb-screen-bar">
     <span>Workbench Screen</span>
     <div class="gadgets">
-      <div class="gadget" id="wb-depth-front"></div>
       <div class="gadget" id="wb-depth-back"></div>
     </div>
   </div>
@@ -105,6 +104,12 @@
           <button class="dp-tool" data-tool="eyedropper" title="Eyedropper (I)">
             <svg viewBox="0 0 18 18"><path d="M6 16 L4 14 L10 8 L12 10 Z" fill="#000"/><circle cx="13" cy="5" r="3" fill="none" stroke="#000" stroke-width="1.5"/></svg>
           </button>
+          <button class="dp-tool" data-tool="text" title="Text (T)">
+            <svg viewBox="0 0 18 18"><text x="3" y="14" font-family="monospace" font-size="13" font-weight="bold" fill="#000">T</text></svg>
+          </button>
+          <button class="dp-tool" data-tool="stamp" title="Stamp">
+            <svg viewBox="0 0 18 18"><circle cx="9" cy="7" r="5" fill="none" stroke="#000" stroke-width="1.5"/><rect x="5" y="12" width="8" height="3" fill="#000" rx="1"/><rect x="3" y="15" width="12" height="2" fill="#000" rx="0.5"/></svg>
+          </button>
           <hr class="dp-divider">
           <button class="dp-tool" id="dp-filled-toggle" title="Toggle Filled (Shift+F)">
             <svg viewBox="0 0 18 18"><rect x="2" y="4" width="14" height="10" fill="none" stroke="#000" stroke-width="2"/><rect x="5" y="7" width="8" height="4" fill="#000"/></svg>
@@ -120,9 +125,29 @@
             <svg viewBox="0 0 18 18"><rect x="6" y="6" width="6" height="6" fill="#000"/></svg>
           </button>
           <hr class="dp-divider">
+          <button class="dp-tool" id="dp-undo" title="Undo (Ctrl+Z)">
+            <svg viewBox="0 0 18 18"><path d="M4 8 Q4 3 10 3 Q15 3 15 8 Q15 13 10 13 L7 13" fill="none" stroke="#000" stroke-width="1.5"/><polyline points="4,5 4,9 8,9" fill="none" stroke="#000" stroke-width="1.5"/></svg>
+          </button>
+          <button class="dp-tool" id="dp-redo" title="Redo (Ctrl+Y)">
+            <svg viewBox="0 0 18 18"><path d="M14 8 Q14 3 8 3 Q3 3 3 8 Q3 13 8 13 L11 13" fill="none" stroke="#000" stroke-width="1.5"/><polyline points="14,5 14,9 10,9" fill="none" stroke="#000" stroke-width="1.5"/></svg>
+          </button>
           <button class="dp-tool" id="dp-clear" title="Clear canvas">CLR</button>
           <button class="dp-tool" id="dp-touch-color-toggle" title="Toggle FG/BG draw color">FG</button>
-          <hr class="dp-divider">
+          <div id="dp-stamp-picker">
+            <hr class="dp-divider" style="width:100%;box-sizing:border-box;">
+            <button class="dp-tool dp-stamp active" data-stamp="boing" title="Boing ball">
+              <svg viewBox="0 0 18 18"><circle cx="9" cy="9" r="7" fill="#fcfcfc"/><path d="M9 2 A7 7 0 0 1 16 9 L9 9 Z" fill="#ec0000"/><path d="M9 16 A7 7 0 0 1 2 9 L9 9 Z" fill="#ec0000"/><circle cx="9" cy="9" r="7" fill="none" stroke="#000" stroke-width="1"/></svg>
+            </button>
+            <button class="dp-tool dp-stamp" data-stamp="floppy" title="Floppy disk">
+              <svg viewBox="0 0 18 18"><rect x="3" y="2" width="12" height="14" rx="1" fill="#303030"/><rect x="9" y="2" width="4" height="5" fill="#545454"/><rect x="4" y="8" width="10" height="6" fill="#cccccc"/><rect x="6" y="12" width="6" height="2" fill="#888"/></svg>
+            </button>
+            <button class="dp-tool dp-stamp" data-stamp="star" title="Star">
+              <svg viewBox="0 0 18 18"><path d="M9 2 L10.5 7 L16 7 L11.5 10.5 L13 16 L9 12.5 L5 16 L6.5 10.5 L2 7 L7.5 7 Z" fill="#fcec00" stroke="#888" stroke-width="0.5"/></svg>
+            </button>
+            <button class="dp-tool dp-stamp" data-stamp="heart" title="Heart">
+              <svg viewBox="0 0 18 18"><path d="M9 15 C9 15 2 10 2 5.5 A3.5 3.5 0 0 1 9 5 A3.5 3.5 0 0 1 16 5.5 C16 10 9 15 9 15 Z" fill="#ec0000"/></svg>
+            </button>
+          </div>
           <button class="dp-tool dp-save" id="dp-save" title="Save painting (Ctrl+S)">
             <svg viewBox="0 0 18 18"><path d="M3 1h10l3 3v11a2 2 0 01-2 2H3a2 2 0 01-2-2V3a2 2 0 012-2z" fill="none" stroke="#fff" stroke-width="1.5"/><rect x="5" y="1" width="7" height="5" rx="0.5" fill="#fff" opacity="0.7"/><rect x="5" y="10" width="8" height="6" rx="1" fill="#fff" opacity="0.5"/></svg>
           </button>

@@ -14,6 +14,9 @@ export const dpaint = {
   canvasW: 320, canvasH: 256,
   touchUseBg: false,
   drawingIsRight: false,
+  undoStack: [],
+  redoStack: [],
+  currentStamp: 'boing',
   palette: [
     '#000000','#a0a0a0','#ec0000','#a80000',
     '#dc8800','#fcec00','#88fc00','#008800',
@@ -25,6 +28,26 @@ export const dpaint = {
     '#cccccc','#dcdcdc','#ececec','#fcfcfc'
   ]
 };
+
+const MAX_UNDO = 40;
+
+function dpaintSnapshot() {
+  dpaint.undoStack.push(dpaint.ctx.getImageData(0, 0, dpaint.canvasW, dpaint.canvasH));
+  if (dpaint.undoStack.length > MAX_UNDO) dpaint.undoStack.shift();
+  dpaint.redoStack = [];
+}
+
+export function dpaintUndo() {
+  if (!dpaint.undoStack.length) return;
+  dpaint.redoStack.push(dpaint.ctx.getImageData(0, 0, dpaint.canvasW, dpaint.canvasH));
+  dpaint.ctx.putImageData(dpaint.undoStack.pop(), 0, 0);
+}
+
+export function dpaintRedo() {
+  if (!dpaint.redoStack.length) return;
+  dpaint.undoStack.push(dpaint.ctx.getImageData(0, 0, dpaint.canvasW, dpaint.canvasH));
+  dpaint.ctx.putImageData(dpaint.redoStack.pop(), 0, 0);
+}
 
 export function sizeDPaintCanvas() {
   const win = document.getElementById('dpaint-window');
@@ -50,6 +73,7 @@ export function initDPaint() {
   buildDPaintPalette();
   attachDPaintCanvasEvents();
   attachDPaintToolbarEvents();
+  initDPaintStamps();
 }
 
 function dpaintCoords(e) {
@@ -160,6 +184,99 @@ function dpaintPickColor(x, y, isRight) {
   updateDPaintPaletteSelection();
 }
 
+function showDPaintTextInput(canvasX, canvasY) {
+  document.getElementById('dp-text-input')?.remove();
+  const rect = dpaint.canvas.getBoundingClientRect();
+  const scaleX = rect.width / dpaint.canvasW;
+  const scaleY = rect.height / dpaint.canvasH;
+  const screenX = rect.left + canvasX * scaleX;
+  const screenY = rect.top + canvasY * scaleY;
+  const fontSize = Math.max(8, dpaint.brushSize * 4);
+  const input = document.createElement('input');
+  input.type = 'text';
+  input.id = 'dp-text-input';
+  input.style.cssText = `position:fixed;left:${screenX}px;top:${screenY}px;background:transparent;border:1px dashed ${dpaint.fgColor};color:${dpaint.fgColor};font-family:'Silkscreen',monospace;font-size:${fontSize}px;outline:none;min-width:40px;padding:0 2px;z-index:9999;`;
+  let committed = false;
+  const commit = () => {
+    if (committed) return;
+    committed = true;
+    const text = input.value;
+    if (text) {
+      dpaintSnapshot();
+      dpaint.ctx.font = `${fontSize}px 'Silkscreen', monospace`;
+      dpaint.ctx.fillStyle = dpaint.fgColor;
+      dpaint.ctx.textBaseline = 'top';
+      dpaint.ctx.fillText(text, canvasX, canvasY);
+    }
+    input.remove();
+  };
+  input.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') { e.preventDefault(); commit(); }
+    if (e.key === 'Escape') { committed = true; input.remove(); }
+    e.stopPropagation();
+  });
+  input.addEventListener('blur', commit);
+  document.body.appendChild(input);
+  input.focus();
+}
+
+const STAMPS = {};
+
+function initDPaintStamps() {
+  // Boing ball — red/white checkerboard sphere
+  const boing = document.createElement('canvas');
+  boing.width = boing.height = 16;
+  const bc = boing.getContext('2d');
+  for (let y = 0; y < 16; y++) {
+    for (let x = 0; x < 16; x++) {
+      const dx = x - 7.5, dy = y - 7.5;
+      if (dx * dx + dy * dy <= 56) {
+        bc.fillStyle = (Math.floor(x / 2) + Math.floor(y / 2)) % 2 ? '#ec0000' : '#fcfcfc';
+        bc.fillRect(x, y, 1, 1);
+      }
+    }
+  }
+  STAMPS.boing = boing;
+
+  // Floppy disk
+  const floppy = document.createElement('canvas');
+  floppy.width = floppy.height = 16;
+  const fc = floppy.getContext('2d');
+  fc.fillStyle = '#303030'; fc.fillRect(2, 1, 12, 14);
+  fc.fillStyle = '#545454'; fc.fillRect(8, 1, 4, 4);
+  fc.fillStyle = '#cccccc'; fc.fillRect(3, 6, 10, 7);
+  fc.fillStyle = '#888888'; fc.fillRect(5, 11, 6, 2);
+  STAMPS.floppy = floppy;
+
+  // Star
+  const star = document.createElement('canvas');
+  star.width = star.height = 16;
+  const sc = star.getContext('2d');
+  sc.fillStyle = '#fcec00';
+  sc.beginPath();
+  for (let i = 0; i < 10; i++) {
+    const angle = (i * Math.PI / 5) - Math.PI / 2;
+    const r = i % 2 === 0 ? 7 : 3;
+    const px = 8 + r * Math.cos(angle), py = 8 + r * Math.sin(angle);
+    i === 0 ? sc.moveTo(px, py) : sc.lineTo(px, py);
+  }
+  sc.closePath(); sc.fill();
+  STAMPS.star = star;
+
+  // Heart
+  const heart = document.createElement('canvas');
+  heart.width = heart.height = 16;
+  const hc = heart.getContext('2d');
+  hc.fillStyle = '#ec0000';
+  const heartPx = ['0110110','1111111','1111111','0111110','0011100','0001000'];
+  heartPx.forEach((row, ry) => {
+    [...row].forEach((px, rx) => {
+      if (px === '1') hc.fillRect(rx + 4, ry + 4, 1, 1);
+    });
+  });
+  STAMPS.heart = heart;
+}
+
 function attachDPaintCanvasEvents() {
   const canvas = dpaint.canvas;
   const win = canvas.closest('.window');
@@ -175,15 +292,28 @@ function attachDPaintCanvasEvents() {
     dpaint.lastX = pos.x; dpaint.lastY = pos.y;
 
     if (dpaint.currentTool === 'pencil') {
+      dpaintSnapshot();
       dpaintDrawPixel(pos.x, pos.y, color);
     } else if (dpaint.currentTool === 'eraser') {
+      dpaintSnapshot();
       dpaintDrawPixel(pos.x, pos.y, dpaint.bgColor);
     } else if (dpaint.currentTool === 'eyedropper') {
       dpaintPickColor(pos.x, pos.y, isRight);
       dpaint.isDrawing = false;
     } else if (dpaint.currentTool === 'fill') {
+      dpaintSnapshot();
       dpaintFloodFill(pos.x, pos.y, color);
       dpaint.isDrawing = false;
+    } else if (dpaint.currentTool === 'text') {
+      showDPaintTextInput(pos.x, pos.y);
+      dpaint.isDrawing = false;
+    } else if (dpaint.currentTool === 'stamp') {
+      dpaintSnapshot();
+      const stamp = STAMPS[dpaint.currentStamp];
+      if (stamp) dpaint.ctx.drawImage(stamp, pos.x - 8, pos.y - 8);
+      dpaint.isDrawing = false;
+    } else if (dpaint.currentTool === 'line' || dpaint.currentTool === 'rect' || dpaint.currentTool === 'circle') {
+      dpaintSnapshot();
     }
   });
 
@@ -230,15 +360,28 @@ function attachDPaintCanvasEvents() {
     dpaint.startX = pos.x; dpaint.startY = pos.y;
     dpaint.lastX = pos.x; dpaint.lastY = pos.y;
     if (dpaint.currentTool === 'pencil') {
+      dpaintSnapshot();
       dpaintDrawPixel(pos.x, pos.y, color);
     } else if (dpaint.currentTool === 'eraser') {
+      dpaintSnapshot();
       dpaintDrawPixel(pos.x, pos.y, dpaint.bgColor);
     } else if (dpaint.currentTool === 'eyedropper') {
       dpaintPickColor(pos.x, pos.y, isRight);
       dpaint.isDrawing = false;
     } else if (dpaint.currentTool === 'fill') {
+      dpaintSnapshot();
       dpaintFloodFill(pos.x, pos.y, color);
       dpaint.isDrawing = false;
+    } else if (dpaint.currentTool === 'text') {
+      showDPaintTextInput(pos.x, pos.y);
+      dpaint.isDrawing = false;
+    } else if (dpaint.currentTool === 'stamp') {
+      dpaintSnapshot();
+      const stamp = STAMPS[dpaint.currentStamp];
+      if (stamp) dpaint.ctx.drawImage(stamp, pos.x - 8, pos.y - 8);
+      dpaint.isDrawing = false;
+    } else if (dpaint.currentTool === 'line' || dpaint.currentTool === 'rect' || dpaint.currentTool === 'circle') {
+      dpaintSnapshot();
     }
   }, { passive: false });
 
@@ -325,6 +468,8 @@ function attachDPaintToolbarEvents() {
       document.querySelectorAll('#dpaint-toolbar .dp-tool[data-tool]').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
       dpaint.currentTool = btn.dataset.tool;
+      const picker = document.getElementById('dp-stamp-picker');
+      if (picker) picker.classList.toggle('visible', btn.dataset.tool === 'stamp');
     });
   });
   document.querySelectorAll('#dpaint-toolbar .dp-size').forEach(btn => {
@@ -343,10 +488,13 @@ function attachDPaintToolbarEvents() {
       filledBtn.classList.toggle('active', dpaint.filled);
     });
   }
+  document.getElementById('dp-undo')?.addEventListener('click', (e) => { e.stopPropagation(); dpaintUndo(); });
+  document.getElementById('dp-redo')?.addEventListener('click', (e) => { e.stopPropagation(); dpaintRedo(); });
   const clearBtn = document.getElementById('dp-clear');
   if (clearBtn) {
     clearBtn.addEventListener('click', (e) => {
       e.stopPropagation();
+      dpaintSnapshot();
       dpaint.ctx.fillStyle = dpaint.bgColor;
       dpaint.ctx.fillRect(0, 0, dpaint.canvasW, dpaint.canvasH);
     });
@@ -359,6 +507,14 @@ function attachDPaintToolbarEvents() {
       colorToggle.textContent = dpaint.touchUseBg ? 'BG' : 'FG';
     });
   }
+  document.querySelectorAll('#dp-stamp-picker [data-stamp]').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      document.querySelectorAll('#dp-stamp-picker [data-stamp]').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      dpaint.currentStamp = btn.dataset.stamp;
+    });
+  });
 }
 
 export function dpaintSave() {

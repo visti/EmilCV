@@ -1,3 +1,5 @@
+import { playStatic } from './sound.js';
+
 export async function runBootSequence() {
   const screen  = document.getElementById('boot-screen');
   const canvas  = document.getElementById('boot-canvas');
@@ -57,7 +59,8 @@ export async function runBootSequence() {
     ctx.fillRect(0, ly, W, lh);
   });
 
-  // Bright flash as screen "snaps" on
+  // Bright flash as screen "snaps" on — play static as line fully expands
+  playStatic();
   ctx.fillStyle = 'rgba(255,255,255,0.9)';
   ctx.fillRect(0, 0, W, H);
   await wait(55);
