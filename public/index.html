@@ -976,7 +976,7 @@
       font-size: 11px;
     }
 
-    /* VistiBASIC window */
+    /* AmigaBASIC window */
     #basic-body {
       background: #0022aa;
       color: #fff;
@@ -1227,11 +1227,11 @@
     </div>
   </div>
 
-  <!-- VistiBASIC window (hidden by default) -->
+  <!-- AmigaBASIC window (hidden by default) -->
   <div class="window" id="basic-window" style="display:none">
     <div class="window-title">
       <div class="close-gadget" id="basic-close"></div>
-      <span class="title-text">VistiBASIC</span>
+      <span class="title-text">AmigaBASIC</span>
     </div>
     <div class="window-body" id="basic-body">
       <div id="basic-output"></div>
@@ -1361,11 +1361,11 @@
       </div>
       <span class="icon-label">Pictures</span>
     </a>
-    <a class="wb-icon" href="#" id="basic-icon" aria-label="VistiBASIC">
+    <a class="wb-icon" href="#" id="basic-icon" aria-label="AmigaBASIC">
       <div class="icon-box">
         <img src="files/icons/basic.svg" alt="">
       </div>
-      <span class="icon-label">Visti<br>BASIC</span>
+      <span class="icon-label">Amiga<br>BASIC</span>
     </a>
     <a class="wb-icon" href="#" id="mail-icon" aria-label="Mail">
       <div class="icon-box">
@@ -3395,7 +3395,7 @@
       });
     }
 
-    // === VistiBASIC Interpreter ===
+    // === AmigaBASIC Interpreter ===
     const bas = {
       prog: {}, vars: {}, running: false, pc: 0,
       lines: [], callStack: [], forStack: [], whileStack: [],
@@ -4255,7 +4255,7 @@
     function basInit() {
       const input = document.getElementById('basic-input');
       if (!input) return;
-      basOut('VistiBASIC v3.4');
+      basOut('AmigaBASIC v3.4');
       basOut('(c) 2026 Workbench Edition');
       basOut('32768 bytes free');
       basOutMarked('Use [[HELP]] for a list of commands');
@@ -4576,7 +4576,7 @@
           switch (args.toLowerCase()) {
             case 'readme.txt':
               htermPrint('=== README ===', 'hterm-accent');
-              htermPrint('This site is a love letter to VistiOS.');
+              htermPrint('This site is a love letter to the Commodore Amiga.');
               htermPrint('Built with HTML, CSS, and vanilla JS.');
               htermPrint('No frameworks were harmed in the making of this page.');
               htermPrint('The VistiOS Workbench aesthetic is recreated from memory');
