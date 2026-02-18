@@ -3298,11 +3298,10 @@
         const g = uiAudioCtx.createGain();
         o.connect(g); g.connect(uiAudioCtx.destination);
         o.type = 'square';
-        o.frequency.setValueAtTime(440, t);
-        o.frequency.exponentialRampToValueAtTime(880, t + 0.04);
-        g.gain.setValueAtTime(0.05, t);
-        g.gain.exponentialRampToValueAtTime(0.001, t + 0.12);
-        o.start(t); o.stop(t + 0.12);
+        o.frequency.value = 180;
+        g.gain.setValueAtTime(0.12, t);
+        g.gain.exponentialRampToValueAtTime(0.001, t + 0.035);
+        o.start(t); o.stop(t + 0.035);
       } catch {}
     }
     function playWinClose() {
@@ -3313,11 +3312,10 @@
         const g = uiAudioCtx.createGain();
         o.connect(g); g.connect(uiAudioCtx.destination);
         o.type = 'square';
-        o.frequency.setValueAtTime(660, t);
-        o.frequency.exponentialRampToValueAtTime(220, t + 0.06);
-        g.gain.setValueAtTime(0.05, t);
-        g.gain.exponentialRampToValueAtTime(0.001, t + 0.10);
-        o.start(t); o.stop(t + 0.10);
+        o.frequency.value = 130;
+        g.gain.setValueAtTime(0.12, t);
+        g.gain.exponentialRampToValueAtTime(0.001, t + 0.035);
+        o.start(t); o.stop(t + 0.035);
       } catch {}
     }
 
