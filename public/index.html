@@ -3310,7 +3310,7 @@
     // Pre-fetch audio bytes immediately — no AudioContext needed for fetch
     const uiRawAudio = Promise.all([
       fetch('/files/audio/load.mp3').then(r => r.arrayBuffer()).catch(() => null),
-      fetch('/files/audio/deload.mp3').then(r => r.arrayBuffer()).catch(() => null),
+      fetch('/files/audio/deload.wav').then(r => r.arrayBuffer()).catch(() => null),
     ]);
     let uiAudioCtx = null;
     let uiSounds = null;
@@ -3350,14 +3350,8 @@
         if (!uiSounds) return;
         const src = uiAudioCtx.createBufferSource();
         src.buffer = uiSounds.deload;
-        const g = uiAudioCtx.createGain();
-        src.connect(g); g.connect(uiAudioCtx.destination);
-        const dur = uiSounds.deload.duration;
-        const t = uiAudioCtx.currentTime;
-        g.gain.setValueAtTime(1, t);
-        g.gain.setValueAtTime(1, t + Math.max(0, dur - 0.15));
-        g.gain.linearRampToValueAtTime(0, t + dur);
-        src.start(t);
+        src.connect(uiAudioCtx.destination);
+        src.start();
       } catch {}
     }
 
