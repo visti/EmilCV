@@ -4274,8 +4274,8 @@
         wbContainer.classList.add('slid-down');
         gsap.to(wbContainer, {
           y: window.innerHeight - 24,
-          duration: 0.6,
-          ease: 'back.out(1.4)',
+          duration: 0.9,
+          ease: 'back.out(3)',
           onComplete: () => htermInput.focus()
         });
       } else {
@@ -4283,8 +4283,8 @@
         wbContainer.classList.remove('slid-down');
         gsap.to(wbContainer, {
           y: 0,
-          duration: 0.5,
-          ease: 'back.in(1.4)',
+          duration: 0.65,
+          ease: 'back.in(2)',
           onComplete: () => {
             htermScreen.classList.remove('visible', 'behind');
           }
