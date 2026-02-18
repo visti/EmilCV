@@ -1713,8 +1713,12 @@
           if (win.style.display === 'none') {
             win.style.display = '';
             win.classList.add('open');
-            win.style.height = '';
-            delete win.dataset.prevHeight;
+            if (win.dataset.prevHeight) {
+              win.style.height = win.dataset.prevHeight;
+              delete win.dataset.prevHeight;
+            } else {
+              win.style.height = '';
+            }
             if (!win.classList.contains('is-absolute')) mobileWindowPos(win, 380, null);
             bringToFront(win);
             playWinOpen();
@@ -2962,8 +2966,12 @@
           win.style.display = '';
           if (!win.classList.contains('open')) {
             win.classList.add('open');
-            win.style.height = '';
-            delete win.dataset.prevHeight;
+            if (win.dataset.prevHeight) {
+              win.style.height = win.dataset.prevHeight;
+              delete win.dataset.prevHeight;
+            } else {
+              win.style.height = '';
+            }
           }
           if (!win.classList.contains('is-absolute')) mobileWindowPos(win, w, h);
           bringToFront(win);
