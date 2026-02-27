@@ -844,7 +844,8 @@
     }
 
     /* Pictures window */
-    #pictures-body {
+    #pictures-body,
+    #videos-body {
       display: flex;
       flex-wrap: wrap;
       gap: 8px;
@@ -903,6 +904,34 @@
       height: auto;
       image-rendering: pixelated;
       border: 2px solid #fff;
+    }
+    .video-viewer {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      background: #001a44;
+      padding: 6px;
+    }
+    .video-player {
+      width: 100%;
+      border: 2px solid #fff;
+      background: #000;
+    }
+    .video-meta {
+      border: 2px solid #fff;
+      background: #002266;
+      padding: 6px;
+      color: #aaccff;
+    }
+    .video-meta-title {
+      color: #ffdd44;
+      font-size: 12px;
+      margin-bottom: 4px;
+    }
+    .video-meta-desc {
+      font-size: 11px;
+      line-height: 1.4;
+      white-space: pre-wrap;
     }
 
     /* Timeline window */

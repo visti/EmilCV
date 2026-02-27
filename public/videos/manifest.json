@@ -1,0 +1,52 @@
+[
+  {
+    "id": "video-20260227-170634",
+    "title": "Video by emilvisti",
+    "description": "Been programming for the #pico8 lately, so here's a.. thing.",
+    "source_url": "https://www.instagram.com/p/CLPvg47J429/",
+    "video_url": "/videos/video-20260227-170634.mp4",
+    "thumb_url": "/videos/thumbs/video-20260227-170634.jpg",
+    "created_at": "2026-02-27T17:06:40+00:00",
+    "duration": 54.912
+  },
+  {
+    "id": "video-20260227-170630",
+    "title": "Video by emilvisti",
+    "description": "Coded this little game concept in Pico-8 a while back but never had a suitable hardware platform for it before now with the powkiddy V10.",
+    "source_url": "https://www.instagram.com/p/DAF1rIOtUIj/",
+    "video_url": "/videos/video-20260227-170630.mp4",
+    "thumb_url": "/videos/thumbs/video-20260227-170630.jpg",
+    "created_at": "2026-02-27T17:06:34+00:00",
+    "duration": 40.788
+  },
+  {
+    "id": "video-20260227-170620",
+    "title": "Video by emilvisti",
+    "description": "",
+    "source_url": "http://instagram.com/p/DA84tsNNNOh/",
+    "video_url": "/videos/video-20260227-170620.mp4",
+    "thumb_url": "/videos/thumbs/video-20260227-170620.jpg",
+    "created_at": "2026-02-27T17:06:30+00:00",
+    "duration": 75.907
+  },
+  {
+    "id": "video-20260227-170604",
+    "title": "Video by emilvisti",
+    "description": "I wrote this sequencer for the #monomenorns this evening. Based on the idea of a binary tree and split timelines in general, each node is given a random note from a scale and the the tree is then traversed by a playhead. Each time the playhead is faced with the decision of a branching paths, it splits in two (or three) and takes all possible paths creating polymetrix patterns as the roads end at different points.\n\nI just finished reading Blake Crouch\u2019s Dark Matter a few days ago which is a book also about split timelines, so I guess I\u2019ve been subconsciously influenced.",
+    "source_url": "https://www.instagram.com/p/DCU5wP5tpen/",
+    "video_url": "/videos/video-20260227-170604.mp4",
+    "thumb_url": "/videos/thumbs/video-20260227-170604.jpg",
+    "created_at": "2026-02-27T17:06:20+00:00",
+    "duration": 90.025
+  },
+  {
+    "id": "video-20260227-165448",
+    "title": "Video by emilvisti",
+    "description": "Another norns study: catmull is a chaotic sequencer the draws a curve through user-selected points (using a Catmull-Rom interpolation). The user can then distribute more notes evenly across the spline resulting in weird timings as the spline isn't uniform#. 6 LFOs can be routed to various destinations. Probably not a lot of musical application to this one, but learned a lot about graphics for the norns. #monomenorns #nornsshield",
+    "source_url": "https://www.instagram.com/p/DDAuDFFNekF/",
+    "video_url": "/videos/video-20260227-165448.mp4",
+    "thumb_url": "/videos/thumbs/video-20260227-165448.jpg",
+    "created_at": "2026-02-27T16:55:43+00:00",
+    "duration": 90.025
+  }
+]

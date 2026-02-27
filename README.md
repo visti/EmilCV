@@ -29,6 +29,7 @@ A retro-themed personal CV website styled after the Commodore Amiga Workbench 3.
 | Deluxe Paint | Pixel editor | Full pixel art editor (see below) |
 | File Manager | Disk info | Language pie chart + defrag grid of GitHub repos |
 | Pictures | Gallery | Browse and view saved paintings |
+| Videos | Video gallery | Browse Instagram-sourced video thumbnails and open a player with descriptions |
 | AmigaBASIC | BASIC shell | Interactive interpreter (see below) |
 | Mail | Contact form | Send email via mailto link |
 | Timeline | Timeline Map | Visual career + education history grid |
@@ -49,6 +50,12 @@ Full pixel art editor inspired by the classic Amiga app:
 - Thumbnail grid of all saved server-side paintings
 - Click a thumbnail to open the painting in a Workbench-style viewer window
 - Drag anything to the trashcan to trigger the Guru Meditation easter egg
+
+### Videos Gallery
+- Thumbnail grid sourced from `public/videos/manifest.json`
+- Click any thumbnail to open a Workbench-style video player window
+- Player includes title + description metadata beneath the video
+- Ingest pipeline via `scripts/fetch_instagram.py` downloads from Instagram URL, transcodes to MP4, and generates a thumbnail
 
 ### AmigaBASIC Interpreter
 Interactive BASIC shell with:
@@ -107,6 +114,9 @@ A multi-room fantasy adventure game (`/game/game.json` + individual `.room` file
     │   └── *.room           # Individual room data files
     ├── music/
     │   └── music.mp3        # Ambient music for the adventure game
+    ├── videos/
+    │   ├── manifest.json    # Video index used by the Videos window
+    │   └── thumbs/          # Generated thumbnails
     └── notes/
         ├── manifest.json    # Auto-generated note index
         └── *.md             # Markdown note files
@@ -119,3 +129,19 @@ node server.js
 ```
 
 Then open `http://localhost:3000`.
+
+## Instagram Ingest Script
+
+```bash
+python3 scripts/fetch_instagram.py "https://www.instagram.com/reel/..."
+```
+
+Optional metadata:
+
+```bash
+python3 scripts/fetch_instagram.py "https://www.instagram.com/reel/..." \
+  --title "Video title" \
+  --description "What this clip is about"
+```
+
+Requirements: `yt-dlp`, `ffmpeg`, `ffprobe`.

@@ -174,6 +174,17 @@
     </div>
   </div>
 
+  <!-- Videos window (hidden by default) -->
+  <div class="window" id="videos-window" style="display:none">
+    <div class="window-title">
+      <div class="close-gadget" id="videos-close"></div>
+      <span class="title-text">Videos</span>
+    </div>
+    <div class="window-body" id="videos-body">
+      <div class="pic-empty">No videos yet</div>
+    </div>
+  </div>
+
   <!-- AmigaBASIC window (hidden by default) -->
   <div class="window" id="basic-window" style="display:none">
     <div class="window-title">
@@ -307,6 +318,12 @@
         <img src="files/icons/pictures.svg" alt="">
       </div>
       <span class="icon-label">Pictures</span>
+    </a>
+    <a class="wb-icon" href="#" id="videos-icon" aria-label="Videos">
+      <div class="icon-box">
+        <img src="files/icons/pictures.svg" alt="">
+      </div>
+      <span class="icon-label">Videos</span>
     </a>
     <a class="wb-icon" href="#" id="basic-icon" aria-label="AmigaBASIC">
       <div class="icon-box">

@@ -8,6 +8,7 @@ import { sizeDPaintCanvas, dpaintSave, dpaintUndo, dpaintRedo } from './dpaint.j
 import { bas, basInit, sizeBasicBody } from './basic.js';
 import { htermState, htermToggle, htermInit } from './terminal.js';
 import './pictures.js';
+import './videos.js';
 import {
   registerWindow, guruMeditation, applyIconGsap,
   observeResize, sizeMainWindowBody, sizeWindowsToContent,
@@ -103,17 +104,58 @@ async function main() {
   };
 }
 
+const BOOT_COOLDOWN_MS = 5 * 60 * 1000;
+const BOOT_LAST_SEEN_KEY = 'vistios:lastBootAt';
+
+function shouldPlayBoot() {
+  try {
+    const raw = localStorage.getItem(BOOT_LAST_SEEN_KEY);
+    const ts = raw ? parseInt(raw, 10) : 0;
+    if (!ts || Number.isNaN(ts)) return true;
+    return (Date.now() - ts) > BOOT_COOLDOWN_MS;
+  } catch {
+    return true;
+  }
+}
+
+function markBootSeenNow() {
+  try {
+    localStorage.setItem(BOOT_LAST_SEEN_KEY, String(Date.now()));
+  } catch {}
+}
+
+function hideBootScreen() {
+  const prompt = document.getElementById('boot-prompt');
+  const screen = document.getElementById('boot-screen');
+  if (prompt) prompt.style.display = 'none';
+  if (screen) {
+    screen.classList.remove('active');
+    screen.style.display = 'none';
+  }
+}
+
 (async () => {
   const mainPromise = main();
-  await new Promise(resolve => {
-    const prompt = document.getElementById('boot-prompt');
-    const handler = () => { prompt.style.display = 'none'; resolve(); };
-    prompt.addEventListener('click', handler, { once: true });
-  });
-  const [, startTypewriter] = await Promise.all([
-    runBootSequence(),
-    mainPromise
-  ]);
+  const playBoot = shouldPlayBoot();
+
+  if (playBoot) {
+    await new Promise(resolve => {
+      const prompt = document.getElementById('boot-prompt');
+      if (!prompt) { resolve(); return; }
+      const handler = () => { prompt.style.display = 'none'; resolve(); };
+      prompt.addEventListener('click', handler, { once: true });
+    });
+  } else {
+    hideBootScreen();
+  }
+
+  const startTypewriterPromise = mainPromise;
+  if (playBoot) {
+    await runBootSequence();
+    markBootSeenNow();
+  }
+
+  const startTypewriter = await startTypewriterPromise;
   if (startTypewriter) startTypewriter();
 })();
 
