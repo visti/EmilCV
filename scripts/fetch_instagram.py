@@ -76,10 +76,11 @@ def probe_duration(path: pathlib.Path) -> float | None:
         return None
 
 
-def fetch_metadata(url: str) -> dict[str, Any]:
+def read_info_json(path: pathlib.Path) -> dict[str, Any]:
+    if not path.exists():
+        return {}
     try:
-        out = run(["yt-dlp", "--no-playlist", "--dump-single-json", url])
-        data = json.loads(out)
+        data = json.loads(path.read_text(encoding="utf-8"))
         return data if isinstance(data, dict) else {}
     except Exception:
         return {}
@@ -120,15 +121,18 @@ def main() -> None:
     output_video = videos_dir / f"{video_id}.mp4"
     output_thumb = thumbs_dir / f"{video_id}.jpg"
 
+    metadata: dict[str, Any] = {}
     with tempfile.TemporaryDirectory(prefix="igdl-") as tmp:
         tmpdir = pathlib.Path(tmp)
         source_tmpl = tmpdir / "source.%(ext)s"
+        info_json = tmpdir / "source.info.json"
 
         print("Downloading source video...")
         subprocess.run(
             [
                 "yt-dlp",
                 "--no-playlist",
+                "--write-info-json",
                 "-o",
                 str(source_tmpl),
                 args.url,
@@ -185,9 +189,9 @@ def main() -> None:
             ],
             check=True,
         )
+        metadata = read_info_json(info_json)
 
     duration = probe_duration(output_video)
-    metadata = fetch_metadata(args.url)
     meta_title = metadata.get("title") if isinstance(metadata.get("title"), str) else None
     meta_desc = metadata.get("description") if isinstance(metadata.get("description"), str) else None
 

@@ -3,53 +3,89 @@ import { mobileWindowPos, bringToFront, winShow, winHide, registerWindow, guruMe
 import { playWinOpen, playWinClose } from './sound.js';
 
 let _picturesAbort = null;
+let _picturesListCache = null;
+let _warmPicturesPromise = null;
+
+async function runWithConcurrency(tasks, limit) {
+  let i = 0;
+  async function worker() {
+    while (i < tasks.length) {
+      const idx = i++;
+      try { await tasks[idx](); } catch {}
+    }
+  }
+  const workers = Array.from({ length: Math.max(1, Math.min(limit, tasks.length)) }, () => worker());
+  await Promise.all(workers);
+}
+
+function renderPictures(body, list) {
+  body.innerHTML = '';
+  if (!list.length) {
+    body.innerHTML = '<div class="pic-empty">No paintings saved yet</div>';
+    return;
+  }
+  list.forEach(item => {
+    const a = document.createElement('a');
+    a.className = 'pic-thumb';
+    a.href = item.url;
+    a.draggable = true;
+    a.dataset.filename = item.filename;
+    a.addEventListener('click', (e) => {
+      e.preventDefault();
+      openPaintingWindow(item.filename, item.url);
+    });
+    a.addEventListener('dragstart', (e) => {
+      e.dataTransfer.setData('text/plain', item.filename);
+      e.dataTransfer.effectAllowed = 'move';
+      a.classList.add('dragging');
+    });
+    a.addEventListener('dragend', () => {
+      a.classList.remove('dragging');
+    });
+    const img = document.createElement('img');
+    img.src = item.url;
+    img.alt = item.filename;
+    a.appendChild(img);
+    // Extract date from filename: painting-{timestamp}.png
+    const ts = parseInt(item.filename.replace('painting-', '').replace('.png', ''), 10);
+    if (ts) {
+      const d = new Date(ts);
+      const label = document.createElement('span');
+      label.textContent = d.toLocaleDateString() + ' ' + d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      a.appendChild(label);
+    }
+    body.appendChild(a);
+  });
+}
+
+export function warmPicturesCache() {
+  if (_warmPicturesPromise) return _warmPicturesPromise;
+  _warmPicturesPromise = fetch('./paint/')
+    .then(res => (res.ok ? res.json() : []))
+    .then(async (list) => {
+      if (!Array.isArray(list)) return [];
+      _picturesListCache = list;
+      const tasks = list.map(item => () => fetch(item.url, { cache: 'force-cache' }));
+      await runWithConcurrency(tasks, 4);
+      return list;
+    })
+    .catch(() => {});
+  return _warmPicturesPromise;
+}
 
 export function loadPictures() {
   const body = document.getElementById('pictures-body');
   if (!body) return;
+  if (_picturesListCache) renderPictures(body, _picturesListCache);
   if (_picturesAbort) { _picturesAbort.abort(); }
   _picturesAbort = new AbortController();
   const signal = _picturesAbort.signal;
   fetch('./paint/', { signal })
     .then(res => res.ok ? res.json() : [])
     .then(list => {
-      body.innerHTML = '';
-      if (list.length === 0) {
-        body.innerHTML = '<div class="pic-empty">No paintings saved yet</div>';
-        return;
-      }
-      list.forEach(item => {
-        const a = document.createElement('a');
-        a.className = 'pic-thumb';
-        a.href = item.url;
-        a.draggable = true;
-        a.dataset.filename = item.filename;
-        a.addEventListener('click', (e) => {
-          e.preventDefault();
-          openPaintingWindow(item.filename, item.url);
-        });
-        a.addEventListener('dragstart', (e) => {
-          e.dataTransfer.setData('text/plain', item.filename);
-          e.dataTransfer.effectAllowed = 'move';
-          a.classList.add('dragging');
-        });
-        a.addEventListener('dragend', () => {
-          a.classList.remove('dragging');
-        });
-        const img = document.createElement('img');
-        img.src = item.url;
-        img.alt = item.filename;
-        a.appendChild(img);
-        // Extract date from filename: painting-{timestamp}.png
-        const ts = parseInt(item.filename.replace('painting-', '').replace('.png', ''), 10);
-        if (ts) {
-          const d = new Date(ts);
-          const label = document.createElement('span');
-          label.textContent = d.toLocaleDateString() + ' ' + d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-          a.appendChild(label);
-        }
-        body.appendChild(a);
-      });
+      if (!Array.isArray(list)) list = [];
+      _picturesListCache = list;
+      renderPictures(body, list);
     })
     .catch(err => {
       if (err.name === 'AbortError') return;

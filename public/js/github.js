@@ -1,4 +1,4 @@
-import { GITHUB_USER, fallback, fallbackRepos } from './config.js';
+import { GITHUB_USER, PROFILE_LINKS, fallback, fallbackRepos } from './config.js';
 import { pad, makeBar } from './utils.js';
 
 export async function fetchGitHub() {
@@ -121,7 +121,8 @@ export function buildLines(user, repos) {
 
   // Links
   lines.push({ type: 'cmd', html: `<span class="prompt-text">1.SYS:&gt;</span> <span class="cmd-text">type DH0:links</span>` });
-  lines.push({ type: 'out', html: `  <a href="https://github.com/${GITHUB_USER}" target="_blank" rel="noopener noreferrer">github.com/${GITHUB_USER}</a>` });
+  const ghLabel = PROFILE_LINKS.github.replace(/^https?:\/\//, '');
+  lines.push({ type: 'out', html: `  <a href="${PROFILE_LINKS.github}" target="_blank" rel="noopener noreferrer">${ghLabel}</a>` });
   lines.push({ type: 'blank' });
 
   // Final prompt

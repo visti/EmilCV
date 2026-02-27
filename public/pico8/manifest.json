@@ -1,0 +1,16 @@
+[
+  {
+    "id": "spiralgenerator",
+    "title": "Spiral Generator",
+    "description": "Embedded from Lexaloffle BBS.",
+    "embed_url": "https://www.lexaloffle.com/bbs/widget.php?pid=spiralgenerator",
+    "thumb_url": "/pico8/thumbs/spiralgenerator.png"
+  },
+  {
+    "id": "creeps",
+    "title": "Creeps",
+    "description": "Embedded from Lexaloffle BBS.",
+    "embed_url": "https://www.lexaloffle.com/bbs/widget.php?pid=creeps",
+    "thumb_url": "/pico8/thumbs/creeps.png"
+  }
+]

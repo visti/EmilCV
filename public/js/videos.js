@@ -3,6 +3,50 @@ import { mobileWindowPos, bringToFront, winShow, winHide, registerWindow } from 
 import { playWinOpen, playWinClose } from './sound.js';
 
 let _videosAbort = null;
+let _videosListCache = null;
+let _warmVideosPromise = null;
+
+function canPreloadLargeMedia() {
+  const conn = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+  if (!conn) return true;
+  if (conn.saveData) return false;
+  const et = String(conn.effectiveType || '').toLowerCase();
+  return et !== 'slow-2g' && et !== '2g';
+}
+
+async function runWithConcurrency(tasks, limit) {
+  let i = 0;
+  async function worker() {
+    while (i < tasks.length) {
+      const idx = i++;
+      try { await tasks[idx](); } catch {}
+    }
+  }
+  const workers = Array.from({ length: Math.max(1, Math.min(limit, tasks.length)) }, () => worker());
+  await Promise.all(workers);
+}
+
+function warmVideoMetadata(url) {
+  return new Promise((resolve) => {
+    const el = document.createElement('video');
+    let done = false;
+    const finish = () => {
+      if (done) return;
+      done = true;
+      el.removeAttribute('src');
+      el.load();
+      resolve();
+    };
+    const timer = setTimeout(finish, 8000);
+    el.preload = 'metadata';
+    el.muted = true;
+    el.playsInline = true;
+    el.onloadedmetadata = () => { clearTimeout(timer); finish(); };
+    el.onerror = () => { clearTimeout(timer); finish(); };
+    el.src = url;
+    el.load();
+  });
+}
 
 function formatDuration(seconds) {
   if (typeof seconds !== 'number' || !Number.isFinite(seconds) || seconds <= 0) return '';
@@ -15,6 +59,7 @@ function formatDuration(seconds) {
 export function loadVideos() {
   const body = document.getElementById('videos-body');
   if (!body) return;
+  if (_videosListCache) renderVideos(body, _videosListCache);
 
   if (_videosAbort) _videosAbort.abort();
   _videosAbort = new AbortController();
@@ -22,49 +67,84 @@ export function loadVideos() {
   fetch('./videos/manifest.json', { signal: _videosAbort.signal })
     .then((res) => (res.ok ? res.json() : []))
     .then((list) => {
-      body.innerHTML = '';
-      if (!Array.isArray(list) || list.length === 0) {
-        body.innerHTML = '<div class="pic-empty">No videos yet</div>';
-        return;
-      }
-
-      list.forEach((item) => {
-        const thumb = safeUrl(item.thumb_url || '');
-        const itemId = item.id || item.video_url || item.title || 'video';
-
-        const a = document.createElement('a');
-        a.className = 'pic-thumb';
-        a.href = '#';
-        a.dataset.videoId = itemId;
-        a.addEventListener('click', (e) => {
-          e.preventDefault();
-          openVideoWindow(item);
-        });
-
-        const img = document.createElement('img');
-        img.src = thumb;
-        img.alt = item.title || 'Video';
-
-        const name = document.createElement('span');
-        name.textContent = item.title || 'Untitled';
-
-        const dur = formatDuration(item.duration);
-        if (dur) {
-          const meta = document.createElement('span');
-          meta.className = 'dim-text';
-          meta.textContent = dur;
-          a.appendChild(meta);
-        }
-
-        a.prepend(name);
-        a.prepend(img);
-        body.appendChild(a);
-      });
+      if (!Array.isArray(list)) list = [];
+      _videosListCache = list;
+      renderVideos(body, list);
     })
     .catch((err) => {
       if (err.name === 'AbortError') return;
       body.innerHTML = '<div class="pic-empty">Could not load videos</div>';
     });
+}
+
+export function warmVideosCache() {
+  if (_warmVideosPromise) return _warmVideosPromise;
+  _warmVideosPromise = fetch('./videos/manifest.json')
+    .then((res) => (res.ok ? res.json() : []))
+    .then(async (list) => {
+      if (!Array.isArray(list)) return [];
+      _videosListCache = list;
+      const thumbTasks = list
+        .map((item) => item.thumb_url)
+        .filter(Boolean)
+        .map((url) => () => fetch(url, { cache: 'force-cache' }));
+      await runWithConcurrency(thumbTasks, 4);
+
+      const videoUrls = list.map((item) => item.video_url).filter(Boolean);
+      if (canPreloadLargeMedia()) {
+        // Warm full media progressively so opening feels instant without flooding network.
+        const videoTasks = videoUrls.map((url) => () => fetch(url, { cache: 'force-cache' }));
+        await runWithConcurrency(videoTasks, 2);
+      } else {
+        // On constrained links, only warm metadata for first few videos.
+        const metaTasks = videoUrls.slice(0, 3).map((url) => () => warmVideoMetadata(url));
+        await runWithConcurrency(metaTasks, 1);
+      }
+      return list;
+    })
+    .catch(() => {});
+  return _warmVideosPromise;
+}
+
+function renderVideos(body, list) {
+  body.innerHTML = '';
+  if (!Array.isArray(list) || list.length === 0) {
+    body.innerHTML = '<div class="pic-empty">No videos yet</div>';
+    return;
+  }
+
+  list.forEach((item) => {
+    const thumb = safeUrl(item.thumb_url || '');
+    const itemId = item.id || item.video_url || item.title || 'video';
+
+    const a = document.createElement('a');
+    a.className = 'pic-thumb';
+    a.href = '#';
+    a.dataset.videoId = itemId;
+    a.addEventListener('click', (e) => {
+      e.preventDefault();
+      openVideoWindow(item);
+    });
+
+    const img = document.createElement('img');
+    img.src = thumb;
+    img.alt = item.title || 'Video';
+
+    const name = document.createElement('span');
+    name.textContent = item.title || 'Untitled';
+
+    const dur = formatDuration(item.duration);
+    if (dur) {
+      const meta = document.createElement('span');
+      meta.className = 'dim-text';
+      meta.textContent = dur;
+      a.appendChild(meta);
+    }
+
+    a.prepend(name);
+    a.prepend(img);
+    body.appendChild(a);
+  });
 }
 
 export const toggleVideosWindow = registerWindow(

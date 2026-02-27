@@ -185,6 +185,17 @@
     </div>
   </div>
 
+  <!-- PICO-8 window (hidden by default) -->
+  <div class="window" id="pico8-window" style="display:none">
+    <div class="window-title">
+      <div class="close-gadget" id="pico8-close"></div>
+      <span class="title-text">PICO-8</span>
+    </div>
+    <div class="window-body" id="pico8-body">
+      <div class="pic-empty">No PICO-8 carts yet</div>
+    </div>
+  </div>
+
   <!-- AmigaBASIC window (hidden by default) -->
   <div class="window" id="basic-window" style="display:none">
     <div class="window-title">
@@ -277,13 +288,13 @@
       </div>
       <span class="icon-label">CV</span>
     </a>
-    <a class="wb-icon" href="https://github.com/visti" target="_blank" rel="noopener noreferrer" aria-label="GitHub">
+    <a class="wb-icon" href="https://github.com/visti" target="_blank" rel="noopener noreferrer" aria-label="GitHub" id="github-link">
       <div class="icon-box">
         <img src="files/icons/github.svg" alt="">
       </div>
       <span class="icon-label">GitHub</span>
     </a>
-    <a class="wb-icon" href="https://soundcloud.com/visti-1" target="_blank" rel="noopener noreferrer" aria-label="SoundCloud">
+    <a class="wb-icon" href="https://soundcloud.com/visti-1" target="_blank" rel="noopener noreferrer" aria-label="SoundCloud" id="soundcloud-link">
       <div class="icon-box">
         <img src="files/icons/soundcloud.svg" alt="">
       </div>
@@ -324,6 +335,12 @@
         <img src="files/icons/pictures.svg" alt="">
       </div>
       <span class="icon-label">Videos</span>
+    </a>
+    <a class="wb-icon" href="#" id="pico8-icon" aria-label="PICO-8">
+      <div class="icon-box">
+        <img src="files/icons/program.svg" alt="">
+      </div>
+      <span class="icon-label">PICO-8</span>
     </a>
     <a class="wb-icon" href="#" id="basic-icon" aria-label="AmigaBASIC">
       <div class="icon-box">

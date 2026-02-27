@@ -1,4 +1,11 @@
 export const GITHUB_USER = 'visti';
+export const CONTACT_EMAIL = 'emilvisti@gmail.com';
+export const CV_PDF_URL = '/files/Emil_Visti_CV.pdf';
+
+export const PROFILE_LINKS = {
+  github: `https://github.com/${GITHUB_USER}`,
+  soundcloud: 'https://soundcloud.com/visti-1',
+};
 
 export const fallback = {
   name: 'Emil Visti',

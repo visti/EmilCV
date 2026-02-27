@@ -1,5 +1,6 @@
 import { runBootSequence } from './boot.js';
 import { fetchGitHub, buildLines } from './github.js';
+import { CONTACT_EMAIL, PROFILE_LINKS, CV_PDF_URL } from './config.js';
 import { fetchNotes, renderNotes } from './notes.js';
 import { sizeDemoCanvas, startStarfield, startScroller } from './demo.js';
 import { sizeDiskCanvas } from './disk.js';
@@ -7,8 +8,9 @@ import { sizeFileMgrCanvas } from './filemanager.js';
 import { sizeDPaintCanvas, dpaintSave, dpaintUndo, dpaintRedo } from './dpaint.js';
 import { bas, basInit, sizeBasicBody } from './basic.js';
 import { htermState, htermToggle, htermInit } from './terminal.js';
-import './pictures.js';
-import './videos.js';
+import { warmPicturesCache } from './pictures.js';
+import { warmVideosCache } from './videos.js';
+import './pico8.js';
 import {
   registerWindow, guruMeditation, applyIconGsap,
   observeResize, sizeMainWindowBody, sizeWindowsToContent,
@@ -134,7 +136,31 @@ function hideBootScreen() {
   }
 }
 
+function applyProfileConfig() {
+  const gh = document.getElementById('github-link');
+  if (gh) gh.href = PROFILE_LINKS.github;
+  const sc = document.getElementById('soundcloud-link');
+  if (sc) sc.href = PROFILE_LINKS.soundcloud;
+  const print = document.getElementById('print-icon');
+  if (print) print.href = CV_PDF_URL;
+  const mailTo = document.getElementById('mail-to');
+  if (mailTo) mailTo.value = CONTACT_EMAIL;
+}
+
+function scheduleAssetWarmup() {
+  const warm = () => {
+    warmPicturesCache();
+    warmVideosCache();
+  };
+  if ('requestIdleCallback' in window) {
+    window.requestIdleCallback(warm, { timeout: 2500 });
+  } else {
+    setTimeout(warm, 1200);
+  }
+}
+
 (async () => {
+  applyProfileConfig();
   const mainPromise = main();
   const playBoot = shouldPlayBoot();
 
@@ -157,6 +183,7 @@ function hideBootScreen() {
 
   const startTypewriter = await startTypewriterPromise;
   if (startTypewriter) startTypewriter();
+  scheduleAssetWarmup();
 })();
 
 // Reboot icon
@@ -185,7 +212,7 @@ document.getElementById('mail-send-btn')?.addEventListener('click', () => {
   if (!subjectRaw.trim() && !bodyRaw.trim()) return;
   const subject = encodeURIComponent(subjectRaw);
   const body = encodeURIComponent(bodyRaw);
-  window.location.href = 'mailto:emilvisti@gmail.com?subject=' + subject + '&body=' + body;
+  window.location.href = 'mailto:' + CONTACT_EMAIL + '?subject=' + subject + '&body=' + body;
 });
 
 // === Timeline window ===
